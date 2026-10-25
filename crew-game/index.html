@@ -186,6 +186,8 @@
   .ctrl { top: max(12px, env(safe-area-inset-top)) !important; bottom: auto !important; left: auto !important; right: 12px !important; z-index: 6; }
   .veil { height: 120px; }
 
+  .skill-tip { max-height: 50vh; overflow: auto; }
+  .skill-tip .eff span { font-size: 11.5px !important; }
   .skill-tip { position: fixed; z-index: 7; width: min(300px, calc(100vw - 24px)); transform: translate(-50%, 4px) scale(0.98); transform-origin: 50% 100%;
     background: rgba(28,36,48,0.95); color: #fff; border-radius: 14px; padding: 10px 12px; border-top: 4px solid var(--c, #14b89c); pointer-events: none;
     opacity: 0; transition: opacity var(--duration-quick) var(--ease-smooth-out), transform var(--duration-quick) var(--ease-smooth-out); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
@@ -226,7 +228,7 @@
     background: radial-gradient(circle at 36% 48%, #8ff5e4 0 5px, transparent 6px), radial-gradient(circle at 64% 48%, #8ff5e4 0 5px, transparent 6px), radial-gradient(ellipse at 50% 50%, #1c2a33 0 55%, #e6edf1 57%); }
   .narr.off { opacity: 0; transform: translate(-50%, -8px); }
   @media (prefers-reduced-motion: reduce) { .narr { transition: none; } }
-  .hero .cardb { position: absolute; top: 3px; right: 5px; font-size: 9.5px; font-weight: 900; color: var(--muted); }
+  .hero .cardb { position: absolute; top: 2px; right: 3px; z-index: 1; font-size: 10.5px; font-weight: 900; color: var(--muted); background: #fff; border-radius: 999px; padding: 0 5px; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
   .hero .cardb.done { color: #f0a33a; }
   .skill-tip .task { margin-top: 7px; display: flex; justify-content: space-between; gap: 8px; font-size: 11.5px; font-weight: 700; padding: 5px 8px; border-radius: 8px; background: rgba(240,163,58,0.18); }
   .skill-tip .task b { flex: none; color: #ffd36b; }
@@ -315,7 +317,7 @@
   .hero .ring { width: 46px; height: 46px; border-radius: 50%; padding: 3px; background: conic-gradient(var(--c) calc(var(--p, 1) * 360deg), rgba(34,42,54,0.12) 0); }
   .hero img { width: 100%; height: 100%; border-radius: 50%; background: #e9f6f3; display: block; transition: filter var(--duration-fast) var(--ease-smooth-out); }
   .hero b { font-size: 11.5px; font-weight: 900; line-height: 1.2; white-space: nowrap; }
-  .hero em { font-style: normal; font-size: 10.5px; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .hero em { font-style: normal; font-size: 11px; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
   .hero kbd { position: absolute; top: 4px; left: 6px; font: inherit; font-size: 10px; font-weight: 900; color: var(--muted); }
   .hero.duo { max-width: 120px; flex-grow: 1.35; }
   .hero.duo b { font-size: 10.5px; letter-spacing: -0.02em; }
@@ -337,7 +339,7 @@
   @keyframes cast { 30% { transform: translateY(-10px) scale(1.08); } }
   @media (hover: none) { .hero kbd { display: none; } }
 
-  .qb { width: 30px; height: 30px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-weight: 900; font-size: 19px; line-height: 1;
+  .qb { width: 34px; height: 34px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-weight: 900; font-size: 19px; line-height: 1;
     box-shadow: 0 3px 8px rgba(0,0,0,0.25); border: 3px solid var(--q-yellow); color: #c98a00; transition: transform var(--duration-quick) var(--ease-bounce), opacity var(--duration-quick); }
   .qb.r { border-color: var(--q-red); color: var(--q-red); animation: qshake .5s ease-in-out infinite; }
   .qb.boss { width: auto; height: auto; border-radius: 14px; padding: 6px 12px; font-size: 15px; border-color: var(--q-red); color: var(--q-red); flex-direction: column; gap: 4px; display: flex; }
@@ -356,7 +358,7 @@
     transition: opacity var(--duration-fast) var(--ease-smooth-out), transform var(--duration-fast) var(--ease-bounce); }
   .stall.off { opacity: 0; transform: scale(0.6); }
 
-  .screen { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 16px; background: rgba(28,36,48,0.28);
+  .screen { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 16px; background: rgba(28,36,48,0.45);
     opacity: 0; pointer-events: none; transition: opacity var(--duration-fast) var(--ease-smooth-out); }
   .screen.open { opacity: 1; pointer-events: auto; }
   .panel { width: min(100%, 460px); max-height: calc(100dvh - 32px); overflow-y: auto; background: rgba(255,252,246,0.97); border-radius: 22px; padding: 20px 20px 18px;
@@ -366,10 +368,27 @@
   .panel h2 { margin: 8px 0 6px; font-family: "Noto Serif TC", serif; font-weight: 900; font-size: clamp(26px, 7vw, 34px); line-height: 1.2; }
   .panel p { margin: 0; font-size: 14px; line-height: 1.65; color: #3a4350; }
   .tut-note { margin-top: 8px !important; text-align: center; font-size: 12px !important; color: var(--muted) !important; }
-  .alt.link { width: 100%; border: 0; background: none; font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; padding: 0; }
+  .alt.link { width: 100%; border: 0; background: none; font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; padding: 12px 0; min-height: 44px; }
   .skip-tut { position: absolute; right: 12px; top: calc(max(12px, env(safe-area-inset-top)) + 46px); pointer-events: auto; border: 0; border-radius: 999px; padding: 6px 12px;
     background: rgba(28,36,48,0.78); color: #fff; font: inherit; font-size: 12.5px; font-weight: 900; cursor: pointer; display: none; }
   body.tutorial .skip-tut { display: block; }
+  .skip-tut { padding: 11px 14px !important; }
+  body.voyage .hud, body.voyage .ctrl, body.voyage .isl, body.voyage .stall { opacity: 0 !important; pointer-events: none; }
+  .end-actions { position: sticky; bottom: -18px; margin: 10px -20px -18px; padding: 14px 20px 18px; background: linear-gradient(rgba(255,252,246,0), rgba(255,252,246,0.98) 28%); }
+  .end-actions .row2 .btn, .end-actions > .btn { margin-top: 6px; }
+  .hero .ring { position: relative; }
+  .rotate { position: fixed; inset: 0; z-index: 30; display: none; place-items: center; text-align: center; background: rgba(28,36,48,0.92); color: #fff; font-size: 18px; font-weight: 900; padding: 24px; }
+  .rotate b { display: block; font-size: 44px; margin-bottom: 8px; }
+  @media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) { .rotate { display: grid; } }
+  @media (pointer: coarse) { .hero kbd { display: none; } }
+  @media (max-height: 700px) and (orientation: portrait) {
+    .banner { top: calc(max(12px, env(safe-area-inset-top)) + 56px); font-size: 17px; padding: 8px 14px; }
+    .narr { font-size: 14px; } .narr::before { width: 30px; height: 30px; }
+    .hero .ring { width: 40px; height: 40px; } .hero.duo .ring { width: 62px; }
+    .hero em { display: none; } .hero.locked .away { display: block; }
+  }
+  .hud-top { left: max(12px, env(safe-area-inset-left)); right: max(58px, calc(env(safe-area-inset-right) + 46px)); }
+  .heroes { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
   body.tutorial .combo { display: none; }
   .hero.tap::after { content: "👆"; position: absolute; left: 50%; bottom: -6px; font-size: 26px; transform: translateX(-50%); animation: tap 0.9s ease-in-out infinite; pointer-events: none; }
   @keyframes tap { 50% { transform: translate(-50%, -8px); } }
@@ -436,6 +455,7 @@
 <div class="ctrl"><div class="seg"><button id="tourBtn" type="button">▶ 播放</button><button id="exploreBtn" type="button">自己逛</button></div><button id="checkBtn" class="bot-btn" type="button">AllWill</button><button id="soundBtn" class="snd" type="button" aria-label="聲音開關">🔊</button></div>
 <section class="caption" id="caption" aria-live="polite"></section>
 <button class="cap-open" id="capOpen" type="button">顯示說明</button>
+<div class="rotate"><div><b>📱</b>把手機轉成直式來玩</div></div>
 <div class="red-flash" id="redFlash"></div>
 <div class="card-flip" id="cardFlip" aria-live="polite"></div>
 <div class="cine-bars" aria-hidden="true"><i></i><i></i></div>
@@ -503,6 +523,7 @@ const DEALS = [
 const unitById = Object.fromEntries(UNITS.map((u) => [u.id, u]));
 const params = new URLSearchParams(location.search);
 const GAME_PAGE = true;
+const MOBILE = matchMedia("(pointer: coarse)").matches || innerWidth < 700; // 手機：降效能負擔、放大可讀性
 if (params.has("rec")) document.body.classList.add("rec");
 
 // ── 聲音：Web Audio 現場合成的背景音樂與音效（不用外部音檔）──
@@ -610,19 +631,20 @@ const pick = (arr) => arr[Math.floor(rand() * arr.length)];
 
 // ── 場景 ──
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: params.has("rec") });
-let pixelRatio = Math.min(devicePixelRatio, innerWidth > 900 ? 1.5 : 2);
+let pixelRatio = Math.min(devicePixelRatio, innerWidth > 900 ? 1.5 : 1.75);
 renderer.setPixelRatio(pixelRatio);
 // 幀率掉下來就降一點解析度（大螢幕最吃效能）
 const perf = { acc: 0, n: 0 };
 function tunePerf(dt) {
   perf.acc += dt; perf.n++;
-  if (perf.n < 90) return;
+  if (perf.n < 45) return;
   const avg = perf.acc / perf.n; perf.acc = 0; perf.n = 0;
   if (avg > 1 / 45 && pixelRatio > 1) { pixelRatio = Math.max(1, pixelRatio - 0.25); renderer.setPixelRatio(pixelRatio); }
-  else if (avg < 1 / 58 && pixelRatio < Math.min(devicePixelRatio, 2) - 0.01) { pixelRatio = Math.min(Math.min(devicePixelRatio, 2), pixelRatio + 0.25); renderer.setPixelRatio(pixelRatio); }
+  else if (avg > 1 / 40 && pixelRatio <= 1 && typeof G !== "undefined") G.lowFx = true; // 解析度降到底還是卡：特效減半、關拖尾
+  else if (avg < 1 / 58 && pixelRatio < Math.min(devicePixelRatio, 1.75) - 0.01) { pixelRatio = Math.min(Math.min(devicePixelRatio, 1.75), pixelRatio + 0.25); renderer.setPixelRatio(pixelRatio); }
 }
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = MOBILE ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.95;
@@ -648,8 +670,8 @@ scene.add(hemi);
 const sun = new THREE.DirectionalLight("#ffe2b8", 2.7);
 sun.position.set(-46, 34, 26);
 sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
-Object.assign(sun.shadow.camera, { left: -46, right: 46, top: 46, bottom: -46, near: 1, far: 160 });
+sun.shadow.mapSize.set(MOBILE ? 1024 : 2048, MOBILE ? 1024 : 2048);
+Object.assign(sun.shadow.camera, { left: -34, right: 34, top: 34, bottom: -34, near: 1, far: 160 });
 sun.shadow.bias = -0.0005;
 sun.shadow.normalBias = 0.02;
 scene.add(sun);
@@ -681,7 +703,7 @@ const M = {
 const shadowed = (m) => { m.castShadow = true; m.receiveShadow = true; return m; };
 
 // 海
-const seaGeo = new THREE.PlaneGeometry(700, 700, 90, 90);
+const seaGeo = new THREE.PlaneGeometry(700, 700, MOBILE ? 48 : 90, MOBILE ? 48 : 90);
 seaGeo.rotateX(-Math.PI / 2);
 const seaBase = seaGeo.attributes.position.array.slice();
 const sea = new THREE.Mesh(seaGeo, mat("#3e9fc8", { roughness: 0.3, metalness: 0.05, flatShading: true }));
@@ -761,7 +783,7 @@ function waveSea(t) {
     p[i + 1] = Math.sin(x * 0.16 + t * 0.8) * 0.16 + Math.cos(z * 0.19 + t * 0.6) * 0.16 - 0.4;
   }
   seaGeo.attributes.position.needsUpdate = true;
-  if ((seaFrame = (seaFrame + 1) % 3) === 0) seaGeo.computeVertexNormals();
+  if ((seaFrame = (seaFrame + 1) % (MOBILE ? 6 : 3)) === 0) seaGeo.computeVertexNormals();
 }
 
 // 遠山
@@ -3189,7 +3211,7 @@ function retire(p) {
 }
 
 // 特效：碎片（InstancedMesh）、衝擊波、跳字
-const PART_N = 180;
+const PART_N = MOBILE ? 120 : 180;
 const parts = new THREE.InstancedMesh(new THREE.TetrahedronGeometry(0.16), new THREE.MeshBasicMaterial({ color: "#ffffff" }), PART_N);
 parts.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 parts.frustumCulled = false;
@@ -3198,6 +3220,7 @@ const pdata = Array.from({ length: PART_N }, () => ({ life: 0, max: 1, p: V3(), 
 scene.add(parts);
 let pIdx = 0;
 function burst(pos, color, n, speed = 4) {
+  if (G.lowFx) n = Math.ceil(n / 2);
   const c = new THREE.Color(color);
   for (let i = 0; i < n; i++) {
     const d = pdata[pIdx];
@@ -3219,7 +3242,7 @@ function shockwave(pos, color, r = 4, dur = 0.6) {
   const w = rings.find((x) => x.t >= 1) || rings[0];
   w.t = 0; w.r = r; w.dur = dur; w.m.visible = true; w.m.material.color.set(color); w.m.position.copy(pos).setY(pos.y + 0.15);
 }
-const floats = Array.from({ length: 10 }, () => {
+const floats = Array.from({ length: MOBILE ? 4 : 10 }, () => {
   const el = document.createElement("div");
   el.className = "ftx off";
   const o = new CSS2DObject(el);
@@ -3343,22 +3366,22 @@ function fireOrb(h, p, dmg, opt = {}) {
   o.from = o.sky ? p.g.position.clone().add(V3(0, 10, 0)) : heroPos(h);
   o.m.material.color.set(kind ? h.c : "#ffffff");
   o.m.scale.setScalar(kind ? opt.size || 1 : 0.7);
-  if (kind) { o.sp.material.map = kindTex(kind); o.sp.material.needsUpdate = true; o.sp.scale.setScalar(kind === "heart" ? 0.9 : 1.6); }
-  o.m.visible = !kind && o.delay <= 0;
+  if (kind) { o.sp.material.map = kindTex(kind); o.sp.material.needsUpdate = true; o.sp.scale.setScalar((kind === "heart" ? 0.9 : 1.6) * (portrait() ? (kind === "heart" ? 1.6 : 1.6) : 1)); }
+  o.m.visible = false; // 自動攻擊不畫小白球，只留命中閃光
   o.sp.visible = !!kind && o.delay <= 0;
   p.incoming += dmg;
 }
 function tickOrbs(dt) {
   for (const o of orbs) {
     if (!o.active) continue;
-    if (o.delay > 0) { o.delay -= dt; if (o.delay > 0) continue; o.m.visible = !o.kind; o.sp.visible = !!o.kind; o.from = o.sky ? o.p.g.position.clone().add(V3(0, 10, 0)) : heroPos(o.h); }
+    if (o.delay > 0) { o.delay -= dt; if (o.delay > 0) continue; o.m.visible = false; o.sp.visible = !!o.kind; o.from = o.sky ? o.p.g.position.clone().add(V3(0, 10, 0)) : heroPos(o.h); }
     o.t += dt / o.dur;
     const k = Math.min(o.t, 1);
     const to = o.p.g.position.clone().add(V3(0, 0.9, 0));
     const obj = o.kind ? o.sp : o.m;
     obj.position.lerpVectors(o.from, to, o.sky ? k * k : k).add(V3(0, o.sky ? 0 : Math.sin(k * Math.PI) * o.arc, 0));
     if (o.kind === "hat") o.sp.material.rotation += dt * 14;
-    if (o.kind && rand() < 0.8) burst(obj.position, o.h.c, 1, 0.8); // 大招拖尾
+    if (o.kind && !G.lowFx && rand() < (MOBILE ? 0.4 : 0.8)) burst(obj.position, o.h.c, 1, 0.8); // 大招拖尾
     if (o.t >= 1) {
       o.active = false; o.m.visible = false; o.sp.visible = false;
       if (o.p.gen !== o.gen) continue;
@@ -3368,7 +3391,7 @@ function tickOrbs(dt) {
   }
 }
 const SIG = { hat: ["收到方向！", "water"], heart: ["抓節拍！", "coomy"], fist: ["一拳！", "raymond"], note: ["Solo！", "richard"], code: ["Async ✓", "ccza"] };
-const avPops = Array.from({ length: 6 }, () => {
+const avPops = Array.from({ length: MOBILE ? 3 : 6 }, () => {
   const el = document.createElement("div"); el.className = "hitav off";
   const img = document.createElement("img"); const tx = document.createElement("b"); el.append(img, tx);
   const o = new CSS2DObject(el); o.visible = false; scene.add(o);
@@ -3572,8 +3595,9 @@ const SKILL = {
 };
 function cast(h) {
   const btn = hud.btn[h.key];
-  if (!G.on || h.cool > 0 || !h.unlocked) { btn.classList.remove("is-shaking"); void btn.offsetWidth; btn.classList.add("is-shaking"); return; }
+  if (!G.on || h.cool > 0 || !h.unlocked) { navigator.vibrate?.([10, 40, 10]); btn.classList.remove("is-shaking"); void btn.offsetWidth; btn.classList.add("is-shaking"); return; }
   h.cool = h.cd; h.cast = 0.9;
+  navigator.vibrate?.(15);
   G.casts[h.key] = (G.casts[h.key] || 0) + 1;
   credit(h, 2);
   sayB(BUB[h.bub], h.say, 1.6);
@@ -3704,12 +3728,12 @@ function tickCine(dt) {
   caveParts.head.position.x = t < 0.6 ? Math.sin(elapsed * 60) * 0.12 : 0; // AllWill 抖一下
   if (t > 0.5) {
     const at = C.lane.br.curve.getPointAt(0.9);
-    placeCamera(at.clone().setY(at.y + 2), fitDistance(8, 7), 14);
+    if (portrait()) placeCamera(at.clone().setY(at.y + 3.5), fitDistance(6, 9), 20); else placeCamera(at.clone().setY(at.y + 2), fitDistance(8, 7), 14);
     followGoal(dt, 4);
   }
   if (boss && t > 0.55) tickPets(dt * 1.1, boss);
   if (boss && boss.state === "walk" && !C.said.land) {
-    C.said.land = true; G.shake = 0.55; shockwave(boss.g.position, "#ef5b3c", 9, 0.8); sound.bad();
+    C.said.land = true; G.shake = 0.55; navigator.vibrate?.(40); shockwave(boss.g.position, "#ef5b3c", 9, 0.8); sound.bad();
     burst(boss.g.position.clone().add(V3(0, 2, 0)), "#ef5b3c", 20, 7);
   }
   if (boss && C.said.land) { const q = Math.min(1, (t - 1.4) / 0.4); boss.g.scale.setScalar(3.2 + Math.max(0, Math.sin(Math.max(0, q) * Math.PI)) * 0.5); }
@@ -3809,14 +3833,14 @@ function tickFx(dt) {
   }
   for (const a of avPops) {
     if (a.t >= 1) continue;
-    a.t = Math.min(1, a.t + dt / 0.9);
+    a.t = Math.min(1, a.t + dt / 1.2);
     a.o.position.y = a.y + a.t * 1.2;
     if (a.t > 0.7) a.el.classList.add("off");
     if (a.t >= 1) a.o.visible = false;
   }
   for (const f of floats) {
     if (f.t >= 1) continue;
-    f.t = Math.min(1, f.t + dt / 1.1);
+    f.t = Math.min(1, f.t + dt / 1.3);
     f.o.position.y = f.y + f.t * 1.4;
     if (f.t > 0.75) f.el.classList.add("off");
     if (f.t >= 1) f.o.visible = false;
@@ -3861,8 +3885,8 @@ function showTip(h, intro = false) {
     <small class="bg">${INTRO[h.key].who}｜${INTRO[h.key].bg}</small>`;
   tip.style.setProperty("--c", h.c);
   const r = b.getBoundingClientRect();
-  tip.style.left = `${Math.min(Math.max(r.left + r.width / 2, 150), innerWidth - 150)}px`;
-  tip.style.bottom = `${innerHeight - r.top + 10}px`;
+  if (MOBILE || innerWidth < 700) { tip.style.left = "50%"; tip.style.bottom = `${innerHeight - hud.heroes.getBoundingClientRect().top + 12}px`; }
+  else { tip.style.left = `${Math.min(Math.max(r.left + r.width / 2, 150), innerWidth - 150)}px`; tip.style.bottom = `${innerHeight - r.top + 10}px`; }
   tip.classList.add("on");
   G.preview = { h, lanes: I.lanes(), main: typeof I.main === "function" ? I.main() : I.main || I.lanes() };
 }
@@ -3877,7 +3901,7 @@ hud.heroes.querySelectorAll(".hero").forEach((b) => {
     e.preventDefault();
     if (e.pointerType === "mouse") { cast(h); if (G.preview) showTip(h); return; }
     held = false; clearTimeout(hold);
-    hold = setTimeout(() => { held = true; showTip(h); }, 380); // 手機長按看說明，短按放招
+    hold = setTimeout(() => { held = true; navigator.vibrate?.(8); showTip(h); }, 300); // 手機長按看說明，短按放招
   });
   b.addEventListener("pointerup", (e) => {
     if (e.pointerType === "mouse") return;
@@ -3934,9 +3958,30 @@ function banner(main, sub = "", danger = false, sec = 2.6) {
   G.bannerT = sec;
 }
 
+// ── 標籤不跑出畫面：島名、飄字、頭像標籤超出左右邊就往內推 ──
+const clampEls = () => [...Object.values(islands).map((i) => i.el), ...floats.map((f) => f.el), ...avPops.map((a) => a.el), ...lanes.map((l) => l.el)];
+function clampLabels() {
+  const W = innerWidth;
+  for (const el of clampEls()) {
+    if (el.style.display === "none" || !el.offsetWidth) continue;
+    const m = /translate\(([-\d.]+)px, ([-\d.]+)px\)$/.exec(el.style.transform);
+    if (!m) continue;
+    const x = +m[1], w = el.offsetWidth;
+    const shift = x - w / 2 < 8 ? 8 - (x - w / 2) : x + w / 2 > W - 8 ? W - 8 - (x + w / 2) : 0;
+    if (shift) el.style.transform += ` translateX(${shift}px)`;
+  }
+}
 // ── 鏡頭 ──
+function syncIslandNames() {
+  for (const [id, I] of Object.entries(islands)) {
+    const span = I.el.querySelector("span"); if (!span) continue;
+    const name = I.unit.name, short = portrait() ? name.replace(/ 的島$/, "") : name;
+    span.lastChild.textContent = short;
+  }
+}
 function gameView() {
-  if (portrait()) placeCamera(V3(0, 0, 3), fitDistance(22.5, 30), 60);
+  syncIslandNames();
+  if (portrait()) placeCamera(V3(0, 0, 2), fitDistance(innerHeight < 700 ? 21.5 : 20.5, innerHeight < 700 ? 22 : 26), 66);
   else placeCamera(V3(0, 0, 7.5), fitDistance(31, 25), 50);
 }
 
@@ -3960,7 +4005,7 @@ function resetGame() {
   Object.assign(G, { t: 0, points: 0, shown: 0, inflight: 0, combo: 0, comboT: 0, maxCombo: 0, solved: 0, split: 0, missed: 0, spawnT: 1.2, warn: null, boss: null,
     bossSpawned: false, bossDown: false, bossAt: 0, rapid: 0, double: 0, spot: 0, async: null, hitstop: 0, uses: {}, phase: -1, milestone: 0, seq: null, sailing: false,
     preview: null, task: {}, fresh: [], rapidSolves: 0, stageSolves: 0, casts: {}, waveQ: [], wavesDone: {}, firstLeak: false, redTut: null, cine: null, bossCineDone: false, slow: 0, intro: null, introQ: [], bloomMiss: 0, redsDone: 0, asyncMax: 0, stageCombo: 0, tut: null, tutFreeze: false });
-  document.body.classList.remove("tutorial", "cine");
+  document.body.classList.remove("tutorial", "cine", "voyage");
   hideIntro();
   lanes.forEach((l) => { l.stall = 0; l.mark = 0; });
   HEROES.forEach((h) => { h.cool = 0; h.timer = 0.8 + rand() * 1.2; h.cast = 0; h.unlocked = !!h.noBtn; h.unlockT = null; });
@@ -3977,7 +4022,7 @@ BUB.allwill = (() => { const el = document.createElement("div"); el.className = 
 const TUT_KEY = "allwill-game-tutorial";
 const tutDone = () => { try { return localStorage.getItem(TUT_KEY) === "1"; } catch { return false; } };
 const markTut = () => { try { localStorage.setItem(TUT_KEY, "1"); } catch {} };
-const tutView = (target, half = 10) => placeCamera(target, fitDistance(half, half * 0.75), portrait() ? 40 : 30);
+const tutView = (target, half = 10) => portrait() ? placeCamera(target.clone().add(V3(0, 0, -2)), fitDistance(half + 2.5, (half + 2.5) * 0.75), 52) : placeCamera(target, fitDistance(half, half * 0.75), 30);
 function startTutorial() {
   G.tut = { step: 0, t: 0, pets: [], first: null, said: {} };
   document.body.classList.add("tutorial");
@@ -4088,7 +4133,7 @@ function tickSeq(dt) {
   }
   if (s.t > 0.4) pets.forEach((p) => { if (p.active && rand() < dt * 3) { burst(p.g.position.clone().add(V3(0, 0.8, 0)), "#ffffff", 4, 2); retire(p); } });
   if (s.t < 2.2) { if (portrait()) placeCamera(YARD.clone().add(V3(0, 3, 0)), fitDistance(14, 14), 30); else placeCamera(YARD.clone().add(V3(0, 3, 0)), fitDistance(20, 11), 26); followGoal(dt, 1.6); return; }
-  if (!s.boarded) { s.boarded = true; boardShip(); G.sailing = true; voy.mode = "sail"; voy.t = 0; document.body.classList.add("sailing"); }
+  if (!s.boarded) { s.boarded = true; document.body.classList.add("voyage"); boardShip(); G.sailing = true; voy.mode = "sail"; voy.t = 0; document.body.classList.add("sailing"); }
   tickSail(dt);
   if (voy.t > 11 && !s.shown) { s.shown = true; showEnd(true); }
 }
@@ -4103,8 +4148,9 @@ function tickSail(dt) {
     r.g.position.y += Math.abs(Math.sin(elapsed * 6 + i)) * 0.25; // 甲板上跳
   });
   mascots.wave.rotation.z = 2.5 + Math.sin(elapsed * 6) * 0.35;
-  camGoal.target.copy(big.position).addScaledVector(VOY_DIR, 60).setY(4);
-  camGoal.pos.copy(big.position).addScaledVector(VOY_DIR, -26).add(V3(0, 11, portrait() ? 10 : 6));
+  // 從船尾斜後方看船和甲板上的大家，遠方的島在船頭前面
+  camGoal.target.copy(big.position).addScaledVector(VOY_DIR, portrait() ? 3 : 10).setY(3);
+  camGoal.pos.copy(camGoal.target).add(V3(-0.72, 0.42, 0.55).normalize().multiplyScalar(portrait() ? 56 : 36));
   followGoal(dt, 1.3);
   farIslands.forEach((f, i) => { f.g.visible = true; f.el.classList.toggle("off", voy.t < 4 + i * 1.5); });
 }
@@ -4185,8 +4231,8 @@ function showEnd(won) {
     <div class="collect"><b>成員卡 ${got} / 6</b><span>${fresh.length ? `這局新收集：${fresh.map((k) => MEMBERS[k].name).join("、")}` : got === 6 ? "全部集滿！你認識整個 AllWill 開發團隊了" : "這局沒有新卡，看看下面還差哪些任務"}</span></div>
     <div class="crew">${CARD_ORDER.map((k) => `<div class="${cards[k] ? "" : "off"}"><img src="${avatars[MEMBERS[k].av]}" alt=""><div><b>${MEMBERS[k].name}・${MEMBERS[k].role}${fresh.includes(k) ? "<em>新</em>" : ""}</b><span>${CARD_RULES[k].bg}</span><i>${cards[k] ? hobbyOf(k) : `任務：${CARD_RULES[k].cond}（這局 ${Math.min(G.task[k] || 0, CARD_RULES[k].need)}/${CARD_RULES[k].need}）`}</i></div></div>`).join("")}</div>
     ${nextK ? `<div class="next">下一張：${MEMBERS[nextK].name}・${CARD_RULES[nextK].cond}</div>` : ""}
-    <div class="row2"><button class="btn" id="imgBtn" type="button">存成分享圖</button><a class="btn ghost" id="shareBtn" href="https://www.threads.net/intent/post?text=${share}" target="_blank" rel="noopener">分享到 Threads</a></div>
-    <button class="btn ghost" id="againBtn" type="button">再玩一次</button>
+    <div class="end-actions"><div class="row2"><button class="btn" id="imgBtn" type="button">存成分享圖</button><a class="btn ghost" id="shareBtn" href="https://www.threads.net/intent/post?text=${share}" target="_blank" rel="noopener">分享到 Threads</a></div>
+    <button class="btn ghost" id="againBtn" type="button">再玩一次</button></div>
     <a class="btn ghost" href="mailto:hi@specformula.ai">想認識我們？寫信到 hi@specformula.ai</a>
     <a class="alt" href="../crew/">看團隊導覽 →</a>
     <a class="alt" href="../" style="margin-top:4px">看我們正在打造的 AllWill →</a>
@@ -4262,6 +4308,7 @@ function tickGame(dt) {
     l.br.deckMat.emissive.set(l.mark > 0 ? "#8a5ac6" : l.stall > 0 && G.on ? "#ef5b3c" : "#000000");
     l.br.deckMat.emissiveIntensity = l.mark > 0 ? 0.7 : l.stall > 0 && G.on ? 0.35 + Math.sin(elapsed * 8) * 0.15 : 0;
   });
+  islands.course.el.style.opacity = G.on && portrait() ? 0.6 : "";
   if (G.seq) { tickSeq(dt); return; }
   followGoal(dt, 2);
   if (G.demo) { tickDemo(dt); tickPets(dt); return; }
@@ -4412,7 +4459,7 @@ function tick(dt) {
   const camDist = camera.position.distanceTo(controls.target);
   scene.fog.near = voy.mode === "sail" ? 90 : camDist * 1.2;
   scene.fog.far = voy.mode === "sail" ? 520 : camDist * 3.4 + 60;
-  if (!params.has("fast")) { if (!window.__norender) renderer.render(scene, camera); labelRenderer.render(scene, camera); }
+  if (!params.has("fast")) { if (!window.__norender) renderer.render(scene, camera); labelRenderer.render(scene, camera); clampLabels(); }
   camera.position.sub(shakeOff);
 }
 if (params.has("rec")) { window.__frame = (dt) => tick(dt); window.__avatars = avatars; window.__G = G; }
