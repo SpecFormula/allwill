@@ -523,6 +523,7 @@ const DEALS = [
 const unitById = Object.fromEntries(UNITS.map((u) => [u.id, u]));
 const params = new URLSearchParams(location.search);
 const GAME_PAGE = true;
+let hourOverride = null, gameHour0 = 15; // 出海時暫時轉成傍晚
 const MOBILE = matchMedia("(pointer: coarse)").matches || innerWidth < 700; // 手機：降效能負擔、放大可讀性
 if (params.has("rec")) document.body.classList.add("rec");
 
@@ -736,7 +737,7 @@ const stars = (() => {
 let nightLevel = 0;
 function applyDaylight() {
   const d = new Date();
-  const h = params.has("hour") ? Number(params.get("hour")) : d.getHours() + d.getMinutes() / 60;
+  const h = hourOverride ?? (params.has("hour") ? Number(params.get("hour")) : d.getHours() + d.getMinutes() / 60);
   let i = 0;
   while (i < SKY_KEYS.length - 2 && SKY_KEYS[i + 1][0] <= h) i++;
   const [h0, a] = SKY_KEYS[i], [h1, b] = SKY_KEYS[i + 1];
@@ -3053,6 +3054,128 @@ big.position.set(YARD.x, 0.45, YARD.z);
 big.rotation.y = 0;
 big.scale.setScalar(0.9);
 
+// ── 華麗的 AllWill 號：金磚跟著連擊、裝飾跟著里程碑、完工點霓虹（和首頁同一套） ──
+const DECOS = [];
+const decoFx = {};
+const GOLD_BRICK = mat("#ffcf5a", { emissive: "#c98a00", emissiveIntensity: 0.55, metalness: 0.55, roughness: 0.3 });
+const hullBricks = bricks.filter((b) => b.o.material.color?.getHexString() === "3d64a8").sort((a, b) => b.o.position.x - a.o.position.x);
+hullBricks.forEach((b) => (b.baseMat = b.o.material));
+let goldN = 0;
+const em = (c, i = 1.2) => mat(c, { emissive: c, emissiveIntensity: i, roughness: 0.4 });
+const textPlane = (text, w, h, bg, fg) => {
+  const c = document.createElement("canvas"); c.width = 512; c.height = Math.round(512 * h / w);
+  const x = c.getContext("2d"); x.fillStyle = bg; x.fillRect(0, 0, c.width, c.height);
+  x.fillStyle = fg; x.font = `900 ${Math.round(c.height * 0.55)}px "Noto Sans TC", Helvetica, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, c.width / 2, c.height / 2 + 4);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  return new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: t, side: THREE.DoubleSide, roughness: 0.6, emissive: "#ffffff", emissiveMap: t, emissiveIntensity: 0.25 }));
+};
+function deco(name, build) { const g = new THREE.Group(); build(g); g.visible = false; big.add(g); DECOS.push({ name, g, t: 1 }); }
+deco("旗串", (g) => {
+  const cols = ["#2f9fd8", "#f07aa0", "#e08a3c", "#4f6fd1", "#8a5ac6", "#2f9a62"];
+  for (let i = 0; i < 16; i++) {
+    const k = i / 15, a = k < 0.5 ? [V3(-5, 11.2, 0), V3(0, 13.4, 0), k * 2] : [V3(0, 13.4, 0), V3(5, 11.2, 0), (k - 0.5) * 2];
+    const p = a[0].clone().lerp(a[1], a[2]); p.y -= Math.sin(a[2] * Math.PI) * 0.7 + 0.35;
+    const f = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.65, 3), mat(cols[i % 6])); f.position.copy(p); f.rotation.z = Math.PI; g.add(f);
+  }
+  decoFx.flags = g;
+});
+deco("船首寶石", (g) => {
+  const gem = new THREE.Mesh(new THREE.IcosahedronGeometry(0.75, 0), mat("#ffd36b", { metalness: 0.8, roughness: 0.2, emissive: "#b8860b", emissiveIntensity: 0.5 }));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.07, 6, 28), em("#3fe0cc", 1.4));
+  g.add(gem, ring); g.position.set(10.9, 3.6, 0); decoFx.gem = gem; decoFx.gemRing = ring;
+});
+deco("帆上的 AllWill 旗", (g) => { const p = textPlane("AllWill", 3.4, 1.3, "#1e2a44", "#3fe0cc"); p.position.set(0.3, 8.6, 0.35); g.add(p); });
+deco("左燈籠", (g) => { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.55, 8), em("#ff9a2e", 1.6)); const cap = new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.25, 8), mat("#7a2e1d")); cap.position.y = 0.4; g.add(l, cap); g.position.set(-8.5, 3.8, 2.6); decoFx.lanL = g; });
+deco("右燈籠", (g) => { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.55, 8), em("#ff9a2e", 1.6)); const cap = new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.25, 8), mat("#7a2e1d")); cap.position.y = 0.4; g.add(l, cap); g.position.set(-8.5, 3.8, -2.6); decoFx.lanR = g; });
+deco("煙囪", (g) => {
+  const c = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.45, 1.8, 10), mat("#e8613a")); c.position.y = 0.9;
+  const band = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.25, 10), mat("#ffffff")); band.position.y = 1.5;
+  g.add(c, band); g.position.set(-2.6, 2.84, 0);
+  decoFx.bubbles = Array.from({ length: 5 }, (_, i) => { const b = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 6), new THREE.MeshStandardMaterial({ color: "#ffffff", transparent: true, opacity: 0.7 })); g.add(b); return { b, t: i / 5 }; });
+});
+deco("燈串", (g) => {
+  const n = 34, im = new THREE.InstancedMesh(new THREE.SphereGeometry(0.13, 8, 6), new THREE.MeshBasicMaterial({ color: "#ffffff" }), n);
+  const m4 = new THREE.Matrix4(), cols = ["#ffd36b", "#ff4f86", "#3fe0cc", "#9fb6ff"];
+  for (let i = 0; i < n; i++) { const side = i < n / 2 ? 1 : -1, j = i % (n / 2); m4.makeTranslation(-7.6 + j * 1.0, 3.25, side * 2.95); im.setMatrixAt(i, m4); im.setColorAt(i, new THREE.Color(cols[i % 4])); }
+  g.add(im); decoFx.lights = im;
+});
+deco("舵輪", (g) => {
+  const w = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.07, 6, 18), mat("#8a5a3b")); g.add(w);
+  for (let i = 0; i < 4; i++) { const sp = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.07, 0.07), mat("#8a5a3b")); sp.rotation.z = (i * Math.PI) / 4; g.add(sp); }
+  g.position.set(-7.0, 3.9, 0); g.rotation.y = Math.PI / 2; decoFx.wheel = g;
+});
+deco("救生圈", (g) => {
+  [[2.5, 3.45], [-3.5, 3.45], [2.5, -3.45], [-3.5, -3.45]].forEach(([x, z], i) => { const r = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.14, 8, 18), mat(i % 2 ? "#ffffff" : "#ff7a3d")); r.position.set(x, 1.9, z); g.add(r); });
+});
+deco("瞭望台", (g) => {
+  const d = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 0.8, 0.18, 14), mat("#b98a5e")); const rail = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.05, 6, 24), mat("#7a5a3e"));
+  rail.rotation.x = Math.PI / 2; rail.position.y = 0.45; g.add(d, rail); g.position.set(0, 11.0, 0);
+});
+deco("金字招牌", (g) => { const p = textPlane("AllWill 號", 4.4, 1.1, "#1e2a44", "#ffd36b"); p.position.set(0, 4.0, 3.2); g.add(p); }); // 招牌抬高，避開棧橋柱子
+deco("桅頂星星", (g) => { const st = new THREE.Mesh(new THREE.OctahedronGeometry(0.6, 0), em("#ffd36b", 1.8)); st.position.set(0, 14.6, 0); g.add(st); decoFx.star = st; });
+// 霓虹燈：沿船舷與吃水線兩圈，打倒魔王才一段段亮起
+const neon = { on: false, k: 0, parts: [] };
+{
+  const loop = (y, hw, bow) => new THREE.CatmullRomCurve3([V3(-8.4, y, hw), V3(0, y, hw), V3(8, y, hw), V3(bow, y, 0), V3(8, y, -hw), V3(0, y, -hw), V3(-8.4, y, -hw)], true, "catmullrom", 0.3);
+  [loop(3.05, 3.05, 10.9), loop(0.85, 1.35, 10.2)].forEach((cv) => {
+    const core = new THREE.Mesh(new THREE.TubeGeometry(cv, 120, 0.09, 6, true), new THREE.MeshBasicMaterial({ color: "#ff4fd8" }));
+    const glow = new THREE.Mesh(new THREE.TubeGeometry(cv, 120, 0.3, 6, true), new THREE.MeshBasicMaterial({ color: "#ff4fd8", transparent: true, opacity: 0.18, blending: THREE.AdditiveBlending, depthWrite: false }));
+    [core, glow].forEach((m) => { m.visible = false; big.add(m); });
+    neon.parts.push({ core, glow, n: core.geometry.index.count, ng: glow.geometry.index.count });
+  });
+}
+function lightNeon() { neon.on = true; neon.k = 0; neon.parts.forEach((p) => { p.core.visible = p.glow.visible = true; }); }
+function addGoldShown(n) {
+  for (const b of hullBricks) { if (n <= 0) break; if (b.shown && b.o.material !== GOLD_BRICK) { b.o.material = GOLD_BRICK; n--; } }
+}
+const decoByName = (n) => DECOS.find((D) => D.name === n);
+const MS_DECOS = { 1: ["救生圈", "舵輪", "煙囪"], 2: ["左燈籠", "右燈籠", "瞭望台"], 3: ["旗串", "燈串", "船首寶石"] };
+const decoQ = [];
+let decoQT = 0;
+function popDeco(D) { if (!D || D.g.visible) return; D.g.visible = true; D.t = 0; burst(D.g.getWorldPosition(V3()).add(V3(0, 0.6, 0)), "#ffd36b", 6, 3); }
+function tickDecos(dt) {
+  if (decoFx.fin?.length) { decoFx.finT += dt; while (decoFx.fin.length && decoFx.finT >= decoFx.fin[0].at) decoFx.fin.shift().fn(); }
+  // 排隊的裝飾：魔王在場或命中頓格時先等
+  decoQT -= dt;
+  if (decoQ.length && decoQT <= 0 && !G.boss && G.hitstop <= 0) { popDeco(decoQ.shift()); decoQT = 0.15; }
+  for (const D of DECOS) { if (D.t >= 1) continue; D.t = Math.min(1, D.t + dt / 0.4); const k = D.t, sc = k < 0.7 ? (k / 0.7) * 1.15 : 1.15 - ((k - 0.7) / 0.3) * 0.15; D.g.scale.setScalar(Math.max(0.01, sc)); }
+  if (decoFx.gem) { decoFx.gem.rotation.y += dt * 1.2; decoFx.gemRing.position.y = Math.sin(elapsed * 2) * 0.15; }
+  if (decoFx.star) decoFx.star.rotation.y += dt * 2;
+  if (decoFx.flags) decoFx.flags.children.forEach((f, i) => (f.rotation.x = Math.sin(elapsed * 4 + i) * 0.35));
+  [decoFx.lanL, decoFx.lanR].forEach((l, i) => l && (l.rotation.z = Math.sin(elapsed * 2 + i) * 0.15));
+  if (decoFx.bubbles) decoFx.bubbles.forEach((b) => { b.t = (b.t + dt * 0.4) % 1; b.b.position.set(Math.sin(b.t * 9) * 0.2, 2 + b.t * 3, 0); b.b.scale.setScalar(0.6 + b.t * 1.2); b.b.material.opacity = 0.7 * (1 - b.t); });
+  if (decoFx.lights) decoFx.lights.material.color.setScalar((G.winStars || 0) >= 2 ? 0.7 + Math.sin(elapsed * 8) * 0.3 : 1); // 2 星以上燈串閃爍
+  if (neon.on) {
+    neon.k = Math.min(1, neon.k + dt / 1.8);
+    const rainbow = G.winStars === 3;
+    neon.parts.forEach((p, i) => {
+      const c = rainbow ? new THREE.Color().setHSL((elapsed * 0.12 + i * 0.3) % 1, 1, 0.6) : new THREE.Color(i ? "#3fe0cc" : "#ff4fd8");
+      p.core.geometry.setDrawRange(0, Math.floor(p.n * neon.k / 3) * 3); p.glow.geometry.setDrawRange(0, Math.floor(p.ng * neon.k / 3) * 3);
+      p.core.material.color.copy(c); p.glow.material.color.copy(c); p.glow.material.opacity = 0.16 + nightLevel * 0.16;
+    });
+  }
+  // 3 星：桅頂煙火
+  if (G.winStars === 3 && G.sailing) { decoFx.fw = (decoFx.fw || 0) - dt; if (decoFx.fw <= 0) { decoFx.fw = 0.55; burst(big.localToWorld(V3((rand() - 0.5) * 10, 15, (rand() - 0.5) * 3)), ["#ffd36b", "#ff4f86", "#3fe0cc", "#9fb6ff"][Math.floor(rand() * 4)], 18, 7); } }
+}
+function resetDecos() {
+  DECOS.forEach((D) => { D.g.visible = false; D.t = 1; });
+  decoQ.length = 0; decoFx.fin = [];
+  hullBricks.forEach((b) => (b.o.material = b.baseMat));
+  neon.on = false; neon.parts.forEach((p) => { p.core.visible = p.glow.visible = false; });
+  G.winStars = 0;
+}
+// 完工：霓虹一段段點亮，AllWill 旗、招牌接著出現；3 星才有桅頂星星
+function finishShip(stars) {
+  G.winStars = stars;
+  Object.values(MS_DECOS).flat().forEach((n) => popDeco(decoByName(n)));
+  // 跟著畫面時間排程（不用 setTimeout，快轉或切分頁都不會錯過）
+  decoFx.fin = [
+    { at: 0.4, fn: lightNeon },
+    { at: 1.6, fn: () => { popDeco(decoByName("帆上的 AllWill 旗")); popDeco(decoByName("金字招牌")); } },
+    ...(stars === 3 ? [{ at: 2.6, fn: () => { popDeco(decoByName("桅頂星星")); burst(decoByName("桅頂星星").g.getWorldPosition(V3()), "#ffd36b", 16, 6); } }] : []),
+  ];
+  decoFx.finT = 0;
+}
 // 船塢：兩條棧橋、鷹架，前面的小平台放 AllWill 立體字
 {
   const yard = new THREE.Group();
@@ -3274,7 +3397,8 @@ function addPoints(n) {
   const ms = Math.floor(pct * 4);
   if (n > 0 && ms > G.milestone && ms < 4) {
     G.milestone = ms; G.happy = 1.4; sound.sparkle();
-    banner(`AllWill 號完成 ${ms * 25}%`, ["Coomy 把三個月的東西，一個月到一個半月交付", "Richard 讓只剩一個月 Runway 的公司，兩個月轉虧為盈", "水球潘的社群，一年長到 6,000 人以上"][ms - 1], false, 3.4);
+    MS_DECOS[ms].forEach((n) => decoQ.push(decoByName(n)));
+    banner(`AllWill 號完成 ${ms * 25}%・＋${MS_DECOS[ms].join("・")}`, ["Coomy 把三個月的東西，一個月到一個半月交付", "Richard 讓只剩一個月 Runway 的公司，兩個月轉虧為盈", "水球潘的社群，一年長到 6,000 人以上"][ms - 1], false, 3.4);
     hud.ship.classList.remove("flash"); void hud.ship.offsetWidth; hud.ship.classList.add("flash");
   }
   return G.points - before;
@@ -3433,6 +3557,7 @@ function hit(p, dmg, h, kind = null) {
 function credit(h, n = 1) { if (h) { const k = h.credit || h.key; G.uses[k] = (G.uses[k] || 0) + n; } }
 function solve(p, h, kind = null) {
   G.solved++; G.combo++; G.comboT = 3.2; G.maxCombo = Math.max(G.maxCombo, G.combo); syncCombo(true);
+  if (G.combo % 5 === 0) addGoldShown(3); // 連擊每 5，船殼多 3 塊金磚
   if (G.double > 0) { G.stageCombo = Math.max(G.stageCombo, G.combo); taskProgress("ben", ++G.stageSolves); }
   if (kind === "heart" && G.rapid > 0) taskProgress("coomy", ++G.rapidSolves);
   G.hitstop = 0.06; G.shake = Math.max(G.shake, 0.1);
@@ -4012,6 +4137,8 @@ function resetGame() {
   HEROES.forEach((h) => { h.cool = 0; h.timer = 0.8 + rand() * 1.2; h.cast = 0; h.unlocked = !!h.noBtn; h.unlockT = null; });
   big.position.set(YARD.x, 0.45, YARD.z);
   farIslands.forEach((f) => { f.g.visible = false; f.el.classList.add("off"); });
+  resetDecos();
+  if (hourOverride !== null) { hourOverride = null; applyDaylight(); }
   document.body.classList.remove("sailing");
   placeCrewHome();
   syncCombo(); hudCache = ""; updateHud(); syncCardBadges();
@@ -4106,6 +4233,7 @@ document.getElementById("startBtn").addEventListener("click", startGame);
 function win() {
   if (G.seq) return;
   G.on = false;
+  finishShip(starsOf(true));
   G.seq = { kind: "win", t: 0, boarded: false };
   banner("AllWill 號完工！", "大家上船，準備出海");
   sound.sparkle();
@@ -4133,8 +4261,8 @@ function tickSeq(dt) {
     return;
   }
   if (s.t > 0.4) pets.forEach((p) => { if (p.active && rand() < dt * 3) { burst(p.g.position.clone().add(V3(0, 0.8, 0)), "#ffffff", 4, 2); retire(p); } });
-  if (s.t < 2.2) { if (portrait()) placeCamera(YARD.clone().add(V3(0, 3, 0)), fitDistance(14, 14), 30); else placeCamera(YARD.clone().add(V3(0, 3, 0)), fitDistance(20, 11), 26); followGoal(dt, 1.6); return; }
-  if (!s.boarded) { s.boarded = true; document.body.classList.add("voyage"); boardShip(); G.sailing = true; voy.mode = "sail"; voy.t = 0; document.body.classList.add("sailing"); }
+  if (s.t < 3.2) { if (portrait()) placeCamera(YARD.clone().add(V3(0, 5, 0)), fitDistance(15, 17), 28); else placeCamera(YARD.clone().add(V3(0, 5, 0)), fitDistance(20, 15), 24); followGoal(dt, 1.6); return; }
+  if (!s.boarded) { s.boarded = true; { const d = new Date(); gameHour0 = params.has("hour") ? Number(params.get("hour")) : d.getHours() + d.getMinutes() / 60; if (gameHour0 > 17.6 || gameHour0 < 5) gameHour0 = 17.6; } document.body.classList.add("voyage"); boardShip(); G.sailing = true; voy.mode = "sail"; voy.t = 0; document.body.classList.add("sailing"); }
   tickSail(dt);
   if (voy.t > 11 && !s.shown) { s.shown = true; showEnd(true); }
 }
@@ -4150,10 +4278,11 @@ function tickSail(dt) {
   });
   mascots.wave.rotation.z = 2.5 + Math.sin(elapsed * 6) * 0.35;
   // 從船尾斜後方看船和甲板上的大家，遠方的島在船頭前面
-  camGoal.target.copy(big.position).addScaledVector(VOY_DIR, portrait() ? 3 : 10).setY(3);
-  camGoal.pos.copy(camGoal.target).add(V3(-0.72, 0.42, 0.55).normalize().multiplyScalar(portrait() ? 56 : 36));
+  if (voy.t < 2) { camGoal.target.copy(big.position).setY(3.5); camGoal.pos.copy(big.position).add(V3(6, 6, portrait() ? 34 : 24)); } // 下水時先從招牌那一側看清整艘船
+  else { camGoal.target.copy(big.position).addScaledVector(VOY_DIR, portrait() ? 3 : 10).setY(3); camGoal.pos.copy(camGoal.target).add(V3(-0.72, 0.42, 0.55).normalize().multiplyScalar(portrait() ? 56 : 36)); }
+  const dusk = Math.min(1, voy.t / 4); hourOverride = gameHour0 + (17.6 - gameHour0) * dusk; applyDaylight(); // 出海轉成傍晚，霓虹和燈串更亮
   followGoal(dt, 1.3);
-  if (voy.t > 2) { camera.position.lerp(camGoal.pos, 0.25); controls.target.lerp(camGoal.target, 0.25); } // 船加速後鏡頭跟緊
+  if (voy.t > 2.6) { camera.position.lerp(camGoal.pos, 0.25); controls.target.lerp(camGoal.target, 0.25); } // 船加速後鏡頭跟緊
   farIslands.forEach((f, i) => { f.g.visible = true; f.el.classList.toggle("off", voy.t < 4 + i * 1.5); });
 }
 // 成員卡收集：每位成員一個綁在大招上的任務，邊玩邊看得到進度；進度跨局存在玩家自己的瀏覽器
@@ -4292,6 +4421,7 @@ const TITLE_LINE = {
 
 function tickGame(dt) {
   tickCave(dt);
+  tickDecos(dt);
   tickBricks(dt);
   tickFx(dt);
   if (G.bannerT > 0) { G.bannerT -= dt; if (G.bannerT <= 0) hud.banner.classList.remove("on"); }
@@ -4464,7 +4594,7 @@ function tick(dt) {
   if (!params.has("fast")) { if (!window.__norender) renderer.render(scene, camera); labelRenderer.render(scene, camera); clampLabels(); }
   camera.position.sub(shakeOff);
 }
-if (params.has("rec")) { window.__frame = (dt) => tick(dt); window.__avatars = avatars; window.__G = G; }
+if (params.has("rec")) { window.__frame = (dt) => tick(dt); window.__avatars = avatars; window.__G = G; window.__dbg = () => ({ hourOverride, gameHour0, nightLevel }); }
 else renderer.setAnimationLoop(() => tick(Math.min(clock.getDelta(), 0.05)));
 </script>
 </body>
