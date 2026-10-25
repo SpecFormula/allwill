@@ -1739,6 +1739,7 @@ const hobby = {};
   // 外海的 AllWill 燈塔島收起來，避免出現兩個 AllWill
   islands.allwill.group.visible = false;
   islands.allwill.el.style.display = "none";
+  islands.allwill.group.children.forEach((c) => { if (c.isCSS2DObject) c.visible = false; }); // CSS2D 每次渲染會蓋掉 display:none，要關物件本身
 
   // Johnny & Coomy：Coomy 的街機；Johnny（水球）戴船長帽
   const jc = islands.jc.group;
