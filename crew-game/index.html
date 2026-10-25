@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AllWill 船塢守衛戰</title>
-<meta name="description" content="派 AllWill 開發團隊的六位英雄回答 Agent 帶來的提問，把 Spec 送進船塢，蓋好 AllWill 號一起出海。">
-<meta property="og:title" content="AllWill 船塢守衛戰：派英雄回答提問，蓋好船一起出海">
+<meta name="description" content="AllWill 會把大家 Spec 裡衝突、矛盾的地方丟出來。派開發團隊的六位英雄把它們解掉，蓋好 AllWill 號一起出海。">
+<meta property="og:title" content="AllWill 船塢守衛戰：派英雄解掉 Spec 的衝突，蓋好船一起出海">
 <meta property="og:description" content="一局約 2 分半。用水球潘、Coomy、Richard、Raymond、ccza、ben 的大招，認識 AllWill 的開發團隊。">
 <meta property="og:image" content="https://specformula.github.io/allwill/crew-game/og.png">
 <meta property="og:type" content="website">
@@ -186,6 +186,77 @@
   .ctrl { top: max(12px, env(safe-area-inset-top)) !important; bottom: auto !important; left: auto !important; right: 12px !important; z-index: 6; }
   .veil { height: 120px; }
 
+  .skill-tip { position: fixed; z-index: 7; width: min(300px, calc(100vw - 24px)); transform: translate(-50%, 4px) scale(0.98); transform-origin: 50% 100%;
+    background: rgba(28,36,48,0.95); color: #fff; border-radius: 14px; padding: 10px 12px; border-top: 4px solid var(--c, #14b89c); pointer-events: none;
+    opacity: 0; transition: opacity var(--duration-quick) var(--ease-smooth-out), transform var(--duration-quick) var(--ease-smooth-out); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
+  .skill-tip.on { opacity: 1; transform: translate(-50%, 0) scale(1); transition-delay: 80ms; }
+  .skill-tip > b { font-size: 14px; font-weight: 900; }
+  .skill-tip .new { display: inline-block; font-style: normal; font-size: 10.5px; font-weight: 900; background: var(--c); color: #fff; border-radius: 999px; padding: 1px 8px; margin-bottom: 4px; }
+  .skill-tip .eff { margin-top: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+  .skill-tip .eff span { background: rgba(255,255,255,0.08); border-radius: 9px; padding: 5px 6px; font-size: 10.5px; line-height: 1.35; opacity: .95; }
+  .skill-tip .eff strong { font-size: 11.5px; font-weight: 900; }
+  .skill-tip .eff em { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; font-style: normal; font-size: 10px; font-weight: 900; margin-right: 3px; background: #fff; }
+  .skill-tip .eff em.y { color: #c98a00; box-shadow: inset 0 0 0 2px #f2b51f; } .skill-tip .eff em.r { color: #ec4d2f; box-shadow: inset 0 0 0 2px #ec4d2f; } .skill-tip .eff em.b { background: #ec4d2f; color: #fff; font-size: 9px; }
+  .skill-tip small.bg { opacity: .5; margin-top: 4px; }
+  .skill-tip small b { color: #ffd36b; }
+  .stun-tag { position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%); white-space: nowrap; font-size: 11px; font-weight: 900; color: #fff;
+    background: var(--sc, #e08a3c); padding: 2px 8px; border-radius: 999px; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
+  .stun-tag.off { display: none; }
+  .hitav { display: flex; align-items: center; gap: 4px; padding: 2px 9px 2px 2px; border-radius: 999px; background: var(--c); color: #fff; font-size: 14px; font-weight: 900; white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25); transition: opacity .3s var(--ease-smooth-out); }
+  .hitav img { width: 30px; height: 30px; border-radius: 50%; background: #fff; }
+  .hitav.off { opacity: 0; }
+  .cine-bars i { position: fixed; left: 0; right: 0; height: 0; background: #0b0f16; z-index: 8; transition: height var(--duration-slow) var(--ease-smooth-out); }
+  .cine-bars i:first-child { top: 0; } .cine-bars i:last-child { bottom: 0; }
+  body.cine .cine-bars i { height: 11vh; }
+  .cine-skip { position: fixed; inset: 0; z-index: 9; border: 0; background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 35%, rgba(60,0,0,0.45) 100%); opacity: 0; pointer-events: none; transition: opacity var(--duration-slow) var(--ease-smooth-out); cursor: pointer; }
+  body.cine .cine-skip { opacity: 1; pointer-events: auto; }
+  body.cine .hud { opacity: 0.25; }
+  .skill-tip p { margin: 4px 0 0; font-size: 12.5px; line-height: 1.55; opacity: .92; }
+  .skill-tip dl { margin: 6px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; font-size: 12px; }
+  .skill-tip dt { font-weight: 900; color: var(--c, #14b89c); filter: brightness(1.4); }
+  .skill-tip dd { margin: 0; opacity: .9; }
+  .skill-tip small { display: block; margin-top: 6px; font-size: 11px; opacity: .65; }
+  @media (prefers-reduced-motion: reduce) { .skill-tip { transition: none; } }
+  .narr { position: fixed; left: 50%; top: calc(max(12px, env(safe-area-inset-top)) + 92px); z-index: 10; transform: translateX(-50%); width: max-content; max-width: min(92vw, 520px);
+    display: flex; align-items: center; gap: 10px; padding: 8px 16px 8px 8px; border-radius: 999px; background: rgba(28,36,48,0.92); color: #fff;
+    font-size: clamp(15px, 4vw, 18px); font-weight: 900; line-height: 1.35; box-shadow: 0 10px 28px rgba(0,0,0,0.3); pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-smooth-out), transform var(--duration-fast) var(--ease-smooth-out); }
+  .narr::before { content: ""; flex: none; width: 38px; height: 38px; border-radius: 50%; border: 2px solid #14b89c;
+    background: radial-gradient(circle at 36% 48%, #8ff5e4 0 5px, transparent 6px), radial-gradient(circle at 64% 48%, #8ff5e4 0 5px, transparent 6px), radial-gradient(ellipse at 50% 50%, #1c2a33 0 55%, #e6edf1 57%); }
+  .narr.off { opacity: 0; transform: translate(-50%, -8px); }
+  @media (prefers-reduced-motion: reduce) { .narr { transition: none; } }
+  .hero .cardb { position: absolute; top: 3px; right: 5px; font-size: 9.5px; font-weight: 900; color: var(--muted); }
+  .hero .cardb.done { color: #f0a33a; }
+  .skill-tip .task { margin-top: 7px; display: flex; justify-content: space-between; gap: 8px; font-size: 11.5px; font-weight: 700; padding: 5px 8px; border-radius: 8px; background: rgba(240,163,58,0.18); }
+  .skill-tip .task b { flex: none; color: #ffd36b; }
+  .skill-tip .task.ok { opacity: .6; }
+  .collect { margin-top: 12px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .collect b { font-size: 20px; font-weight: 900; color: #f0a33a; }
+  .collect span { font-size: 12.5px; color: var(--muted); font-weight: 700; }
+  .card-flip { position: fixed; left: 50%; top: 38%; z-index: 11; width: 230px; height: 300px; margin: -150px 0 0 -115px; perspective: 900px; pointer-events: none; opacity: 0; transition: opacity var(--duration-fast) var(--ease-smooth-out); }
+  .card-flip.on { opacity: 1; }
+  .card-flip .fc { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateY(0) scale(0.6); }
+  .card-flip.on .fc { animation: cardflip 1s var(--ease-smooth-out) forwards; }
+  @keyframes cardflip { 0% { transform: rotateY(0) scale(0.6); } 35% { transform: rotateY(0) scale(1.05); } 100% { transform: rotateY(180deg) scale(1); } }
+  .card-flip .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; padding: 16px;
+    box-shadow: 0 0 0 4px #ffd36b, 0 0 40px rgba(255,211,107,0.8), 0 18px 40px rgba(0,0,0,0.35); }
+  .card-flip .front { background: linear-gradient(135deg, var(--c, #14b89c), #1c2430); color: #fff; font-size: 18px; font-weight: 900; }
+  .card-flip .front b { font-size: 34px; }
+  .card-flip .back { background: #fffaf2; transform: rotateY(180deg); }
+  .card-flip .back img { width: 96px; height: 96px; border-radius: 50%; background: #e9f6f3; box-shadow: 0 0 0 4px var(--c, #14b89c); }
+  .card-flip .back b { font-size: 17px; font-weight: 900; }
+  .card-flip .back span { font-size: 13px; line-height: 1.5; color: #3a4350; }
+  .card-flip .back em { font-style: normal; font-size: 12px; font-weight: 900; color: #f0a33a; }
+  @media (prefers-reduced-motion: reduce) { .card-flip.on .fc { animation: none; transform: rotateY(180deg); } }
+  .red-flash { position: fixed; inset: 0; pointer-events: none; z-index: 4; opacity: 0; box-shadow: inset 0 0 120px 30px rgba(236,77,47,0.75); }
+  .red-flash.on { animation: redflash .7s var(--ease-smooth-out); }
+  @keyframes redflash { 15% { opacity: 1; } 100% { opacity: 0; } }
+  .qb.near { animation: qnear .35s ease-in-out infinite; box-shadow: 0 0 0 4px rgba(236,77,47,0.45), 0 3px 8px rgba(0,0,0,0.25); }
+  @keyframes qnear { 50% { transform: scale(1.25); } }
+  .hero.urge { animation: urge .6s ease-in-out infinite; box-shadow: 0 0 0 3px var(--c), 0 0 22px var(--c); }
+  @keyframes urge { 50% { transform: translateY(-5px) scale(1.04); } }
+  @media (prefers-reduced-motion: reduce) { .red-flash.on, .qb.near, .hero.urge { animation: none; } }
   .hud { position: fixed; inset: 0; pointer-events: none; z-index: 5; opacity: 0; transition: opacity var(--duration-slow) var(--ease-smooth-out); }
   body.playing-game .hud { opacity: 1; }
   .hud-top { position: absolute; top: max(12px, env(safe-area-inset-top)); left: 12px; right: 58px; display: flex; gap: 8px; align-items: center; }
@@ -239,7 +310,7 @@
     background: linear-gradient(to top, rgba(28,36,48,0.35), rgba(28,36,48,0)); }
   .hero { position: relative; flex: 1 1 0; max-width: 96px; min-width: 0; border: 0; background: var(--paper); border-radius: 16px; padding: 6px 2px 6px; cursor: pointer; font: inherit; color: var(--ink);
     display: flex; flex-direction: column; align-items: center; gap: 1px; box-shadow: 0 6px 16px rgba(28,36,48,0.22);
-    transition: transform var(--duration-quick) var(--ease-smooth-out), box-shadow var(--duration-fast) var(--ease-smooth-out); touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    transition: transform var(--duration-quick) var(--ease-smooth-out), box-shadow var(--duration-fast) var(--ease-smooth-out); touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   .hero:active { transform: scale(0.94); }
   .hero .ring { width: 46px; height: 46px; border-radius: 50%; padding: 3px; background: conic-gradient(var(--c) calc(var(--p, 1) * 360deg), rgba(34,42,54,0.12) 0); }
   .hero img { width: 100%; height: 100%; border-radius: 50%; background: #e9f6f3; display: block; transition: filter var(--duration-fast) var(--ease-smooth-out); }
@@ -365,6 +436,10 @@
 <div class="ctrl"><div class="seg"><button id="tourBtn" type="button">▶ 播放</button><button id="exploreBtn" type="button">自己逛</button></div><button id="checkBtn" class="bot-btn" type="button">AllWill</button><button id="soundBtn" class="snd" type="button" aria-label="聲音開關">🔊</button></div>
 <section class="caption" id="caption" aria-live="polite"></section>
 <button class="cap-open" id="capOpen" type="button">顯示說明</button>
+<div class="red-flash" id="redFlash"></div>
+<div class="card-flip" id="cardFlip" aria-live="polite"></div>
+<div class="cine-bars" aria-hidden="true"><i></i><i></i></div>
+<button class="cine-skip" id="cineSkip" type="button" aria-label="跳過特寫"></button>
 <div class="hud" id="hud">
   <div class="hud-top">
     <div class="timer" id="hTime">3:00</div>
@@ -380,7 +455,7 @@
   <div class="panel t-stagger">
     <span class="tag">#AllWill 開發團隊</span>
     <h2>AllWill 船塢守衛戰</h2>
-    <p>六個人、五座島，一起把 AllWill 號蓋出海。</p>
+    <p>六個人、五座島，一起把 AllWill 號蓋出海。<br>邊玩邊收集 <b>6 張成員卡</b>，認識 AllWill 開發團隊。</p>
     <button class="btn" id="startBtn" type="button"><i>▶</i>開始守衛<em>一局約 2 分半</em></button>
     <p class="tut-note" id="tutNote">第一次會有導覽，可以跳過</p>
     <button class="alt link" id="replayTut" type="button" hidden>重看教學</button>
@@ -516,6 +591,14 @@ const sound = (() => {
     pop: () => fx((t) => { const o = tone(N(72), t, 0.18, { gain: 0.14, out: master }); o.frequency.exponentialRampToValueAtTime(N(84), t + 0.1); }),
     answer: () => fx((t) => [72, 76, 79].forEach((m, k) => pluck(N(m), t + k * 0.07, 0.12, master))),
     sparkle: () => fx((t) => [72, 76, 79, 84, 88].forEach((m, k) => pluck(N(m), t + k * 0.08, 0.1, master))),
+    // 提問漏掉：往下掉的嗡聲＋悶響
+    miss: () => fx((t) => {
+      const o = tone(N(52), t, 0.5, { type: "sawtooth", gain: 0.2, out: master }); o.frequency.exponentialRampToValueAtTime(N(34), t + 0.45);
+      tone(N(40), t, 0.35, { type: "square", gain: 0.12, out: master });
+      noise(t, 0.25, { gain: 0.22, type: "lowpass", freq: 500, out: master });
+    }),
+    // 問題快走到島上：兩聲短促的警報
+    alarm: () => fx((t) => { tone(N(88), t, 0.08, { type: "square", gain: 0.07, out: master }); tone(N(88), t + 0.12, 0.08, { type: "square", gain: 0.07, out: master }); }),
   };
 })();
 
@@ -3033,11 +3116,13 @@ function makeGamePet(boss = false) {
   const el = document.createElement("div");
   const q = document.createElement("div");
   q.className = "qb off";
-  el.appendChild(q);
+  const st = document.createElement("div");
+  st.className = "stun-tag off";
+  el.append(st, q);
   const bub = new CSS2DObject(el);
   bub.position.set(0, boss ? 1.55 : 1.4, 0);
   p.g.add(bub);
-  Object.assign(p, { el, q, bub, boss, active: false, gen: 0, incoming: 0 });
+  Object.assign(p, { el, q, st, bub, boss, active: false, gen: 0, incoming: 0 });
   p.g.visible = false; bub.visible = false;
   pets.push(p);
   return p;
@@ -3054,7 +3139,11 @@ const lanes = LANE_IDS.map((id) => {
   const o = new CSS2DObject(el);
   o.position.copy(br.curve.getPointAt(0)).add(V3(0, 3.4, 0));
   scene.add(o);
-  return { id, br, stall: 0, el, o, mark: 0 };
+  // 技能範圍預覽：沿著橋鋪一條發光帶
+  const band = new THREE.Mesh(new THREE.TubeGeometry(br.curve, 40, 0.75, 8, false), new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0, depthWrite: false }));
+  band.position.y = 0.25; band.visible = false; band.renderOrder = 2;
+  scene.add(band);
+  return { id, br, stall: 0, el, o, mark: 0, band };
 });
 const laneById = Object.fromEntries(lanes.map((l) => [l.id, l]));
 
@@ -3072,7 +3161,7 @@ function paintPet(p) {
 function spawn(type, lane, at = null) {
   const p = type === "boss" ? bossPet : pets.find((x) => !x.active && !x.boss);
   if (!p || p.active) return null;
-  Object.assign(p, { active: true, type, lane, gold: false, stun: 0, incoming: 0, flash: 0, side: (rand() - 0.5) * 0.8 });
+  Object.assign(p, { active: true, type, lane, gold: false, stun: 0, incoming: 0, flash: 0, warned: false, side: (rand() - 0.5) * 0.8 });
   p.gen++;
   p.hp = p.maxHp = type === "boss" ? 16 : type === "r" ? 3 : type === "y" ? 1 : 0;
   p.speed = type === "boss" ? 0.34 : type === "r" ? 0.8 : type === "y" ? 1.05 : 1.5;
@@ -3080,11 +3169,21 @@ function spawn(type, lane, at = null) {
   p.g.rotation.set(0, 0, 0);
   paintPet(p);
   if (at !== null) { p.state = "walk"; p.u = at; }
-  else { p.state = "fly"; p.t = 0; p.from = MOUTH(); p.to = lane.br.curve.getPointAt(1).clone(); p.u = 1; G.jaw = 0.45; }
+  else {
+    // 大家的 Spec 先飛進 AllWill 對一對，再吐出 Agent（帶著衝突的就是黃色／紅色）
+    const src = lanes[Math.floor(rand() * lanes.length)].br.curve.getPointAt(0).clone().setY(1.6);
+    emitSpec(src, cave.localToWorld(V3(0, 4.6, 0)), 0.6); p.state = "fly"; p.t = 0; p.from = MOUTH(); p.to = lane.br.curve.getPointAt(1).clone(); p.u = 1; G.jaw = 0.45; }
   if (type === "boss") G.boss = p;
   return p;
 }
+function setStun(p, sec, color, label) {
+  p.stun = sec; p.stunC = color;
+  p.q.classList.add("dance");
+  p.st.textContent = label; p.st.style.setProperty("--sc", color); p.st.classList.remove("off");
+  shockwave(p.g.position, color, 1.6, 0.4);
+}
 function retire(p) {
+  p.st.classList.add("off");
   p.active = false; p.g.visible = false; p.bub.visible = false; p.q.classList.add("off"); p.gen++;
   if (p === G.boss) G.boss = null;
 }
@@ -3182,18 +3281,18 @@ function tickBricks(dt) {
 
 // 英雄：每人守自己那座島的橋；ccza 遠端，全地圖都打得到
 const HEROES = [
-  { key: "johnny", av: "water", lane: "jc", c: "#2f9fd8", auto: 3.6, obj: () => mascots.water, hy: 2.7, noBtn: true, credit: "jc" },
-  { key: "jc", avs: ["water", "coomy"], name: "水球潘 & Coomy", bub: "me", lane: "jc", c: "#f07aa0", skill: "默契連攜", cd: 14, auto: 3.1, title: "默契搭檔 水球潘 & Coomy", say: "交給我們！", obj: () => mascots.me, hy: 3.1 },
-  { key: "raymond", av: "raymond", bub: "raymond", lane: "raymond", c: "#4f6fd1", skill: "重訓一拳", cd: 9, auto: 3.1, title: "一拳 CTO Raymond", say: "一拳！", obj: () => team.raymond.g, hy: 3.0 },
-  { key: "richard", av: "richard", bub: "richard", lane: "richard", c: "#e08a3c", skill: "吉他 Solo", cd: 10, auto: 3.1, title: "音波設計師 Richard", say: "Solo 來了！", obj: () => team.richard.g, hy: 3.0 },
-  { key: "ccza", av: "ccza", bub: "ccza", lane: "ccza", c: "#8a5ac6", skill: "Async 回覆", cd: 11, auto: 3.8, title: "遠端狙擊手 ccza", say: "（敲 Enter）", obj: () => team.ccza.g, hy: 2.6, global: true },
-  { key: "ben", av: "ben", bub: "ben", lane: "ben", c: "#2f9a62", skill: "舞台演出", cd: 13, auto: 3.1, title: "最佳男主角 ben", say: "看我這邊！", obj: () => team.ben.g, hy: 3.2 },
+  { key: "johnny", av: "water", lane: "jc", c: "#2f9fd8", auto: 4.8, obj: () => mascots.water, hy: 2.7, noBtn: true, credit: "jc" },
+  { key: "jc", avs: ["water", "coomy"], name: "水球潘 & Coomy", bub: "me", lane: "jc", c: "#f07aa0", skill: "默契連攜", cd: 14, auto: 4.2, title: "默契搭檔 水球潘 & Coomy", say: "交給我們！", obj: () => mascots.me, hy: 3.1 },
+  { key: "raymond", av: "raymond", bub: "raymond", lane: "raymond", c: "#4f6fd1", skill: "重訓一拳", cd: 9, auto: 4.2, title: "一拳 CTO Raymond", say: "一拳！", obj: () => team.raymond.g, hy: 3.0 },
+  { key: "richard", av: "richard", bub: "richard", lane: "richard", c: "#e08a3c", skill: "吉他 Solo", cd: 10, auto: 4.2, title: "音波設計師 Richard", say: "Solo 來了！", obj: () => team.richard.g, hy: 3.0 },
+  { key: "ccza", av: "ccza", bub: "ccza", lane: "ccza", c: "#8a5ac6", skill: "Async 回覆", cd: 11, auto: 5.0, title: "遠端狙擊手 ccza", say: "（敲 Enter）", obj: () => team.ccza.g, hy: 2.6, global: true },
+  { key: "ben", av: "ben", bub: "ben", lane: "ben", c: "#2f9a62", skill: "舞台演出", cd: 13, auto: 4.2, title: "最佳男主角 ben", say: "看我這邊！", obj: () => team.ben.g, hy: 3.2 },
 ];
 const heroByKey = Object.fromEntries(HEROES.map((h) => [h.key, h]));
 // 英雄分批登場：一次介紹一位（文案只用團隊提供的真實資料）
 const INTRO = {
   jc: { at: 16, who: "水球潘・CEO ＆ Coomy・Frontend Lead", bg: "水球潘創辦水球軟體學院，社群一年長到 6,000 人以上；Coomy 是團隊的節拍器。", how: "船長帽清掉全場黃色，Coomy 接著連打", tag: ["一呼百應！", "抓節拍！"] },
-  raymond: { at: 26, who: "Raymond・CTO", bg: "Appier 出身、SurveyCake 初期核心開發，負責 agentic AI 研發。", how: "紅色阻塞，一拳解掉", tag: ["只是步驟多了點"] },
+  raymond: { at: 26, who: "Raymond・CTO", bg: "Appier 出身、SurveyCake 初期核心開發，負責 agentic AI 研發。", how: "紅色衝突，一拳解掉", tag: ["只是步驟多了點"] },
   richard: { at: 36, who: "Richard・COO & Designer", bg: "在 SlideArt 經手 Nike、Google、BMW 的設計案；當過讓公司一個月止血的 COO。", how: "附近三座島的 Agent 停下來跳舞", tag: ["一個月止血"] },
   ccza: { at: 44, who: "ccza・主力工程師", bg: "AllWill 背後的主力工程師。大 I 人，喜歡在海邊遠端工作。", how: "問題最多的那條橋，整條一起解掉", tag: ["Async 一次回完"] },
   ben: { at: 53, who: "ben・導入", bg: "在客戶端帶導入的人，也是話劇社的。剛串門子回來。", how: "全場停下來看戲，英雄傷害加倍", tag: ["導入現場 Demo"] },
@@ -3203,44 +3302,94 @@ const active = (f) => pets.filter((p) => p.active && p.type !== "n" && p.state =
 
 const orbs = [];
 const ORB_GEO = new THREE.SphereGeometry(0.24, 10, 8);
+// 大招的專屬投射物：一眼看出是誰打的（自動攻擊維持小白球）
+const KIND_TEX = {};
+function kindTex(kind) {
+  if (KIND_TEX[kind]) return KIND_TEX[kind];
+  const c = document.createElement("canvas"); c.width = c.height = 128;
+  const x = c.getContext("2d");
+  x.textAlign = "center"; x.textBaseline = "middle";
+  if (kind === "hat") { // 船長帽
+    x.fillStyle = "#1e2a44"; x.beginPath(); x.ellipse(64, 88, 54, 16, 0, 0, Math.PI * 2); x.fill();
+    x.fillStyle = "#ffffff"; x.beginPath(); x.roundRect(26, 34, 76, 52, 22); x.fill();
+    x.fillStyle = "#1e2a44"; x.fillRect(26, 68, 76, 12);
+    x.fillStyle = "#f2c14e"; x.beginPath(); x.arc(64, 54, 10, 0, Math.PI * 2); x.fill();
+  } else if (kind === "code") {
+    x.fillStyle = "#8a5ac6"; x.beginPath(); x.roundRect(6, 30, 116, 68, 16); x.fill();
+    x.fillStyle = "#fff"; x.font = "900 46px monospace"; x.fillText("{ }", 64, 66);
+  } else {
+    x.font = kind === "fist" ? "92px sans-serif" : "900 96px sans-serif";
+    x.fillStyle = kind === "note" ? "#e08a3c" : "#ff4f86";
+    x.strokeStyle = "#ffffff"; x.lineWidth = 8;
+    const ch = { fist: "👊", note: "♪", heart: "♥" }[kind];
+    if (kind !== "fist") x.strokeText(ch, 64, 70);
+    x.fillText(ch, 64, 70);
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  return (KIND_TEX[kind] = t);
+}
 function fireOrb(h, p, dmg, opt = {}) {
   let o = orbs.find((x) => !x.active);
   if (!o) {
     if (orbs.length >= 48) return;
     const m = new THREE.Mesh(ORB_GEO, new THREE.MeshBasicMaterial({ color: "#ffffff" }));
-    m.visible = false; scene.add(m);
-    o = { m, active: false };
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false }));
+    m.visible = false; sp.visible = false; sp.renderOrder = 5; scene.add(m, sp);
+    o = { m, sp, active: false };
     orbs.push(o);
   }
-  Object.assign(o, { active: true, t: 0, dur: opt.dur || 0.4, p, gen: p.gen, dmg, h, delay: opt.delay || 0, arc: opt.arc ?? 1.8, from: heroPos(h) });
-  o.m.material.color.set(h.c);
-  o.m.scale.setScalar(opt.size || 1);
-  o.m.visible = o.delay <= 0;
+  const kind = opt.kind || null;
+  Object.assign(o, { active: true, t: 0, dur: opt.dur || 0.4, p, gen: p.gen, dmg, h, kind, delay: opt.delay || 0, arc: opt.arc ?? 1.8, sky: !!opt.sky });
+  o.from = o.sky ? p.g.position.clone().add(V3(0, 10, 0)) : heroPos(h);
+  o.m.material.color.set(kind ? h.c : "#ffffff");
+  o.m.scale.setScalar(kind ? opt.size || 1 : 0.7);
+  if (kind) { o.sp.material.map = kindTex(kind); o.sp.material.needsUpdate = true; o.sp.scale.setScalar(kind === "heart" ? 0.9 : 1.6); }
+  o.m.visible = !kind && o.delay <= 0;
+  o.sp.visible = !!kind && o.delay <= 0;
   p.incoming += dmg;
 }
 function tickOrbs(dt) {
   for (const o of orbs) {
     if (!o.active) continue;
-    if (o.delay > 0) { o.delay -= dt; if (o.delay > 0) continue; o.m.visible = true; o.from = heroPos(o.h); }
+    if (o.delay > 0) { o.delay -= dt; if (o.delay > 0) continue; o.m.visible = !o.kind; o.sp.visible = !!o.kind; o.from = o.sky ? o.p.g.position.clone().add(V3(0, 10, 0)) : heroPos(o.h); }
     o.t += dt / o.dur;
     const k = Math.min(o.t, 1);
     const to = o.p.g.position.clone().add(V3(0, 0.9, 0));
-    o.m.position.lerpVectors(o.from, to, k).add(V3(0, Math.sin(k * Math.PI) * o.arc, 0));
-    if (rand() < 0.5) burst(o.m.position, o.h.c, 1, 0.6);
+    const obj = o.kind ? o.sp : o.m;
+    obj.position.lerpVectors(o.from, to, o.sky ? k * k : k).add(V3(0, o.sky ? 0 : Math.sin(k * Math.PI) * o.arc, 0));
+    if (o.kind === "hat") o.sp.material.rotation += dt * 14;
+    if (o.kind && rand() < 0.8) burst(obj.position, o.h.c, 1, 0.8); // 大招拖尾
     if (o.t >= 1) {
-      o.active = false; o.m.visible = false;
+      o.active = false; o.m.visible = false; o.sp.visible = false;
       if (o.p.gen !== o.gen) continue;
       o.p.incoming = Math.max(0, o.p.incoming - o.dmg);
-      if (o.p.active && o.p.type !== "n") hit(o.p, o.dmg, o.h);
+      if (o.p.active && o.p.type !== "n") hit(o.p, o.dmg, o.h, o.kind);
     }
   }
 }
-function hit(p, dmg, h) {
+const SIG = { hat: ["收到方向！", "water"], heart: ["抓節拍！", "coomy"], fist: ["一拳！", "raymond"], note: ["Solo！", "richard"], code: ["Async ✓", "ccza"] };
+const avPops = Array.from({ length: 6 }, () => {
+  const el = document.createElement("div"); el.className = "hitav off";
+  const img = document.createElement("img"); const tx = document.createElement("b"); el.append(img, tx);
+  const o = new CSS2DObject(el); o.visible = false; scene.add(o);
+  return { el, img, tx, o, t: 1, y: 0 };
+});
+function popAvatar(pos, kind, h) {
+  const a = avPops.find((x) => x.t >= 1) || avPops.reduce((m, x) => (x.t > m.t ? x : m));
+  const [text, av] = SIG[kind];
+  a.img.src = avatars[av]; a.tx.textContent = G.double > 0 ? `${text} ×2` : text;
+  a.el.style.setProperty("--c", h.c);
+  a.el.classList.remove("off"); a.o.position.copy(pos); a.y = pos.y; a.t = 0; a.o.visible = true;
+}
+function hit(p, dmg, h, kind = null) {
   if ((p.type === "r" || p.type === "boss") && h?.key === "raymond") dmg *= 2;
   if (G.double > 0) dmg *= 2;
   p.hp -= dmg; p.flash = 0.14;
   const at = p.g.position.clone().add(V3(0, 1, 0));
   burst(at, p.type === "y" ? "#f5c43a" : "#ef5b3c", 5, 3);
+  if (kind === "fist" && (p.type === "r" || p.type === "boss")) taskProgress("raymond", 1, "add");
+  if (kind) { popAvatar(at.clone().setY(at.y + 2), kind, h); burst(at, h.c, 10, 5); shockwave(p.g.position, h.c, 2.6, 0.45); }
+  if (G.double > 0) burst(at.clone().setY(at.y + 0.6), "#3fd17a", 8, 4); // ben 加倍期間噴綠星
   if (p.type === "boss") {
     p.el.style.setProperty("--hp", `${(Math.max(0, p.hp) / p.maxHp) * 100}%`);
     G.shake = Math.max(G.shake, 0.12);
@@ -3248,25 +3397,26 @@ function hit(p, dmg, h) {
     return;
   }
   if (p.type === "r") G.redsDone++;
-  if (p.hp <= 0) return solve(p, h);
+  if (p.hp <= 0) { p.st.classList.add("off"); return solve(p, h, kind); }
   if (p.type === "r") {
     // 大問題拆成兩個小問題
     p.type = "y"; p.hp = 1; paintPet(p); G.split++;
     const q = spawn("y", p.lane, Math.min(1, p.u + 0.06));
     if (q) q.side = -p.side;
-    floatText(at.clone().setY(at.y + 1.6), "拆成兩個小問題");
+    floatText(at.clone().setY(at.y + 1.6), "拆成兩個小矛盾");
     sound.pop();
   }
 }
 function credit(h, n = 1) { if (h) { const k = h.credit || h.key; G.uses[k] = (G.uses[k] || 0) + n; } }
-function solve(p, h) {
+function solve(p, h, kind = null) {
   G.solved++; G.combo++; G.comboT = 3.2; G.maxCombo = Math.max(G.maxCombo, G.combo); syncCombo(true);
-  if (G.double > 0) G.stageCombo = Math.max(G.stageCombo, G.combo);
+  if (G.double > 0) { G.stageCombo = Math.max(G.stageCombo, G.combo); taskProgress("ben", ++G.stageSolves); }
+  if (kind === "heart" && G.rapid > 0) taskProgress("coomy", ++G.rapidSolves);
   G.hitstop = 0.06; G.shake = Math.max(G.shake, 0.1);
   const at = p.g.position.clone().add(V3(0, 1.6, 0));
   burst(at, "#ffffff", 10, 5); burst(at, "#ffd36b", 6, 4);
   shockwave(p.g.position, "#ffd36b", 2.2, 0.45);
-  floatText(at.clone().setY(at.y + 1), G.combo >= 3 ? `解答了！×${G.combo}` : "解答了！", "gold");
+  if (!kind) floatText(at.clone().setY(at.y + 1), G.combo >= 3 ? `對齊了！×${G.combo}` : "對齊了！", "gold");
   p.type = "n"; p.gold = true; p.speed = 1.6; p.stun = 0; paintPet(p);
   credit(h);
   if (elapsed - G.lastSfx > 0.09) { sound.answer(); G.lastSfx = elapsed; }
@@ -3304,16 +3454,20 @@ function arrive(p) {
   if (G.tut) return;
   G.missed++; G.combo = 0; syncCombo();
   if (G.phase === 3) G.bloomMiss++;
-  sound.bad();
+  sound.miss();
+  flashRed();
   dust(at);
-  if (type === "y") { L.stall = Math.max(L.stall, 4); floatText(at.clone().setY(at.y + 2.6), "卡住了，等回覆", "bad"); }
-  else if (type === "r") { L.stall = Math.max(L.stall, 6); addPoints(-4); G.shake = 0.35; floatText(at.clone().setY(at.y + 2.6), "阻塞！船掉了 4 塊磚", "bad"); }
+  if (type === "y") { L.stall = Math.max(L.stall, 5); addPoints(-2); G.shake = Math.max(G.shake, 0.2); floatText(at.clone().setY(at.y + 2.6), "漏掉了！停工、掉 2 塊磚", "bad"); }
+  else if (type === "r" && !G.firstLeak) { G.firstLeak = true; L.stall = Math.max(L.stall, 3); G.shake = 0.3; banner("衝突漏進船塢了", "這次先停工 3 秒，下次記得按大招", true, 2.8); sayB(BUB.allwill, "沒人拍板，Plan 就卡住。", 2.6); floatText(at.clone().setY(at.y + 2.6), "停工 3 秒", "bad"); }
+  else if (type === "r") { L.stall = Math.max(L.stall, 7); addPoints(-6); G.shake = 0.45; floatText(at.clone().setY(at.y + 2.6), "衝突沒解！船掉了 6 塊磚", "bad big"); }
   else { L.stall = 8; addPoints(-18); G.shake = 0.7; G.bossAt = G.t + 3; floatText(at.clone().setY(at.y + 3), "魔王衝上島！船塌了一角", "bad big"); }
 }
 
-function tickPets(dt) {
+const redFlash = document.getElementById("redFlash");
+function flashRed() { redFlash.classList.remove("on"); void redFlash.offsetWidth; redFlash.classList.add("on"); }
+function tickPets(dt, only = null) {
   for (const p of pets) {
-    if (!p.active) continue;
+    if (!p.active || (only && p !== only)) continue;
     if (p.flash > 0) { p.flash -= dt; p.shell.emissive.set("#ffffff"); p.shell.emissiveIntensity = Math.max(0, p.flash / 0.14) * 0.9; }
     else if (p.shell.emissiveIntensity) p.shell.emissiveIntensity = 0;
     if (p.state === "fly") {
@@ -3330,7 +3484,8 @@ function tickPets(dt) {
       p.stun -= dt;
       p.g.rotation.y += dt * 8;
       p.g.position.y = p.baseY + Math.abs(Math.sin(elapsed * 11 + p.side * 9)) * 0.4;
-      if (p.stun <= 0) p.q.classList.remove("dance");
+      if (rand() < dt * 14) burst(p.g.position.clone().add(V3(Math.sin(elapsed * 6) * 0.7, 2.2, Math.cos(elapsed * 6) * 0.7)), p.stunC || "#ffd36b", 1, 0.8);
+      if (p.stun <= 0) { p.q.classList.remove("dance"); p.st.classList.add("off"); }
       continue;
     }
     const hes = p.type === "y" && Math.sin(elapsed * 2.6 + p.side * 12) > 0.55 ? 0.2 : 1; // 黃色走走停停
@@ -3346,15 +3501,17 @@ function tickPets(dt) {
     p.g.rotation.y = Math.atan2(tan.x, tan.z);
     p.g.rotation.z = p.type === "y" ? Math.sin(elapsed * 4 + p.side * 5) * 0.28 : 0; // 歪頭
     p.legs.forEach((l, i) => (l.rotation.x = Math.sin(step) * 0.6 * (i === 0 || i === 3 ? 1 : -1)));
+    if (p.type !== "n" && p.u < 0.3 && !p.warned && G.on && !G.tut) { p.warned = true; p.q.classList.add("near"); if (elapsed - (G.lastAlarm || 0) > 0.5) { sound.alarm(); G.lastAlarm = elapsed; } }
     if (p.u <= 0) arrive(p);
   }
 }
 
 // 自動攻擊：英雄只打走到橋後半段的問題（ccza 遠端，範圍更大）
-function pickTarget(laneIds, maxU) {
+function pickTarget(laneIds, maxU, yellowOnly = false) {
   let best = null;
   for (const p of pets) {
     if (!p.active || p.type === "n" || p.state !== "walk" || p.u > maxU || p.hp - p.incoming <= 0) continue;
+    if (yellowOnly && p.type !== "y") continue;
     if (laneIds && !laneIds.includes(p.lane.id)) continue;
     if (!best || p.u < best.u) best = p;
   }
@@ -3368,10 +3525,10 @@ function tickHeroes(dt) {
     if (h.timer > 0) continue;
     let lane = h.lane;
     if (h.key === "ben" && !G.benHome) { const r = ACT.ben; if (r.mode === "cross" || r.mode === "toBridge" || !laneById[r.island]) { h.timer = 0.2; continue; } lane = r.island; } // 串門子：幫所在的那座島
-    const t = rapid ? pickTarget(["jc", "ccza", "raymond"], 0.95) : pickTarget(h.global ? null : [lane], h.global ? 0.4 : 0.45);
+    const t = rapid ? pickTarget(["jc", "ccza", "raymond"], 0.95) : pickTarget(h.global ? null : [lane], h.global ? 0.35 : 0.4, true); // 自動只回答黃色；紅色和魔王要靠大招
     if (!t) { h.timer = 0.12; continue; }
     h.timer = rapid ? 0.2 : h.auto;
-    fireOrb(h, t, 1, rapid ? { dur: 0.3, size: 0.8, arc: 1 } : {});
+    fireOrb(h, t, 1, rapid ? { kind: "heart", dur: 0.3, arc: 1 } : {});
   }
 }
 const SKILL = {
@@ -3380,8 +3537,10 @@ const SKILL = {
     const wb = heroByKey.johnny;
     love.hug = 1.4; love.cool = 6;
     sayB(BUB.water, "我喊方向！", 1.6);
-    active((p) => p.type === "y").forEach((p, i) => fireOrb(wb, p, 9, { delay: 0.35 + i * 0.05, size: 1.6, dur: 0.5, arc: 3 }));
-    G.rapid = 4.5;
+    const ys = active((p) => p.type === "y");
+    ys.forEach((p, i) => fireOrb(wb, p, 9, { kind: "hat", delay: 0.35 + i * 0.05, dur: 0.55, arc: 3 }));
+    taskProgress("johnny", ys.length);
+    G.rapid = 4.5; G.rapidSolves = 0;
     const at = mascots.me.getWorldPosition(V3()).lerp(mascots.water.getWorldPosition(V3()), 0.5);
     burst(at.clone().setY(at.y + 3), "#ff4f86", 10, 5); burst(at.clone().setY(at.y + 3), "#2f9fd8", 8, 5);
     shockwave(at, "#ff4f86", 5, 0.7);
@@ -3389,8 +3548,10 @@ const SKILL = {
   // Richard：吉他 Solo，附近三座島的 Agent 停下來跳舞，自己島的黃色直接解掉
   richard: (h) => {
     const near = ["richard", "ben", "ccza"];
-    active((p) => near.includes(p.lane.id) && p.type !== "boss").forEach((p) => { p.stun = 3; p.q.classList.add("dance"); });
-    active((p) => p.lane.id === "richard" && p.type === "y").forEach((p, i) => fireOrb(h, p, 9, { delay: 0.15 + i * 0.05 }));
+    const stunned = active((p) => near.includes(p.lane.id) && p.type !== "boss");
+    stunned.forEach((p) => setStun(p, 3, h.c, "♪ 跳舞中"));
+    taskProgress("richard", stunned.length);
+    active((p) => p.lane.id === "richard" && p.type === "y").forEach((p, i) => fireOrb(h, p, 9, { kind: "note", delay: 0.15 + i * 0.05, arc: 2.4 }));
     const at = h.obj().getWorldPosition(V3());
     shockwave(at, "#e08a3c", 7, 0.8); setTimeout(() => shockwave(at, "#ffd36b", 9, 0.9), 160);
   },
@@ -3398,7 +3559,7 @@ const SKILL = {
   raymond: (h) => {
     let list = active((p) => p.type === "r" || p.type === "boss").sort((a, b) => a.u - b.u).slice(0, 3);
     if (!list.length) list = active().sort((a, b) => a.u - b.u).slice(0, 3);
-    list.forEach((p, i) => fireOrb(h, p, 3, { delay: i * 0.14, size: 2.3, dur: 0.55, arc: 2.5 }));
+    list.forEach((p, i) => fireOrb(h, p, 3, { kind: "fist", delay: i * 0.14, dur: 0.45, arc: 0 }));
   },
   // ccza：Async 回覆，標記問題最多的那條橋，1.2 秒後整條一起解掉
   ccza: () => {
@@ -3407,12 +3568,13 @@ const SKILL = {
     L.mark = 1.2; G.async = { lane: L, t: 1.2 };
   },
   // ben：舞台演出，全場的 Agent 停下來看戲，這段時間英雄傷害加倍
-  ben: () => { active().forEach((p) => { p.stun = 3.5; p.q.classList.add("dance"); }); G.double = 3.5; G.spot = 3.5; },
+  ben: (h) => { active().forEach((p) => setStun(p, 3.5, h.c, "🎭 看戲中")); G.double = 3.5; G.spot = 3.5; G.stageSolves = 0; },
 };
 function cast(h) {
   const btn = hud.btn[h.key];
   if (!G.on || h.cool > 0 || !h.unlocked) { btn.classList.remove("is-shaking"); void btn.offsetWidth; btn.classList.add("is-shaking"); return; }
   h.cool = h.cd; h.cast = 0.9;
+  G.casts[h.key] = (G.casts[h.key] || 0) + 1;
   credit(h, 2);
   sayB(BUB[h.bub], h.say, 1.6);
   sound.whoosh();
@@ -3422,6 +3584,7 @@ function cast(h) {
   SKILL[h.key](h);
   INTRO[h.key].tag.forEach((t, i) => setTimeout(() => floatText(heroPos(h).add(V3(0, 1.2, 0)), t, "big"), i * 900));
   if (G.intro?.h === h) hideIntro();
+  if (G.redTut?.frozen && h.key === "raymond") { G.redTut.frozen = false; G.redTut.step = 3; G.redTut.t = 0; hud.btn.raymond.classList.remove("tap"); BUB.allwill.until = 0; }
   if (G.tut?.step === 4 && h.key === "jc") { G.tut.step = 5; G.tut.t = 0; G.tutFreeze = false; hud.btn.jc.classList.remove("tap"); BUB.allwill.until = 0; G.shake = 0.3; }
   btn.classList.remove("cast"); void btn.offsetWidth; btn.classList.add("cast");
 }
@@ -3440,23 +3603,47 @@ function heroPoses(dt) {
 
 // 出怪節奏：教學 → 加速 → 紅色登場 → 需求大爆發 → 魔王
 const PHASES = [
-  { until: 16, every: 1.5, y: 0.2, r: 0, b: ["AllWill 開工了！", "黃色 ? 是小疑問，英雄會自動回答"] },
-  { until: 52, every: 0.95, y: 0.42, r: 0 },
-  { until: 100, every: 0.8, y: 0.36, r: 0.2, b: ["紅色 ! 阻塞登場", "打一下會拆成兩個小問題"] },
+  { until: 16, every: 1.5, y: 0.2, r: 0, b: ["AllWill 開工了！", "黃色 ? 是 Spec 對不上的地方，英雄會自動回答"] },
+  { until: 26, every: 1.0, y: 0.4, r: 0 },
+  { until: 52, every: 0.95, y: 0.38, r: 0.1, redTut: true },
+  { until: 100, every: 0.8, y: 0.36, r: 0.2, b: ["衝突變多了！", "記得用大招"], ben: true },
   { until: 132, every: 0.5, y: 0.38, r: 0.24, b: ["需求大爆發！", "Agent 吐得更快了"], danger: true },
   { until: 999, every: 0.8, y: 0.34, r: 0.18 },
 ];
+const WAVES = [
+  { at: 31, lanes: ["jc", "raymond", "ccza"], seq: ["y", "y", "y", "y", "y", "y"], say: "這波很多！" },
+  { at: 38, lanes: ["richard", "ben", "ccza"], seq: ["y", "y", "y", "y", "y"], say: "又一波！三座島一起來了！" },
+  { at: 47, lanes: ["auto"], seq: ["y", "y", "r", "y", "y"], say: "這條橋塞車了！" },
+];
 function tickSpawn(dt) {
   const ph = PHASES.findIndex((x) => G.t < x.until);
-  if (ph !== G.phase) { G.phase = ph; const P = PHASES[ph]; if (P.b) banner(P.b[0], P.b[1], P.danger); if (ph === 2) sayB(BUB.allwill, "打一下，它會拆成兩個小問題。", 3.2); if (ph === 2 && !G.benHome) benReturn(); }
+  if (ph !== G.phase) {
+    G.phase = ph; const P = PHASES[ph];
+    if (P.b) banner(P.b[0], P.b[1], P.danger);
+    if (P.redTut) {
+      banner("紅色 ! Spec 打架了", "自動解不掉，點 Raymond", true, 3.2);
+      if (!redTutDone()) G.redTut = { step: 0, t: 0, p: null };
+      else { sayB(BUB.allwill, "這兩份在吵，我不敢判。", 2.6); G.waveQ.push({ at: G.t + 0.4, type: "r", lane: "raymond" }); const b = hud.btn.raymond; b.classList.add("tap"); setTimeout(() => b.classList.remove("tap"), 2600); }
+    }
+    if (P.ben && !G.benHome) benReturn();
+  }
+  // 前段小高潮：固定時間、固定橋，逼玩家按剛登場的英雄
+  for (const W of WAVES) if (!G.wavesDone[W.at] && G.t >= W.at) {
+    G.wavesDone[W.at] = true;
+    sayB(BUB.allwill, W.say, 2.2);
+    const pickLane = W.lanes[0] === "auto" ? LANE_IDS[Math.floor(rand() * LANE_IDS.length)] : null;
+    W.seq.forEach((type, i) => G.waveQ.push({ at: G.t + i * 0.18, type, lane: pickLane || W.lanes[i % W.lanes.length] }));
+  }
+  for (let i = G.waveQ.length - 1; i >= 0; i--) { const q = G.waveQ[i]; if (G.t >= q.at && spawn(q.type, laneById[q.lane])) G.waveQ.splice(i, 1); }
   // 魔王：時間到 132 秒，或船蓋到九成
   if (!G.bossSpawned && (G.t >= 132 || G.points >= Math.floor(G.goal * 0.9))) {
     G.bossSpawned = true; G.bossAt = G.t + 1.4; G.warn = { type: "boss", t: 1.4 };
-    banner("魔王：到底要做什麼？", "全員集火！解掉它，船才蓋得完", true, 3.2);
   }
   if (G.bossSpawned && !G.bossDown && !G.boss && G.t >= G.bossAt) {
     const L = lanes[Math.floor(rand() * lanes.length)];
     spawn("boss", L); G.warn = null;
+    if (!G.bossCineDone) { G.bossCineDone = true; G.cine = { t: 0, lane: L, short: bossSeen(), said: {} }; document.body.classList.add("cine"); sound.miss(); }
+    else banner("魔王又來了！", "全員集火！", true, 2.4);
   }
   if (G.warn && G.warn.type !== "boss") {
     G.warn.t -= dt;
@@ -3474,29 +3661,93 @@ function tickSpawn(dt) {
   else G.warn = { type, lane: L, t: 0.45 }; // 眼睛先變色預警
 }
 function unlockHero(h) {
-  h.unlocked = true; h.cool = 0;
+  h.unlocked = true; h.cool = 0; h.unlockT ??= G.t;
   G.introQ.push(h);
 }
+// 英雄登場：頭像亮起，自動彈出技能說明卡 2.5 秒（不放慢遊戲）
 function showIntro(h) {
-  const I = INTRO[h.key];
-  hud.intro.innerHTML = `<span class="avs">${(h.avs || [h.av]).map((a) => `<img src="${avatars[a]}" alt="">`).join("")}</span>
-    <div><small>英雄登場</small><b>${I.who}</b><p>${I.bg}</p><em>按我放「${h.skill}」：${I.how}</em></div>`;
-  hud.intro.style.setProperty("--c", h.c);
-  hud.intro.classList.add("on");
+  showTip(h, true);
   hud.btn[h.key].classList.add("spot");
-  G.intro = { h, t: 2.8 }; G.slow = 1.5;
+  G.intro = { h, t: 2.5 };
+  floatText(heroPos(h).add(V3(0, 1.4, 0)), INTRO[h.key].tag[0], "big");
   sound.ok();
 }
 function hideIntro() {
   if (!G.intro) return;
   hud.btn[G.intro.h.key].classList.remove("spot");
-  hud.intro.classList.remove("on");
-  G.intro = null; G.slow = 0;
+  hideTip();
+  G.intro = null;
 }
 function tickIntro(dt) {
   for (const h of BTN_HEROES) if (!h.unlocked && h.key !== "ben" && G.t >= INTRO[h.key].at) unlockHero(h);
   if (G.intro) { G.intro.t -= dt; if (G.intro.t <= 0) hideIntro(); }
   else if (G.introQ.length && G.t >= (G.introQ[0].key === "ben" ? INTRO.ben.at : 0)) showIntro(G.introQ.shift());
+}
+// 魔王登場特寫：暗場、黑邊、鏡頭推到橋頭看它落地；第一局完整版，之後短版，點一下可跳過
+const BOSS_KEY = "allwill-game-boss";
+const bossSeen = () => { try { return localStorage.getItem(BOSS_KEY) === "1"; } catch { return false; } };
+function endCine() {
+  if (!G.cine) return;
+  G.cine = null;
+  document.body.classList.remove("cine");
+  try { localStorage.setItem(BOSS_KEY, "1"); } catch {}
+  if (G.boss) G.boss.g.scale.setScalar(3.2);
+  caveParts.head.position.x = 0;
+  gameView();
+  banner("魔王：到底要做什麼？", "Raymond 重擊、ccza 整條橋，全員集火！", true, 3.2);
+  sayB(BUB.raymond, "全員集火！", 2);
+  ["raymond", "ccza"].forEach((k) => { const b = hud.btn[k]; b.classList.remove("cast"); void b.offsetWidth; b.classList.add("cast"); });
+}
+function tickCine(dt) {
+  const C = G.cine, k = C.short ? 0.45 : 1, t = (C.t += dt) / k;
+  const boss = G.boss;
+  caveParts.head.position.x = t < 0.6 ? Math.sin(elapsed * 60) * 0.12 : 0; // AllWill 抖一下
+  if (t > 0.5) {
+    const at = C.lane.br.curve.getPointAt(0.9);
+    placeCamera(at.clone().setY(at.y + 2), fitDistance(8, 7), 14);
+    followGoal(dt, 4);
+  }
+  if (boss && t > 0.55) tickPets(dt * 1.1, boss);
+  if (boss && boss.state === "walk" && !C.said.land) {
+    C.said.land = true; G.shake = 0.55; shockwave(boss.g.position, "#ef5b3c", 9, 0.8); sound.bad();
+    burst(boss.g.position.clone().add(V3(0, 2, 0)), "#ef5b3c", 20, 7);
+  }
+  if (boss && C.said.land) { const q = Math.min(1, (t - 1.4) / 0.4); boss.g.scale.setScalar(3.2 + Math.max(0, Math.sin(Math.max(0, q) * Math.PI)) * 0.5); }
+  if (!C.short && t > 1.8 && !C.said.line) { C.said.line = true; sayB(BUB.allwill, "這份需求，誰都說不清…", 1.6); }
+  if (t > 3) endCine();
+}
+document.getElementById("cineSkip").addEventListener("pointerdown", (e) => { e.preventDefault(); endCine(); });
+// 紅色教學：第一隻紅色固定走 Raymond 的橋，停住等玩家按 Raymond
+const RED_KEY = "allwill-game-redtut";
+const redTutDone = () => { try { return localStorage.getItem(RED_KEY) === "1"; } catch { return false; } };
+function tickRedTut(dt) {
+  const T = G.redTut, L = laneById.raymond, ray = heroByKey.raymond;
+  T.t += dt;
+  if (T.step === 0) { T.p = spawn("r", L); T.step = 1; return; }
+  if (T.step === 1) {
+    if (!T.p?.active) { G.redTut = null; return; }
+    if (T.p.state === "walk" && T.p.u < 0.72) {
+      T.step = 2; T.frozen = true;
+      ray.unlocked = true; ray.cool = 0;
+      if (G.intro) hideIntro();
+      showIntro(ray); G.intro.t = 1e9;
+      hud.btn.raymond.classList.add("tap");
+      ray.unlockT ??= G.t;
+      sayB(BUB.allwill, "這兩份在吵，我不敢判。點 Raymond！", 1e9);
+      tutView(L.br.curve.getPointAt(0.65), 11);
+    }
+    return;
+  }
+  if (T.step === 3) {
+    if (T.t > 0.6) sayB(BUB.raymond, "這題我來！", 1.6), (T.step = 4);
+  } else if (T.step === 4 && T.t > 1.6) {
+    banner("一拳對齊！", "別人打紅色，打一下會裂成兩個黃", false, 2.8);
+    sayB(BUB.allwill, "好，兩份 Spec 和好了。", 2.6);
+    gameView(); T.step = 5;
+  } else if (T.step === 5 && T.t > 3.4) {
+    try { localStorage.setItem(RED_KEY, "1"); } catch {}
+    G.redTut = null;
+  }
 }
 // ben 串門子結束：被叫回自己的島守橋，大招解鎖
 function benReturn() {
@@ -3556,6 +3807,13 @@ function tickFx(dt) {
     w.m.material.opacity = 1 - w.t;
     if (w.t >= 1) w.m.visible = false;
   }
+  for (const a of avPops) {
+    if (a.t >= 1) continue;
+    a.t = Math.min(1, a.t + dt / 0.9);
+    a.o.position.y = a.y + a.t * 1.2;
+    if (a.t > 0.7) a.el.classList.add("off");
+    if (a.t >= 1) a.o.visible = false;
+  }
   for (const f of floats) {
     if (f.t >= 1) continue;
     f.t = Math.min(1, f.t + dt / 1.1);
@@ -3573,10 +3831,61 @@ const hud = {
 const BTN_HEROES = HEROES.filter((h) => !h.noBtn);
 const heroName = (h) => h.name || MEMBERS[h.key].name;
 hud.heroes.innerHTML = BTN_HEROES.map((h, i) => `<button class="hero${h.avs ? " duo" : ""}" data-k="${h.key}" type="button" style="--c:${h.c}" aria-label="${h.skill}（${heroName(h)}）">
-  <kbd>${i + 1}</kbd><span class="ring">${(h.avs || [h.av]).map((a) => `<img src="${avatars[a]}" alt="">`).join("")}</span><b>${heroName(h)}</b><em>${h.skill}</em><em class="away">${h.key === "ben" ? "串門子中…" : `${INTRO[h.key].at} 秒登場`}</em></button>`).join("");
+  <kbd>${i + 1}</kbd><span class="ring">${(h.avs || [h.av]).map((a) => `<img src="${avatars[a]}" alt="">`).join("")}</span><span class="cardb"></span><b>${heroName(h)}</b><em>${h.skill}</em><em class="away">${h.key === "ben" ? "串門子中…" : `${INTRO[h.key].at} 秒登場`}</em></button>`).join("");
+// 技能說明：桌機 hover、手機長按，顯示技能效果並在地圖上亮出範圍
+// 對黃色／紅色／魔王的實際效果（照程式寫）
+const EFFECT = {
+  jc: ["全場一次清掉", "Coomy 連打打得到，打一下先裂成黃", "連打小傷"],
+  raymond: ["沒有紅色時，打最前面 3 個", "一拳一個，最多 3 個", "重擊"],
+  richard: ["自己橋上的全解掉", "打不掉，只能定住 3 秒", "沒效"],
+  ccza: ["整條橋一起解掉", "整條橋一起解掉", "剛好在那條橋上才有小傷"],
+  ben: ["不直接打，全場定住", "全場定住，英雄傷害 ×2", "定住，傷害 ×2"],
+};
+const SKILL_INFO = {
+  jc: { effect: "水球潘丟船長帽，全場黃色一次解掉；Coomy 接著連打 4.5 秒。", range: "全場黃色；連打範圍是自己、Raymond、ccza 三座島的橋", lanes: () => ["jc", "raymond", "ccza", "richard", "ben"], main: ["jc", "raymond", "ccza"] },
+  raymond: { effect: "一拳打掉最靠近島的 3 個紅色衝突（魔王也打得到）。", range: "全場最危險的 3 個紅色", lanes: () => LANE_IDS, main: () => active((p) => p.type === "r" || p.type === "boss").map((p) => p.lane.id) },
+  richard: { effect: "吉他 Solo：附近三座島的 Agent 停下來跳舞 3 秒，自己島上的黃色直接解掉。", range: "Richard、ben、ccza 三座島的橋", lanes: () => ["richard", "ben", "ccza"], main: ["richard"] },
+  ccza: { effect: "Async 回覆：標記矛盾最多的那條橋，1.2 秒後整條一起解掉（紅色也行）。", range: "現在矛盾最多的那一條橋", lanes: () => { const c = lanes.map((l) => active((p) => p.lane === l).length); return [lanes[c.indexOf(Math.max(...c))].id]; } },
+  ben: { effect: "舞台演出：全場 Agent 停下來看戲 3.5 秒，這段時間英雄傷害加倍。", range: "全場", lanes: () => LANE_IDS },
+};
+const AUTO_INFO = "平時：只會自動回答自己橋上、靠近島的<b>黃色</b>；紅色要靠大招";
+const tip = document.createElement("div");
+tip.className = "skill-tip";
+document.getElementById("hud").appendChild(tip);
+function showTip(h, intro = false) {
+  const I = SKILL_INFO[h.key], b = hud.btn[h.key], E = EFFECT[h.key];
+  tip.innerHTML = `${intro ? `<i class="new">英雄登場</i>` : ""}<b>${heroName(h)}・${h.skill}</b><p>${I.effect}</p>
+    <div class="eff"><span><em class="y">?</em>對黃色<br><strong>${E[0]}</strong></span><span><em class="r">!</em>對紅色<br><strong>${E[1]}</strong></span><span><em class="b">魔</em>對魔王<br><strong>${E[2]}</strong></span></div>
+    <dl><dt>範圍</dt><dd>${I.range}</dd><dt>冷卻</dt><dd>${h.cd} 秒${h.unlocked ? (h.cool > 0 ? `（還要 ${Math.ceil(h.cool)} 秒）` : "（可以放）") : "（還沒登場）"}</dd></dl>
+    <small>${h.key === "ccza" ? "平時：遠端，全場靠近島的<b>黃色</b>都打得到；紅色要靠大招" : AUTO_INFO}</small>${CARD_ORDER.filter((k) => CARD_RULES[k].hero === h.key).map((k) => `<div class="task${ownedCards[k] ? " ok" : ""}">🃏 ${MEMBERS[k].name}成員卡：${CARD_RULES[k].cond}<b>${ownedCards[k] ? "✓ 已收集" : `${Math.min(G.task?.[k] || 0, CARD_RULES[k].need)} / ${CARD_RULES[k].need}`}</b></div>`).join("")}
+    <small class="bg">${INTRO[h.key].who}｜${INTRO[h.key].bg}</small>`;
+  tip.style.setProperty("--c", h.c);
+  const r = b.getBoundingClientRect();
+  tip.style.left = `${Math.min(Math.max(r.left + r.width / 2, 150), innerWidth - 150)}px`;
+  tip.style.bottom = `${innerHeight - r.top + 10}px`;
+  tip.classList.add("on");
+  G.preview = { h, lanes: I.lanes(), main: typeof I.main === "function" ? I.main() : I.main || I.lanes() };
+}
+function hideTip() { tip.classList.remove("on"); G.preview = null; }
 hud.heroes.querySelectorAll(".hero").forEach((b) => {
   hud.btn[b.dataset.k] = b;
-  b.addEventListener("pointerdown", (e) => { e.preventDefault(); cast(heroByKey[b.dataset.k]); });
+  const h = heroByKey[b.dataset.k];
+  let hold = null, held = false;
+  b.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") showTip(h); });
+  b.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") hideTip(); });
+  b.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    if (e.pointerType === "mouse") { cast(h); if (G.preview) showTip(h); return; }
+    held = false; clearTimeout(hold);
+    hold = setTimeout(() => { held = true; showTip(h); }, 380); // 手機長按看說明，短按放招
+  });
+  b.addEventListener("pointerup", (e) => {
+    if (e.pointerType === "mouse") return;
+    clearTimeout(hold);
+    if (held) hideTip(); else cast(h);
+  });
+  b.addEventListener("pointercancel", () => { clearTimeout(hold); hideTip(); });
+  b.addEventListener("contextmenu", (e) => e.preventDefault());
   b.addEventListener("click", (e) => { if (e.detail === 0) cast(heroByKey[b.dataset.k]); }); // 鍵盤 Enter／空白鍵
   b.addEventListener("animationend", () => b.classList.remove("is-shaking", "cast"));
 });
@@ -3606,7 +3915,12 @@ function updateHud() {
     b.classList.toggle("ready", G.on && h.cool <= 0 && !locked);
     b.classList.toggle("wait", h.cool > 0 || locked);
     b.classList.toggle("locked", locked);
+    b.classList.toggle("urge", G.on && !G.tut && !locked && h.cool <= 0 && G.urge);
   }
+}
+function calcUrge() {
+  const qs = active();
+  G.urge = qs.length >= 4 || qs.some((p) => (p.type === "r" || p.type === "boss") && p.u < 0.65) || qs.some((p) => p.u < 0.3);
 }
 function syncCombo(pop = false) {
   hud.combo.textContent = `釐清 ×${G.combo}`;
@@ -3645,20 +3959,21 @@ function resetGame() {
   bricks.forEach((b) => { b.shown = false; b.drop = null; b.t = 1; b.o.visible = false; b.o.position.copy(b.home); b.o.rotation.x = b.rx; b.o.scale.setScalar(1); });
   Object.assign(G, { t: 0, points: 0, shown: 0, inflight: 0, combo: 0, comboT: 0, maxCombo: 0, solved: 0, split: 0, missed: 0, spawnT: 1.2, warn: null, boss: null,
     bossSpawned: false, bossDown: false, bossAt: 0, rapid: 0, double: 0, spot: 0, async: null, hitstop: 0, uses: {}, phase: -1, milestone: 0, seq: null, sailing: false,
-    slow: 0, intro: null, introQ: [], bloomMiss: 0, redsDone: 0, asyncMax: 0, stageCombo: 0, tut: null, tutFreeze: false });
-  document.body.classList.remove("tutorial");
+    preview: null, task: {}, fresh: [], rapidSolves: 0, stageSolves: 0, casts: {}, waveQ: [], wavesDone: {}, firstLeak: false, redTut: null, cine: null, bossCineDone: false, slow: 0, intro: null, introQ: [], bloomMiss: 0, redsDone: 0, asyncMax: 0, stageCombo: 0, tut: null, tutFreeze: false });
+  document.body.classList.remove("tutorial", "cine");
   hideIntro();
   lanes.forEach((l) => { l.stall = 0; l.mark = 0; });
-  HEROES.forEach((h) => { h.cool = 0; h.timer = 0.8 + rand() * 1.2; h.cast = 0; h.unlocked = !!h.noBtn; });
+  HEROES.forEach((h) => { h.cool = 0; h.timer = 0.8 + rand() * 1.2; h.cast = 0; h.unlocked = !!h.noBtn; h.unlockT = null; });
   big.position.set(YARD.x, 0.45, YARD.z);
   farIslands.forEach((f) => { f.g.visible = false; f.el.classList.add("off"); });
   document.body.classList.remove("sailing");
   placeCrewHome();
-  syncCombo(); hudCache = ""; updateHud();
+  syncCombo(); hudCache = ""; updateHud(); syncCardBadges();
   gameView();
 }
 // ── 開場教學：AllWill 當導覽，鏡頭拉近；第一次放大招要等玩家自己按 ──
-BUB.allwill = makeBubble(cave, 6.4);
+// AllWill 的話放在畫面上方的固定旁白框，鏡頭拉近也不會被切掉（沿用 sayB／tickActs 的顯示邏輯）
+BUB.allwill = (() => { const el = document.createElement("div"); el.className = "narr off"; el.setAttribute("role", "status"); document.body.appendChild(el); return { el, until: 0 }; })();
 const TUT_KEY = "allwill-game-tutorial";
 const tutDone = () => { try { return localStorage.getItem(TUT_KEY) === "1"; } catch { return false; } };
 const markTut = () => { try { localStorage.setItem(TUT_KEY, "1"); } catch {} };
@@ -3678,8 +3993,9 @@ function endTutorial(skipped) {
   markTut();
   if (skipped) { hideIntro(); T.pets.forEach((p) => p.active && retire(p)); }
   G.t = 16; G.phase = 1; G.spawnT = 0.8;
+  if (heroByKey.jc.unlocked) heroByKey.jc.unlockT = 16;
   gameView();
-  banner("開工了！", skipped ? "冷卻好了頭像會亮，點下去放大招" : "接下來英雄會一位一位登場");
+  banner("開工了！", "黃色交給英雄自動解；來太多、或出現紅色，就放大招");
 }
 function tickTutorial(dt) {
   const T = G.tut, jc = laneById.jc;
@@ -3688,40 +4004,44 @@ function tickTutorial(dt) {
   const say = (k, b, text, sec) => once(k) && sayB(b, text, sec);
   if (T.step === 0) {
     say("a1", BUB.allwill, "嗨，我是 AllWill，這裡的工頭。", 2);
-    if (T.t > 2) say("a2", BUB.allwill, "我吐出 Agent，把 Spec 送上每座島。", 2.2);
-    if (T.t > 4.2) { T.step = 1; T.t = 0; G.warn = { type: "y", lane: jc, t: 0.5 }; }
+    if (T.t > 2) say("a2", BUB.allwill, "大家的 Spec 都會送來我這裡對一對。", 2.2);
+    if (T.t > 4.2) say("a3", BUB.allwill, "對不上的地方，我會丟出來給負責的人。", 2.4);
+    if (T.t > 6.4) { T.step = 1; T.t = 0; G.warn = { type: "y", lane: jc, t: 0.5 }; }
   } else if (T.step === 1) {
     if (G.warn) { G.warn.t -= dt; if (G.warn.t <= 0) { T.first = spawn("y", jc); T.pets.push(T.first); G.warn = null; } }
     const p = T.first;
     if (p) {
       tutView(p.g.position.clone(), 9);
-      say("y", BUB.allwill, "頭上有黃色 ? 的，代表規格沒講清楚。", 3);
+      if (once("yAt")) T.yAt = T.t;
+      say("y", BUB.allwill, "黃色 ? 是 Spec 之間矛盾的地方。", 2.4);
+      if (T.t - T.yAt > 2.4) say("auto", BUB.allwill, "只有一兩隻時，英雄會自己清掉。", 2.6);
       if (p.state === "walk" && p.u < 0.5) { T.step = 2; T.t = 0; }
     }
   } else if (T.step === 2) {
     const p = T.first;
     tutView(posOf(unitById.jc).lerp(jc.br.curve.getPointAt(0.3), 0.5), 10);
     if (once("ans")) { sayB(BUB.water, "這題我答！", 1.8); fireOrb(heroByKey.johnny, p, 9, { size: 1.4, dur: 0.6, arc: 2.5 }); }
-    if (T.t > 1.2) say("gold", BUB.allwill, "回答過的背金色 Spec，一個抵兩塊磚。", 3);
+    if (T.t > 1.2) say("gold", BUB.allwill, "解掉後 Spec 對齊了，一個抵兩塊磚。", 2.6);
     if (T.t > 4.4) { T.step = 3; T.t = 0; }
   } else if (T.step === 3) {
     tutView(jc.br.curve.getPointAt(0.45), 11);
     for (let i = 0; i < 4; i++) if (T.t > 0.2 + i * 0.4 && once("s" + i)) { const q = spawn("y", jc); if (q) T.pets.push(q); }
-    if (T.t > 1.4) say("coomy", BUB.me, "太多了，抓個節拍！", 2.4);
-    if (T.t > 2.2 && once("stallHint")) floatText(jc.br.curve.getPointAt(0).add(V3(0, 3, 0)), "沒擋住，島就停工", "bad");
+    if (T.t > 1.0) say("many", BUB.allwill, "可是一次來太多，自動解不完…", 2.4);
+    if (T.t > 1.6) say("coomy", BUB.me, "太多了，抓個節拍！", 2.4);
+    if (T.t > 2.2 && once("stallHint")) floatText(jc.br.curve.getPointAt(0).add(V3(0, 3, 0)), "漏掉的話，島會停工", "bad");
     const walking = T.pets.filter((q) => q.active && q.type === "y" && q.state === "walk");
     if (T.t > 2 && walking.length >= 4 && Math.min(...walking.map((q) => q.u)) < 0.72) {
       T.step = 4; T.t = 0; G.tutFreeze = true;
       const h = heroByKey.jc; h.unlocked = true; h.cool = 0;
       showIntro(h); G.slow = 0; G.intro.t = 1e9; // 等玩家按
       hud.btn.jc.classList.add("tap");
-      sayB(BUB.allwill, "點他們的頭像！", 1e9);
+      sayB(BUB.allwill, "自動來不及時，點頭像放大招！", 1e9);
     }
   } else if (T.step === 4) {
     // 停住，等玩家按「默契連攜」（cast 會把 step 推到 5）
   } else if (T.step === 5) {
     if (T.t > 0.6) gameView();
-    if (T.t > 2.4) say("end", BUB.allwill, "問題有人回，Plan 就不會走散。", 2.8);
+    if (T.t > 2.4) say("end", BUB.allwill, "矛盾有人解，Plan 就不會走散。", 2.8);
     if (T.t > 4.6) endTutorial(false);
   }
 }
@@ -3788,17 +4108,48 @@ function tickSail(dt) {
   followGoal(dt, 1.3);
   farIslands.forEach((f, i) => { f.g.visible = true; f.el.classList.toggle("off", voy.t < 4 + i * 1.5); });
 }
-// 成員卡收集：用成員背景當挑戰，進度只存在玩家自己的瀏覽器
+// 成員卡收集：每位成員一個綁在大招上的任務，邊玩邊看得到進度；進度跨局存在玩家自己的瀏覽器
 const CARD_RULES = {
-  johnny: { bg: "水球軟體學院創辦人，社群一年 6,000+", cond: "按「分享到 Threads」（build in public）", ok: () => false },
-  coomy: { bg: "前 Onramp Lab FE Tech Lead，團隊的節拍器", cond: "2:30 內出海", ok: (won) => won && G.t <= 150 },
-  richard: { bg: "SlideArt 設計 Nike、Google、BMW", cond: "需求大爆發期間零停工（一個月止血）", ok: () => G.t >= 132 && G.bloomMiss === 0 },
-  raymond: { bg: "Appier 出身，SurveyCake 初期核心開發", cond: "一局處理 12 個紅色阻塞", ok: () => G.redsDone >= 12 },
-  ccza: { bg: "AllWill 背後的主力工程師", cond: "一次 Async 回覆清掉 4 隻以上", ok: () => G.asyncMax >= 4 },
-  ben: { bg: "在客戶端帶導入的人", cond: "舞台演出期間打出 ×12 連擊", ok: () => G.stageCombo >= 12 },
+  johnny: { hero: "jc", need: 4, bg: "水球軟體學院創辦人，社群一年 6,000+", cond: "一次船長帽清掉 4 隻黃色" },
+  coomy: { hero: "jc", need: 6, bg: "前 Onramp Lab FE Tech Lead，團隊的節拍器", cond: "連打期間解掉 6 個" },
+  raymond: { hero: "raymond", need: 5, bg: "Appier 出身，SurveyCake 初期核心開發", cond: "一拳打掉 5 個紅色（累計）" },
+  richard: { hero: "richard", need: 4, bg: "SlideArt 設計 Nike、Google、BMW", cond: "一次 Solo 定住 4 隻" },
+  ccza: { hero: "ccza", need: 4, bg: "AllWill 背後的主力工程師", cond: "一次 Async 清掉 4 隻" },
+  ben: { hero: "ben", need: 6, bg: "在客戶端帶導入的人", cond: "看戲期間解掉 6 個" },
 };
-const loadCards = () => { try { return JSON.parse(localStorage.getItem("allwill-crew-cards") || "{}"); } catch { return {}; } };
-const saveCards = (c) => { try { localStorage.setItem("allwill-crew-cards", JSON.stringify(c)); } catch {} };
+const CARD_ORDER = ["johnny", "coomy", "raymond", "richard", "ccza", "ben"];
+const loadCards = () => { try { return JSON.parse(localStorage.getItem("allwill-crew-cards-v2") || "{}"); } catch { return {}; } };
+const saveCards = (c) => { try { localStorage.setItem("allwill-crew-cards-v2", JSON.stringify(c)); } catch {} };
+let ownedCards = loadCards();
+// 更新任務進度；達成就立刻翻牌解鎖
+function taskProgress(k, v, mode = "max") {
+  if (!G.on) return;
+  const R = CARD_RULES[k];
+  G.task[k] = mode === "add" ? (G.task[k] || 0) + v : Math.max(G.task[k] || 0, v);
+  if (G.task[k] >= R.need && !ownedCards[k]) {
+    ownedCards[k] = 1; saveCards(ownedCards); G.fresh.push(k);
+    showCardFlip(k);
+  }
+  syncCardBadges();
+}
+const flip = document.getElementById("cardFlip");
+function showCardFlip(k) {
+  const m = MEMBERS[k];
+  flip.innerHTML = `<div class="fc"><div class="face front">成員卡<br><b>解鎖！</b></div><div class="face back"><img src="${avatars[m.av]}" alt=""><b>${m.name}・${m.role}</b><span>${CARD_RULES[k].bg}</span><em>成員卡 ${Object.keys(ownedCards).length} / 6</em></div></div>`;
+  flip.style.setProperty("--c", heroByKey[CARD_RULES[k].hero].c);
+  flip.classList.remove("on"); void flip.offsetWidth; flip.classList.add("on");
+  clearTimeout(flip._t); flip._t = setTimeout(() => flip.classList.remove("on"), 3200);
+  sound.sparkle();
+}
+function syncCardBadges() {
+  for (const h of BTN_HEROES) {
+    const ks = CARD_ORDER.filter((k) => CARD_RULES[k].hero === h.key);
+    const got = ks.filter((k) => ownedCards[k]).length;
+    const b = hud.btn[h.key].querySelector(".cardb");
+    b.textContent = `🃏 ${got}/${ks.length}`;
+    b.classList.toggle("done", got === ks.length);
+  }
+}
 function starsOf(won) {
   if (!won) return 0;
   if (G.t <= 150 && G.missed === 0) return 3;
@@ -3806,28 +4157,36 @@ function starsOf(won) {
 }
 function showEnd(won) {
   const pct = Math.floor((G.points / G.goal) * 100);
-  const best = Object.entries(G.uses).sort((a, b) => b[1] - a[1])[0];
-  const h = heroByKey[best ? best[0] : "jc"];
+  // 稱號看「大招使用率」：能放的機會裡放了幾次，不受登場早晚與自動攻擊影響
+  let h = null, bestRate = 0;
+  for (const x of BTN_HEROES) {
+    const n = G.casts[x.key] || 0;
+    if (!n || x.unlockT == null) continue;
+    const rate = n / Math.max(1, Math.floor((G.t - x.unlockT) / x.cd) + 1) + (G.uses[x.key] || 0) * 1e-4;
+    if (rate > bestRate) { bestRate = rate; h = x; }
+  }
+  h ||= { key: "rookie", avs: ["allwill"], title: "AllWill 見習船員" };
   const hobbyOf = (k) => MEMBERS[k].lines[0].replace(/<span[^>]*>.*?<\/span>/, "");
   const order = ["johnny", "coomy", "richard", "raymond", "ccza", "ben"];
   const stars = starsOf(won);
-  const cards = loadCards(), fresh = [];
-  order.forEach((k) => { if (!cards[k] && CARD_RULES[k].ok(won)) { cards[k] = 1; fresh.push(k); } });
-  saveCards(cards);
-  const nextK = order.find((k) => !cards[k]);
-  const starLine = won ? ["", "把船蓋完了。下一顆星：漏掉的提問不超過 3 個", "漏掉不超過 3 個。最後一顆星：2:30 內出海、零漏接", "零阻塞！2:30 內出海、一個提問都沒漏"][stars] : "時間到，船還沒蓋完。蓋完出海就有第一顆星";
-  const share = encodeURIComponent(`我在 AllWill 船塢守衛戰拿到 ${"★".repeat(stars) || "0 顆星"}「${h.title}」，${won ? `${fmt(G.t)} 把船蓋好出海了` : `船蓋到 ${pct}%`}！你也來守守看 👉 ${location.origin}${location.pathname}`);
+  const cards = ownedCards, fresh = G.fresh;
+  const got = CARD_ORDER.filter((k) => cards[k]).length;
+  const nextK = CARD_ORDER.find((k) => !cards[k]);
+  const starLine = won ? ["", "把船蓋完了。下一顆星：漏掉的矛盾不超過 3 個", "漏掉不超過 3 個。最後一顆星：2:30 內出海、零漏接", "零漏接！2:30 內出海、一個矛盾都沒漏"][stars] : "時間到，船還沒蓋完。蓋完出海就有第一顆星";
+  const share = encodeURIComponent(`我集到 ${got}/6 張 AllWill 成員卡，拿到${stars ? ` ${"★".repeat(stars)}` : ""}「${h.title}」！${won ? `${fmt(G.t)} 把 AllWill 號蓋好出海了。` : ""}你也來認識這個團隊 👉 ${location.origin}${location.pathname}`);
+  G.endInfo = { won, stars, h, got };
   endPanel.innerHTML = `<div class="t-stagger">
     <span class="tag">#AllWill 船塢守衛戰</span>
     <h2>${won ? "AllWill 號出航！" : `還差 ${100 - pct}%，船還沒蓋好`}</h2>
     <div class="stars" aria-label="${stars} 顆星">${"★".repeat(stars)}<s>${"★".repeat(3 - stars)}</s><small>${starLine}</small></div>
-    <p>${won ? `用了 ${fmt(G.t)}，${bricks.length} 塊磚全部蓋上。地平線後面有美國、有日本，也有還沒畫進地圖的島。` : "提問卡住了 Spec，船塢停在半路。再派一次英雄？"}</p>
-    <div class="stats"><div><b>${G.solved}</b><span>釐清的提問</span></div><div><b>${G.missed}</b><span>漏掉的提問</span></div><div><b>×${G.maxCombo}</b><span>最大連擊</span></div></div>
+    <p>${won ? `用了 ${fmt(G.t)}，${bricks.length} 塊磚全部蓋上。地平線後面有美國、有日本，也有還沒畫進地圖的島。` : "Spec 的矛盾沒解完，船塢停在半路。再派一次英雄？"}</p>
+    <div class="stats"><div><b>${G.solved}</b><span>解掉的矛盾</span></div><div><b>${G.missed}</b><span>漏掉的矛盾</span></div><div><b>×${G.maxCombo}</b><span>最大連擊</span></div></div>
     <div class="title-card"><span class="avs">${(h.avs || [h.av]).map((a) => `<img src="${avatars[a]}" alt="">`).join("")}</span><div><small>你的稱號</small><b>${h.title}</b><span>${TITLE_LINE[h.key]}</span></div></div>
-    <div class="crew-sec">認識 AllWill 開發團隊・成員卡 ${order.filter((k) => cards[k]).length} / 6</div>
-    <div class="crew">${order.map((k) => `<div class="${cards[k] ? "" : "off"}"><img src="${avatars[MEMBERS[k].av]}" alt=""><div><b>${MEMBERS[k].name}・${MEMBERS[k].role}${fresh.includes(k) ? "<em>新</em>" : ""}</b><span>${CARD_RULES[k].bg}</span><i>${cards[k] ? hobbyOf(k) : `亮卡：${CARD_RULES[k].cond}`}</i></div></div>`).join("")}</div>
+    <div class="collect"><b>成員卡 ${got} / 6</b><span>${fresh.length ? `這局新收集：${fresh.map((k) => MEMBERS[k].name).join("、")}` : got === 6 ? "全部集滿！你認識整個 AllWill 開發團隊了" : "這局沒有新卡，看看下面還差哪些任務"}</span></div>
+    <div class="crew">${CARD_ORDER.map((k) => `<div class="${cards[k] ? "" : "off"}"><img src="${avatars[MEMBERS[k].av]}" alt=""><div><b>${MEMBERS[k].name}・${MEMBERS[k].role}${fresh.includes(k) ? "<em>新</em>" : ""}</b><span>${CARD_RULES[k].bg}</span><i>${cards[k] ? hobbyOf(k) : `任務：${CARD_RULES[k].cond}（這局 ${Math.min(G.task[k] || 0, CARD_RULES[k].need)}/${CARD_RULES[k].need}）`}</i></div></div>`).join("")}</div>
     ${nextK ? `<div class="next">下一張：${MEMBERS[nextK].name}・${CARD_RULES[nextK].cond}</div>` : ""}
-    <div class="row2"><button class="btn" id="againBtn" type="button">再玩一次</button><a class="btn ghost" id="shareBtn" href="https://www.threads.net/intent/post?text=${share}" target="_blank" rel="noopener">分享到 Threads</a></div>
+    <div class="row2"><button class="btn" id="imgBtn" type="button">存成分享圖</button><a class="btn ghost" id="shareBtn" href="https://www.threads.net/intent/post?text=${share}" target="_blank" rel="noopener">分享到 Threads</a></div>
+    <button class="btn ghost" id="againBtn" type="button">再玩一次</button>
     <a class="btn ghost" href="mailto:hi@specformula.ai">想認識我們？寫信到 hi@specformula.ai</a>
     <a class="alt" href="../crew/">看團隊導覽 →</a>
     <a class="alt" href="../" style="margin-top:4px">看我們正在打造的 AllWill →</a>
@@ -3835,10 +4194,47 @@ function showEnd(won) {
   endScreen.classList.add("open");
   document.body.classList.remove("playing-game");
   document.getElementById("againBtn").addEventListener("click", startGame);
-  document.getElementById("shareBtn").addEventListener("click", () => { const c = loadCards(); if (!c.johnny) { c.johnny = 1; saveCards(c); } });
+  document.getElementById("imgBtn").addEventListener("click", saveShareImage);
+}
+// 分享圖：星等、稱號、成員卡收集（沒收集的是灰色剪影）、網址
+async function saveShareImage() {
+  const { won, stars, h, got } = G.endInfo;
+  const W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#f6e6cf"); g.addColorStop(1, "#3e9fc8");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  const font = (w, px) => `${w} ${px}px "Noto Sans TC", "PingFang TC", sans-serif`;
+  const load = (src) => new Promise((r) => { const im = new Image(); im.onload = () => r(im); im.onerror = () => r(null); im.src = src; });
+  x.textAlign = "center";
+  x.fillStyle = "#1f8f87"; x.font = font(900, 40); x.fillText("#AllWill 船塢守衛戰", W / 2, 110);
+  x.fillStyle = "#1c2430"; x.font = font(900, 76); x.fillText(won ? "AllWill 號出航！" : "差一點就出海了", W / 2, 210);
+  x.font = font(900, 90); x.fillStyle = "#f0a33a"; x.fillText("★".repeat(stars) + "☆".repeat(3 - stars), W / 2, 320);
+  x.fillStyle = "rgba(28,36,48,0.92)"; x.beginPath(); x.roundRect(90, 370, W - 180, 190, 36); x.fill();
+  x.fillStyle = "rgba(255,255,255,0.7)"; x.font = font(700, 32); x.fillText("我的稱號", W / 2, 432);
+  x.fillStyle = "#fff"; x.font = font(900, 56); x.fillText(h.title, W / 2, 510);
+  x.fillStyle = "#1c2430"; x.font = font(900, 50); x.fillText(`我集到 ${got} / 6 張成員卡`, W / 2, 650);
+  const imgs = await Promise.all(CARD_ORDER.map((k) => load(avatars[MEMBERS[k].av])));
+  CARD_ORDER.forEach((k, i) => {
+    const cx = 210 + (i % 3) * 330, cy = 790 + Math.floor(i / 3) * 270, own = ownedCards[k];
+    x.save();
+    x.fillStyle = own ? "#fffaf2" : "rgba(255,255,255,0.45)"; x.beginPath(); x.roundRect(cx - 140, cy - 115, 280, 245, 28); x.fill();
+    x.globalAlpha = own ? 1 : 0.35; x.filter = own ? "none" : "grayscale(1) brightness(0.6)";
+    if (imgs[i]) { x.save(); x.beginPath(); x.arc(cx, cy - 20, 80, 0, Math.PI * 2); x.clip(); x.drawImage(imgs[i], cx - 80, cy - 100, 160, 160); x.restore(); }
+    x.restore();
+    x.fillStyle = own ? "#1c2430" : "rgba(28,36,48,0.55)"; x.font = font(900, 34); x.fillText(own ? MEMBERS[k].name : "？？？", cx, cy + 100);
+  });
+  x.fillStyle = "#fff"; x.font = font(900, 36); x.fillText("來認識 AllWill 開發團隊 👉", W / 2, 1245);
+  x.font = font(700, 30); x.fillText(`${location.host}${location.pathname}`, W / 2, 1300);
+  c.toBlob(async (blob) => {
+    const file = new File([blob], "allwill-crew-card.png", { type: "image/png" });
+    try { if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], text: `我集到 ${got}/6 張 AllWill 成員卡！` }); return; } } catch {}
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = file.name; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }, "image/png");
 }
 // 稱號卡：喜好＋一句經歷，有水球潘的評語就放上
 const TITLE_LINE = {
+  rookie: "這局還沒放過大招。下一局冷卻好就點英雄頭像，看看大家的招！",
   jc: "水球潘喜歡當船長，Coomy 很愛打遊戲；水球潘說她是「團隊的節拍器」。",
   richard: "玩音樂、常背著吉他。在 SlideArt 經手 Nike、Google、BMW 的設計案，也讓只剩一個月 Runway 的公司兩個月轉虧為盈。",
   raymond: "熱愛健身、跑馬拉松。Appier 出身。水球潘說：「所有最困難的事，對他來說都只是步驟多了點。」",
@@ -3851,8 +4247,18 @@ function tickGame(dt) {
   tickBricks(dt);
   tickFx(dt);
   if (G.bannerT > 0) { G.bannerT -= dt; if (G.bannerT <= 0) hud.banner.classList.remove("on"); }
+  if (G.preview?.h.key === "ccza") G.preview.lanes = G.preview.main = SKILL_INFO.ccza.lanes();
   lanes.forEach((l) => {
     l.el.classList.toggle("off", !(l.stall > 0 && G.on));
+    const pv = G.preview && G.preview.lanes.includes(l.id);
+    l.band.visible = !!pv;
+    if (pv) { l.band.material.color.set(G.preview.h.c); l.band.material.opacity = (G.preview.main.includes(l.id) ? 0.7 : 0.4) + Math.sin(elapsed * 6) * 0.1; }
+    if (pv) {
+      const strong = G.preview.main.includes(l.id);
+      l.br.deckMat.emissive.set(G.preview.h.c);
+      l.br.deckMat.emissiveIntensity = (strong ? 0.75 : 0.35) + Math.sin(elapsed * 6) * 0.15;
+      return;
+    }
     l.br.deckMat.emissive.set(l.mark > 0 ? "#8a5ac6" : l.stall > 0 && G.on ? "#ef5b3c" : "#000000");
     l.br.deckMat.emissiveIntensity = l.mark > 0 ? 0.7 : l.stall > 0 && G.on ? 0.35 + Math.sin(elapsed * 8) * 0.15 : 0;
   });
@@ -3862,16 +4268,18 @@ function tickGame(dt) {
   if (!G.on) return;
   let gdt = dt;
   if (G.hitstop > 0) { G.hitstop -= dt; gdt = dt * 0.1; } // 命中頓一下
-  else if (G.slow > 0) { G.slow -= dt; gdt = dt * 0.25; } // 英雄登場的慢動作
+  if (G.cine) { tickCine(dt); updateHud(); return; }
+  if (G.redTut) { tickRedTut(dt); if (G.redTut?.frozen) { calcUrge(); heroPoses(dt); updateHud(); return; } }
   if (G.tut) { tickTutorial(dt); tickOrbs(gdt); if (!G.tutFreeze) tickPets(gdt); heroPoses(dt); updateHud(); return; }
   tickIntro(dt);
+  calcUrge();
   G.t += gdt;
   G.rapid = Math.max(0, G.rapid - gdt); G.double = Math.max(0, G.double - gdt); G.spot = Math.max(0, G.spot - gdt);
   if (G.comboT > 0) { G.comboT -= gdt; if (G.comboT <= 0) { G.combo = 0; syncCombo(); } }
   lanes.forEach((l) => { l.stall = Math.max(0, l.stall - gdt); l.mark = Math.max(0, l.mark - gdt); });
   if (G.async) {
     G.async.t -= gdt;
-    if (G.async.t <= 0) { const h = heroByKey.ccza; G.asyncMax = Math.max(G.asyncMax, active((p) => p.lane === G.async.lane).length); active((p) => p.lane === G.async.lane).forEach((p, i) => fireOrb(h, p, p.type === "boss" ? 3 : 9, { delay: i * 0.05, dur: 0.35, arc: 4 })); G.async = null; }
+    if (G.async.t <= 0) { const h = heroByKey.ccza; G.asyncMax = Math.max(G.asyncMax, active((p) => p.lane === G.async.lane).length); taskProgress("ccza", active((p) => p.lane === G.async.lane).length); active((p) => p.lane === G.async.lane).forEach((p, i) => fireOrb(h, p, p.type === "boss" ? 3 : 9, { kind: "code", sky: true, delay: i * 0.05, dur: 0.4 })); G.async = null; }
   }
   if (G.spot > 0) { spotLight.visible = true; spotLight.position.copy(team.ben.g.position).add(V3(0, 4.2, 0)); }
   tickSpawn(gdt);
@@ -3888,7 +4296,14 @@ G.demo = true;
 // 測試用：?rec&auto 自動開局、冷卻好就放招
 if (params.has("auto")) {
   startGame();
-  window.__autoCast = () => { if (!params.has("noskill")) BTN_HEROES.forEach((h) => { if (G.on && h.cool <= 0 && active().length >= 2) cast(h); }); };
+  if (params.has("noskill")) { endTutorial(true); try { localStorage.setItem(RED_KEY, "1"); } catch {} }
+  let lazyAt = 0;
+  window.__autoCast = () => {
+    if (params.has("noskill")) return;
+    if (G.redTut?.frozen) return cast(heroByKey.raymond);
+    if (params.has("lazy")) { if (G.tut || G.t - lazyAt > 7) { const h = BTN_HEROES.find((x) => G.on && x.unlocked && x.cool <= 0 && active().length >= 2); if (h) { cast(h); lazyAt = G.t; } } return; } // 偶爾按一下的玩家
+    BTN_HEROES.forEach((h) => { if (G.on && h.cool <= 0 && active().length >= 2) cast(h); });
+  };
 }
 
 // ── 迴圈 ──
