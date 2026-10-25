@@ -294,6 +294,15 @@
   .panel .tag { display: inline-block; }
   .panel h2 { margin: 8px 0 6px; font-family: "Noto Serif TC", serif; font-weight: 900; font-size: clamp(26px, 7vw, 34px); line-height: 1.2; }
   .panel p { margin: 0; font-size: 14px; line-height: 1.65; color: #3a4350; }
+  .tut-note { margin-top: 8px !important; text-align: center; font-size: 12px !important; color: var(--muted) !important; }
+  .alt.link { width: 100%; border: 0; background: none; font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; padding: 0; }
+  .skip-tut { position: absolute; right: 12px; top: calc(max(12px, env(safe-area-inset-top)) + 46px); pointer-events: auto; border: 0; border-radius: 999px; padding: 6px 12px;
+    background: rgba(28,36,48,0.78); color: #fff; font: inherit; font-size: 12.5px; font-weight: 900; cursor: pointer; display: none; }
+  body.tutorial .skip-tut { display: block; }
+  body.tutorial .combo { display: none; }
+  .hero.tap::after { content: "👆"; position: absolute; left: 50%; bottom: -6px; font-size: 26px; transform: translateX(-50%); animation: tap 0.9s ease-in-out infinite; pointer-events: none; }
+  @keyframes tap { 50% { transform: translate(-50%, -8px); } }
+  @media (prefers-reduced-motion: reduce) { .hero.tap::after { animation: none; } }
   .legend { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
   .legend li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; line-height: 1.45; }
   .legend .qb { flex: none; animation: none; }
@@ -364,20 +373,17 @@
   <div class="combo" id="hCombo">釐清 ×0</div>
   <div class="banner" id="hBanner"></div>
   <div class="intro" id="hIntro" role="status"></div>
+  <button class="skip-tut" id="skipTut" type="button">略過教學 ›</button>
   <div class="heroes" id="heroBar"></div>
 </div>
 <div class="screen open" id="startScreen">
   <div class="panel t-stagger">
     <span class="tag">#AllWill 開發團隊</span>
     <h2>AllWill 船塢守衛戰</h2>
-    <p>中間的 AllWill 機器人一直吐出 Agent。它們把 Spec 送到每座島，Spec 再飛進船塢，一塊一塊蓋成 AllWill 號。</p>
-    <ul class="legend">
-      <li><span class="qb">?</span><span><b>黃色 Agent 帶著小疑問</b>：英雄會自動回答，一發解掉。</span></li>
-      <li><span class="qb r">!</span><span><b>紅色 Agent 卡住了</b>：打一下會拆成兩個小問題。</span></li>
-      <li><span class="ic">1–5</span><span><b>按英雄頭像放大招</b>：沒擋下來，那座島就停工等回覆。</span></li>
-      <li><span class="ic spec">▲</span><span>回答過的 Agent 背著<b>金色 Spec</b>，一個抵兩塊磚。</span></li>
-    </ul>
+    <p>六個人、五座島，一起把 AllWill 號蓋出海。</p>
     <button class="btn" id="startBtn" type="button"><i>▶</i>開始守衛<em>一局約 2 分半</em></button>
+    <p class="tut-note" id="tutNote">第一次會有導覽，可以跳過</p>
+    <button class="alt link" id="replayTut" type="button" hidden>重看教學</button>
     <a class="alt" href="../crew/">只想認識團隊？看團隊導覽 →</a>
   </div>
 </div>
@@ -3295,6 +3301,7 @@ function arrive(p) {
     if (gold) floatText(at.clone().setY(at.y + 2.6), "金色 Spec ×2", "gold");
     return;
   }
+  if (G.tut) return;
   G.missed++; G.combo = 0; syncCombo();
   if (G.phase === 3) G.bloomMiss++;
   sound.bad();
@@ -3415,6 +3422,7 @@ function cast(h) {
   SKILL[h.key](h);
   INTRO[h.key].tag.forEach((t, i) => setTimeout(() => floatText(heroPos(h).add(V3(0, 1.2, 0)), t, "big"), i * 900));
   if (G.intro?.h === h) hideIntro();
+  if (G.tut?.step === 4 && h.key === "jc") { G.tut.step = 5; G.tut.t = 0; G.tutFreeze = false; hud.btn.jc.classList.remove("tap"); BUB.allwill.until = 0; G.shake = 0.3; }
   btn.classList.remove("cast"); void btn.offsetWidth; btn.classList.add("cast");
 }
 function heroPoses(dt) {
@@ -3440,7 +3448,7 @@ const PHASES = [
 ];
 function tickSpawn(dt) {
   const ph = PHASES.findIndex((x) => G.t < x.until);
-  if (ph !== G.phase) { G.phase = ph; const P = PHASES[ph]; if (P.b) banner(P.b[0], P.b[1], P.danger); if (ph === 2 && !G.benHome) benReturn(); }
+  if (ph !== G.phase) { G.phase = ph; const P = PHASES[ph]; if (P.b) banner(P.b[0], P.b[1], P.danger); if (ph === 2) sayB(BUB.allwill, "打一下，它會拆成兩個小問題。", 3.2); if (ph === 2 && !G.benHome) benReturn(); }
   // 魔王：時間到 132 秒，或船蓋到九成
   if (!G.bossSpawned && (G.t >= 132 || G.points >= Math.floor(G.goal * 0.9))) {
     G.bossSpawned = true; G.bossAt = G.t + 1.4; G.warn = { type: "boss", t: 1.4 };
@@ -3637,7 +3645,8 @@ function resetGame() {
   bricks.forEach((b) => { b.shown = false; b.drop = null; b.t = 1; b.o.visible = false; b.o.position.copy(b.home); b.o.rotation.x = b.rx; b.o.scale.setScalar(1); });
   Object.assign(G, { t: 0, points: 0, shown: 0, inflight: 0, combo: 0, comboT: 0, maxCombo: 0, solved: 0, split: 0, missed: 0, spawnT: 1.2, warn: null, boss: null,
     bossSpawned: false, bossDown: false, bossAt: 0, rapid: 0, double: 0, spot: 0, async: null, hitstop: 0, uses: {}, phase: -1, milestone: 0, seq: null, sailing: false,
-    slow: 0, intro: null, introQ: [], bloomMiss: 0, redsDone: 0, asyncMax: 0, stageCombo: 0 });
+    slow: 0, intro: null, introQ: [], bloomMiss: 0, redsDone: 0, asyncMax: 0, stageCombo: 0, tut: null, tutFreeze: false });
+  document.body.classList.remove("tutorial");
   hideIntro();
   lanes.forEach((l) => { l.stall = 0; l.mark = 0; });
   HEROES.forEach((h) => { h.cool = 0; h.timer = 0.8 + rand() * 1.2; h.cast = 0; h.unlocked = !!h.noBtn; });
@@ -3648,10 +3657,82 @@ function resetGame() {
   syncCombo(); hudCache = ""; updateHud();
   gameView();
 }
+// ── 開場教學：AllWill 當導覽，鏡頭拉近；第一次放大招要等玩家自己按 ──
+BUB.allwill = makeBubble(cave, 6.4);
+const TUT_KEY = "allwill-game-tutorial";
+const tutDone = () => { try { return localStorage.getItem(TUT_KEY) === "1"; } catch { return false; } };
+const markTut = () => { try { localStorage.setItem(TUT_KEY, "1"); } catch {} };
+const tutView = (target, half = 10) => placeCamera(target, fitDistance(half, half * 0.75), portrait() ? 40 : 30);
+function startTutorial() {
+  G.tut = { step: 0, t: 0, pets: [], first: null, said: {} };
+  document.body.classList.add("tutorial");
+  tutView(V3(0, 2.5, 0), 8);
+}
+function endTutorial(skipped) {
+  if (!G.tut) return;
+  const T = G.tut;
+  G.tut = null; G.tutFreeze = false;
+  document.body.classList.remove("tutorial");
+  BUB.allwill.until = 0;
+  Object.values(hud.btn).forEach((b) => b.classList.remove("tap"));
+  markTut();
+  if (skipped) { hideIntro(); T.pets.forEach((p) => p.active && retire(p)); }
+  G.t = 16; G.phase = 1; G.spawnT = 0.8;
+  gameView();
+  banner("開工了！", skipped ? "冷卻好了頭像會亮，點下去放大招" : "接下來英雄會一位一位登場");
+}
+function tickTutorial(dt) {
+  const T = G.tut, jc = laneById.jc;
+  T.t += dt;
+  const once = (k) => (T.said[k] ? false : (T.said[k] = true));
+  const say = (k, b, text, sec) => once(k) && sayB(b, text, sec);
+  if (T.step === 0) {
+    say("a1", BUB.allwill, "嗨，我是 AllWill，這裡的工頭。", 2);
+    if (T.t > 2) say("a2", BUB.allwill, "我吐出 Agent，把 Spec 送上每座島。", 2.2);
+    if (T.t > 4.2) { T.step = 1; T.t = 0; G.warn = { type: "y", lane: jc, t: 0.5 }; }
+  } else if (T.step === 1) {
+    if (G.warn) { G.warn.t -= dt; if (G.warn.t <= 0) { T.first = spawn("y", jc); T.pets.push(T.first); G.warn = null; } }
+    const p = T.first;
+    if (p) {
+      tutView(p.g.position.clone(), 9);
+      say("y", BUB.allwill, "頭上有黃色 ? 的，代表規格沒講清楚。", 3);
+      if (p.state === "walk" && p.u < 0.5) { T.step = 2; T.t = 0; }
+    }
+  } else if (T.step === 2) {
+    const p = T.first;
+    tutView(posOf(unitById.jc).lerp(jc.br.curve.getPointAt(0.3), 0.5), 10);
+    if (once("ans")) { sayB(BUB.water, "這題我答！", 1.8); fireOrb(heroByKey.johnny, p, 9, { size: 1.4, dur: 0.6, arc: 2.5 }); }
+    if (T.t > 1.2) say("gold", BUB.allwill, "回答過的背金色 Spec，一個抵兩塊磚。", 3);
+    if (T.t > 4.4) { T.step = 3; T.t = 0; }
+  } else if (T.step === 3) {
+    tutView(jc.br.curve.getPointAt(0.45), 11);
+    for (let i = 0; i < 4; i++) if (T.t > 0.2 + i * 0.4 && once("s" + i)) { const q = spawn("y", jc); if (q) T.pets.push(q); }
+    if (T.t > 1.4) say("coomy", BUB.me, "太多了，抓個節拍！", 2.4);
+    if (T.t > 2.2 && once("stallHint")) floatText(jc.br.curve.getPointAt(0).add(V3(0, 3, 0)), "沒擋住，島就停工", "bad");
+    const walking = T.pets.filter((q) => q.active && q.type === "y" && q.state === "walk");
+    if (T.t > 2 && walking.length >= 4 && Math.min(...walking.map((q) => q.u)) < 0.72) {
+      T.step = 4; T.t = 0; G.tutFreeze = true;
+      const h = heroByKey.jc; h.unlocked = true; h.cool = 0;
+      showIntro(h); G.slow = 0; G.intro.t = 1e9; // 等玩家按
+      hud.btn.jc.classList.add("tap");
+      sayB(BUB.allwill, "點他們的頭像！", 1e9);
+    }
+  } else if (T.step === 4) {
+    // 停住，等玩家按「默契連攜」（cast 會把 step 推到 5）
+  } else if (T.step === 5) {
+    if (T.t > 0.6) gameView();
+    if (T.t > 2.4) say("end", BUB.allwill, "問題有人回，Plan 就不會走散。", 2.8);
+    if (T.t > 4.6) endTutorial(false);
+  }
+}
+document.getElementById("skipTut").addEventListener("click", () => endTutorial(true));
+document.getElementById("replayTut").addEventListener("click", () => { try { localStorage.removeItem(TUT_KEY); } catch {} startGame(); });
+if (tutDone()) { document.getElementById("tutNote").hidden = true; document.getElementById("replayTut").hidden = false; }
 function startGame() {
   sound.start();
   resetGame();
   G.demo = false; G.on = true;
+  if (!tutDone()) startTutorial();
   startScreen.classList.remove("open"); endScreen.classList.remove("open");
   document.body.classList.add("playing-game");
 }
@@ -3782,6 +3863,7 @@ function tickGame(dt) {
   let gdt = dt;
   if (G.hitstop > 0) { G.hitstop -= dt; gdt = dt * 0.1; } // 命中頓一下
   else if (G.slow > 0) { G.slow -= dt; gdt = dt * 0.25; } // 英雄登場的慢動作
+  if (G.tut) { tickTutorial(dt); tickOrbs(gdt); if (!G.tutFreeze) tickPets(gdt); heroPoses(dt); updateHud(); return; }
   tickIntro(dt);
   G.t += gdt;
   G.rapid = Math.max(0, G.rapid - gdt); G.double = Math.max(0, G.double - gdt); G.spot = Math.max(0, G.spot - gdt);
@@ -3816,7 +3898,7 @@ function resize() {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   if (touring && !["check", "handoff", "done", "voyage"].includes(STEPS[stepIndex].kind)) applyStep();
-  if (GAME_PAGE && typeof gameView === "function" && !G.sailing) gameView();
+  if (GAME_PAGE && typeof gameView === "function" && !G.sailing && !G.tut && !G.seq) gameView();
 }
 addEventListener("resize", resize);
 resize();
