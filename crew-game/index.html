@@ -184,7 +184,7 @@
   }
   .head, .caption, .cap-open, .ctrl .seg, #checkBtn { display: none !important; }
   .ctrl { top: max(12px, env(safe-area-inset-top)) !important; bottom: auto !important; left: auto !important; right: 12px !important; z-index: 6; }
-  .veil { height: 120px; }
+  .veil { display: none; } /* 上方的漸層遮罩拿掉，不擋畫面 */
 
   .skill-tip { max-height: 50vh; overflow: auto; }
   .skill-tip .eff span { font-size: 11.5px !important; }
@@ -479,7 +479,7 @@
     <button class="btn" id="startBtn" type="button"><i>▶</i>開始守衛<em>一局約 2 分半</em></button>
     <p class="tut-note" id="tutNote">第一次會有導覽，可以跳過</p>
     <button class="alt link" id="replayTut" type="button" hidden>重看教學</button>
-    <a class="alt" href="../crew/">只想認識團隊？看團隊導覽 →</a>
+    <a class="alt" href="../">只想認識團隊？看 AllWill 團隊的一天 →</a>
   </div>
 </div>
 <div class="screen" id="endScreen"><div class="panel" id="endPanel"></div></div>
@@ -2329,7 +2329,7 @@ function tickActs(dt) {
     if (s.mode === "run") {
       s.a += dt * 1.1;
       r.g.position.set(c.x + Math.cos(s.a) * 2.2, 0.75 + Math.abs(Math.sin(elapsed * 10)) * 0.08, c.z + Math.sin(s.a) * 2.2);
-      r.g.rotation.y = Math.atan2(-Math.sin(s.a), Math.cos(s.a)) + Math.PI;
+      r.g.rotation.y = Math.atan2(-Math.sin(s.a), Math.cos(s.a)); // 面向跑的方向
       const sw = Math.sin(elapsed * 12) * 0.9;
       r.legs[0].rotation.x = sw; r.legs[1].rotation.x = -sw; r.arms[0].rotation.x = -sw; r.arms[1].rotation.x = sw;
       if (s.a - s.lapA >= Math.PI * 2) { s.lapA = s.a; s.laps++; tagB.raymond.el.textContent = `第 ${s.laps} 圈`; tagB.raymond.until = elapsed + 1.5; ambSpec(head(r.g, 2.4), spokeStart("raymond")); }
@@ -2464,7 +2464,7 @@ const memberCard = (m) => `<div class="member"><img src="${avatars[m.av]}" alt="
 const islandCard = (u) => (u.couple ? `<div class="small" style="margin-top:2px">${u.members.map((k) => MEMBERS[k].name).join(" 和 ")}是夫妻，住在同一座島。</div>` : "")
   + u.members.map((k) => memberCard(MEMBERS[k])).join("");
 const islandTitle = (u) => u.members.map((k) => MEMBERS[k].name).join(" & ");
-const ALLWILL_LINK = `<a class="go" href="../">看我們正在打造的 AllWill →</a>`;
+const ALLWILL_LINK = `<a class="go" href="../islands/">看 AllWill 怎麼在開工前找出衝突 →</a>`;
 const CONTACT = `<a class="go" href="mailto:hi@specformula.ai">想認識我們？寫信到 hi@specformula.ai</a>`;
 
 // 船：深藍船身、白色三角帆
@@ -3967,6 +3967,7 @@ function clampLabels() {
     const m = /translate\(([-\d.]+)px, ([-\d.]+)px\)$/.exec(el.style.transform);
     if (!m) continue;
     const x = +m[1], w = el.offsetWidth;
+    if (x + w / 2 < 0 || x - w / 2 > W) continue; // 整個在畫面外的不硬拉回來
     const shift = x - w / 2 < 8 ? 8 - (x - w / 2) : x + w / 2 > W - 8 ? W - 8 - (x + w / 2) : 0;
     if (shift) el.style.transform += ` translateX(${shift}px)`;
   }
@@ -4120,7 +4121,7 @@ function boardShip() {
   roamFrozen = true; actsPaused = true;
   roamers.forEach((r, i) => {
     r.g.position.copy(big.localToWorld(V3(-4 + (i % 3) * 2.6, 2.9, i < 3 ? -1.2 : 1.2)));
-    r.g.rotation.set(0, -Math.PI / 2, 0); // 面向鏡頭
+    r.g.rotation.set(0, Math.PI / 2, 0); // 面向出海的方向（船頭）
     burst(r.g.position.clone().add(V3(0, 1.5, 0)), "#ffffff", 8, 3);
   });
 }
@@ -4152,6 +4153,7 @@ function tickSail(dt) {
   camGoal.target.copy(big.position).addScaledVector(VOY_DIR, portrait() ? 3 : 10).setY(3);
   camGoal.pos.copy(camGoal.target).add(V3(-0.72, 0.42, 0.55).normalize().multiplyScalar(portrait() ? 56 : 36));
   followGoal(dt, 1.3);
+  if (voy.t > 2) { camera.position.lerp(camGoal.pos, 0.25); controls.target.lerp(camGoal.target, 0.25); } // 船加速後鏡頭跟緊
   farIslands.forEach((f, i) => { f.g.visible = true; f.el.classList.toggle("off", voy.t < 4 + i * 1.5); });
 }
 // 成員卡收集：每位成員一個綁在大招上的任務，邊玩邊看得到進度；進度跨局存在玩家自己的瀏覽器
@@ -4234,8 +4236,8 @@ function showEnd(won) {
     <div class="end-actions"><div class="row2"><button class="btn" id="imgBtn" type="button">存成分享圖</button><a class="btn ghost" id="shareBtn" href="https://www.threads.net/intent/post?text=${share}" target="_blank" rel="noopener">分享到 Threads</a></div>
     <button class="btn ghost" id="againBtn" type="button">再玩一次</button></div>
     <a class="btn ghost" href="mailto:hi@specformula.ai">想認識我們？寫信到 hi@specformula.ai</a>
-    <a class="alt" href="../crew/">看團隊導覽 →</a>
-    <a class="alt" href="../" style="margin-top:4px">看我們正在打造的 AllWill →</a>
+    <a class="alt" href="../">看 AllWill 團隊的一天 →</a>
+    <a class="alt" href="../islands/" style="margin-top:4px">看 AllWill 怎麼在開工前找出衝突 →</a>
   </div>`;
   endScreen.classList.add("open");
   document.body.classList.remove("playing-game");

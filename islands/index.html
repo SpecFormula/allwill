@@ -1,0 +1,1896 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>組織 Spec 島嶼</title>
+<meta name="description" content="我把公司的組織 Spec 變成島嶼：改一個地方，好幾個部門跟著受影響；AllWill 幫你在開工前找出來。">
+<meta property="og:title" content="我把公司的組織 Spec 變成島嶼">
+<meta property="og:description" content="改一個地方，好幾個部門跟著受影響；AllWill 幫你在開工前找出來。#組織 AI-native co-work">
+<meta property="og:image" content="https://specformula.github.io/allwill/islands/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #222a36;
+    --muted: #66707e;
+    --paper: rgba(255, 252, 246, 0.9);
+    --line: rgba(34, 42, 54, 0.1);
+    --accent: #1f8f87;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #f6e6cf; color: var(--ink);
+    font-family: "Noto Sans TC", "PingFang TC", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  #stage { position: fixed; inset: 0; }
+  #labels { position: fixed; inset: 0; pointer-events: none; }
+  .vignette { position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 55%, rgba(0,0,0,0) 60%, rgba(30,38,48,0.14) 100%); }
+
+  .veil { position: fixed; left: 0; right: 0; top: 0; height: 240px; pointer-events: none;
+    background: linear-gradient(to bottom, rgba(246,228,204,0.95) 0%, rgba(246,228,204,0.82) 62%, rgba(246,228,204,0) 100%); }
+  .head { position: fixed; top: max(18px, env(safe-area-inset-top)); left: 18px; right: 18px; pointer-events: none; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--accent);
+    background: rgba(255,252,246,0.85); padding: 3px 9px; border-radius: 999px; }
+  .head h1 { margin: 8px 0 0; font-family: "Noto Serif TC", serif; font-weight: 900; letter-spacing: 0.02em;
+    font-size: clamp(28px, 7.4vw, 50px); line-height: 1.18; color: #1c2430;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.7), 0 0 24px rgba(255,248,236,0.9);
+    transition: font-size .6s var(--ease); }
+  .head .sub { margin: 8px 0 0; font-size: clamp(14px, 3.6vw, 17px); font-weight: 700; color: #3a4350;
+    text-shadow: 0 0 14px rgba(255,248,236,1), 0 0 4px rgba(255,248,236,1);
+    transition: opacity .5s var(--ease), transform .5s var(--ease); }
+  body.focus .head h1 { font-size: clamp(18px, 4.6vw, 26px); }
+  .play-cta { pointer-events: auto; margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer;
+    background: #1c2430; color: #fff; font: inherit; font-size: clamp(14px, 3.8vw, 16px); font-weight: 700; padding: 10px 16px 10px 10px;
+    border-radius: 999px; box-shadow: 0 8px 22px rgba(28,36,48,0.28); transition: transform .25s var(--ease), opacity .4s var(--ease); }
+  .play-cta i { font-style: normal; width: 28px; height: 28px; border-radius: 50%; background: #14b89c; display: grid; place-items: center; font-size: 12px; }
+  .play-cta em { font-style: normal; font-weight: 500; opacity: .7; font-size: 12px; }
+  .play-cta:hover { transform: translateY(-1px); }
+  body.playing .play-cta { opacity: 0; pointer-events: none; transform: translateY(-6px); }
+  @media (prefers-reduced-motion: no-preference) { body:not(.playing) .play-cta i { animation: pulse 1.8s ease-in-out infinite; } }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(20,184,156,0.6); } 50% { box-shadow: 0 0 0 8px rgba(20,184,156,0); } }
+  body.focus .head .sub { opacity: 0; transform: translateY(-6px); }
+
+  .caption { position: fixed; left: 14px; right: 14px; bottom: max(14px, env(safe-area-inset-bottom)); margin: 0 auto; max-width: 540px;
+    background: var(--paper); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px; padding: 14px 16px 12px 20px; box-shadow: 0 12px 32px rgba(40,30,20,0.16);
+    overflow: hidden; }
+  .caption::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--bar, var(--accent));
+    transition: background .4s var(--ease); }
+  .cap-close { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; border: 0; background: rgba(34,42,54,0.06);
+    color: var(--muted); font-size: 16px; line-height: 1; cursor: pointer; z-index: 2; }
+  .caption .top { padding-right: 30px; }
+  body.cap-hidden .caption { display: none; }
+  .cap-open { position: fixed; right: 14px; bottom: max(14px, env(safe-area-inset-bottom)); display: none; border: 0; border-radius: 999px;
+    padding: 9px 14px; background: var(--paper); box-shadow: 0 6px 18px rgba(40,30,20,0.18); font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); cursor: pointer; }
+  body.cap-hidden .cap-open { display: block; }
+  .chat { margin-top: 8px; display: grid; gap: 8px; }
+  .msg { display: flex; gap: 8px; align-items: flex-start; animation: rise .45s var(--ease) both; }
+  .msg .hint { color: var(--muted); font-size: 12px; }
+  .qcard { display: flex; align-items: center; gap: 4px; padding: 3px 8px 3px 3px; border-radius: 999px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-size: 15px; font-weight: 900; color: #e8613a; transition: opacity .3s var(--ease), transform .4s cubic-bezier(0.34, 1.36, 0.64, 1); }
+  .qcard img { width: 30px; height: 30px; border-radius: 50%; }
+  .qcard.done { color: #14b89c; }
+  .qcard.off { opacity: 0; transform: scale(0.5); }
+  .caption.chat-mode { max-height: 32vh; }
+  .vs { margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .vs div { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 7px 9px; font-size: 12.5px; line-height: 1.5; }
+  .vs span { display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 2px; }
+  .vs div:last-child { border-color: rgba(230,180,34,0.6); }
+  .msg .rule { display: inline-block; font-size: 10.5px; font-weight: 700; color: var(--muted); background: rgba(34,42,54,0.06); border-radius: 6px; padding: 0 5px; margin-right: 5px; }
+  .qcard span { font-size: 12px; color: var(--ink); }
+  .msg img { width: 34px; height: 34px; border-radius: 50%; background: #e9f6f3; flex: none; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+  .msg .b { background: #fff; border: 1px solid var(--line); border-radius: 4px 14px 14px 14px; padding: 7px 10px; font-size: 13px; line-height: 1.5; }
+  .msg .b .n { display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 2px; }
+  .msg.me { flex-direction: row-reverse; }
+  .msg.me .b { border-radius: 14px 4px 14px 14px; background: #f3fbf9; }
+  .caption .top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 24px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px 2px 8px; border-radius: 999px; background: #fff;
+    border: 1px solid var(--line); font-size: 13px; font-weight: 700; }
+  .chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .caption .arrow { color: var(--muted); font-weight: 700; }
+  .caption .count { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .caption .big { margin-top: 8px; font-size: clamp(17px, 4.6vw, 20px); font-weight: 900; line-height: 1.4; }
+  .caption .small { margin-top: 4px; font-size: 13px; line-height: 1.55; color: var(--muted); }
+  .caption .src { margin-top: 8px; font-size: 11px; color: #9aa1ab; }
+  .caption .swap { animation: rise .5s var(--ease); }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+
+  .ctrl { position: fixed; right: 16px; top: max(18px, env(safe-area-inset-top)); pointer-events: auto; display: flex; gap: 8px; align-items: center; }
+  .ctrl button { border: 0; background: transparent; color: var(--muted); border-radius: 999px; padding: 7px 12px;
+    font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease); }
+  .seg { display: flex; padding: 3px; border-radius: 999px; background: var(--paper); box-shadow: 0 4px 14px rgba(40,30,20,0.14); }
+  .seg button.on { background: var(--ink); color: #fff; }
+  .ctrl .snd { background: var(--paper); color: var(--ink); width: 34px; height: 34px; padding: 0; box-shadow: 0 4px 14px rgba(40,30,20,0.14); }
+  .ctrl .bot-btn { background: #1f9e8f; color: #fff; box-shadow: 0 4px 14px rgba(31,158,143,0.35); }
+  .caption { max-height: 48vh; overflow-y: auto; }
+  .caption .sec { margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--muted); }
+  .feats { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .feats span { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 8px; background: #fff; border: 1px solid var(--line); }
+  .feats em { font-style: normal; color: var(--muted); margin-left: 4px; font-weight: 500; }
+  .deals { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .deal { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: rgba(255,255,255,0.7); border-radius: 999px;
+    padding: 2px 10px 2px 2px; font: inherit; font-size: 12px; font-weight: 700; color: var(--ink); cursor: pointer; }
+  .deal .chip { border: 0; }
+  .pager { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
+  .pager button { border: 1px solid var(--line); background: #fff; border-radius: 999px; width: 26px; height: 26px; font-size: 16px; line-height: 1; cursor: pointer; color: var(--ink); }
+  .who-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+  .who-list li { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .who-list .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .who-list .who { font-size: 12px; color: var(--muted); }
+  .badge { font-size: 12px; font-weight: 900; color: #fff; padding: 3px 9px; border-radius: 999px; box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+    transition: opacity .3s var(--ease), transform .4s cubic-bezier(0.34, 1.36, 0.64, 1); }
+  .badge.off { opacity: 0; transform: scale(0.6); }
+  .me-tag { font-size: 11px; font-weight: 900; color: #fff; background: #f07aa0; padding: 2px 8px; border-radius: 999px; white-space: nowrap; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+  .me-tag.wb { background: #2f9fd8; }
+  .bot { font-size: 11px; font-weight: 700; color: #fff; background: #1f9e8f; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+
+  .isl { transform: translateY(-4px); white-space: nowrap; transition: opacity .4s var(--ease); }
+  .isl span { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px 4px 9px; border-radius: 999px; background: rgba(255,252,246,0.95);
+    font-weight: 900; font-size: 14px; color: var(--ink); box-shadow: 0 4px 14px rgba(40,30,20,0.18); }
+  .isl span i { width: 9px; height: 9px; border-radius: 50%; }
+  .isl.ext span { font-size: 12px; font-weight: 700; color: var(--muted); padding: 3px 9px 3px 8px; }
+  .isl.dim { opacity: .3; }
+  .brl { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 8px; background: rgba(255,252,246,0.96); white-space: nowrap;
+    border-left: 4px solid; box-shadow: 0 3px 10px rgba(40,30,20,0.16); transition: opacity .4s var(--ease); }
+  .brl.off { opacity: 0; }
+
+  @media (max-width: 640px) {
+    body.cap-hidden .ctrl { bottom: calc(max(14px, env(safe-area-inset-bottom)) + 56px); }
+    .ctrl { top: auto; right: 14px; left: 14px; justify-content: space-between; bottom: calc(max(14px, env(safe-area-inset-bottom)) + var(--cap-h, 150px) + 10px); }
+  }
+  body.rec .ctrl { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .caption .swap { animation: none; }
+    .head h1, .head .sub { transition: none; }
+  }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="stage"></div>
+<div class="vignette"></div>
+<div class="veil"></div>
+<div id="labels"></div>
+<header class="head">
+  <span class="tag">#組織 AI-native co-work</span>
+  <h1>我把公司的組織 Spec<br>變成島嶼</h1>
+  <button class="play-cta" id="playCta" type="button"><i>▶</i>播放：看 AllWill 怎麼幫一份 Plan 開工<em>約 1 分鐘</em></button>
+</header>
+<div class="ctrl"><div class="seg"><button id="tourBtn" type="button">▶ 播放</button><button id="exploreBtn" type="button">自己逛</button></div><button id="checkBtn" class="bot-btn" type="button">AllWill</button><button id="soundBtn" class="snd" type="button" aria-label="聲音開關">🔊</button></div>
+<section class="caption" id="caption" aria-live="polite"></section>
+<button class="cap-open" id="capOpen" type="button">顯示說明</button>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+
+// ── 資料：取自 specformula-vibe benchmarks/domains/software/scenarios（projects、contracts）──
+const UNITS = [
+  { id: "course",    name: "課程平台", color: "#3f6fb5", angle: null, r: 0,  size: 6.4, houses: 4,
+    say: "保存學員的課程學習進度與作業完成情況。",
+    features: [["道館任務與獎勵", 23], ["訂單與付款發票", 17], ["學習旅程與課程內容", 12], ["帳號與存取權", 11], ["折讓退費", 11],
+      ["學員回饋與討論", 10], ["結業與證書", 10], ["報表 API", 10], ["優惠券與優惠活動", 8], ["邀請碼與推薦歸因", 7],
+      ["領主後台內容管理", 6], ["通知", 4], ["世界與即時互動", 1], ["系統維運", 1]] },
+  { id: "assistant", name: "助教",     color: "#7a63c9", angle: 90,  r: 18, size: 4.6, houses: 3,
+    say: "記錄助教任務及其執行情況。",
+    features: [["訊息模板與發送", 7], ["管理後台", 7], ["關懷紀錄", 5], ["平台資料同步", 5], ["認證與授權", 4], ["學員總覽與查詢", 4], ["系統", 3]] },
+  { id: "crm",       name: "CRM",      color: "#2e9e7f", angle: 28,  r: 18, size: 4.2, houses: 3, say: "保存學員關懷紀錄。" },
+  { id: "finance",   name: "財務",     color: "#c9962a", angle: 152, r: 18, size: 4.2, houses: 3, say: "處理助教報酬。" },
+  { id: "hr",        name: "人資",     color: "#c4577f", angle: 118, r: 30, size: 4.0, houses: 2, say: "保存助教的聘僱狀態。" },
+  { id: "ecpay",      name: "綠界金流",       color: "#8a94a3", angle: 226, r: 19, size: 2.8, ext: "kiosk", say: "處理付款請求與付款結果通知。" },
+  { id: "cloudfront", name: "AWS CloudFront", color: "#8a94a3", angle: 268, r: 17.5, size: 2.8, ext: "warehouse", say: "提供課程教材分發。" },
+  { id: "discord",    name: "Discord",        color: "#8a94a3", angle: 314, r: 19, size: 2.8, ext: "tower", say: "發送課程通知。" },
+];
+// plain：給路人看的一句白話；body：約定原文摘句；check：只依約定原文判斷（open＝方向待確認，gap＝原文寫明尚未定義）
+const DEALS = [
+  { id: "hr-assistant", from: "hr", to: "assistant", what: "聘僱狀態", plain: "人資告訴助教：誰還在職",
+    body: "人資提供既有助教的聘僱狀態，助教服務以在職者為可承接對象。" },
+  { id: "course-assistant", from: "course", to: "assistant", what: "學習進度", plain: "課程平台讓助教看到：學員學到哪", check: "gap",
+    planQuote: "依學習進度找出需要關懷的學員，由助教分配教練追蹤下一份作業。",
+    contractQuote: "助教人工查看進度並挑選關懷對象；尚未定義自動篩選、分配及完成任務的資料交換。",
+    body: "助教人工查看進度並挑選關懷對象；本約定尚未定義供助教服務自動篩選、分配及完成任務的資料交換。" },
+  { id: "assistant-crm", from: "assistant", to: "crm", what: "關懷紀錄", plain: "助教把關懷紀錄寫進 CRM", check: "gap",
+    planQuote: "保存聯繫與任務完成狀態。",
+    contractQuote: "關懷紀錄由使用者在 CRM 人工填寫；尚未定義自動回寫關懷紀錄或任務狀態。",
+    body: "關懷紀錄由使用者在 CRM 人工填寫；本約定尚未定義助教服務向 CRM 自動回寫關懷紀錄或任務狀態。" },
+  { id: "assistant-finance", from: "assistant", to: "finance", what: "計酬依據", plain: "助教交給財務：計酬依據",
+    body: "助教服務向財務提供既有計酬依據；完成關懷任務不新增報酬。" },
+  { id: "course-crm", from: "course", to: "crm", what: "學員與訂單資料", plain: "課程平台交給 CRM：學員、上課與訂單資料",
+    body: "這些資料以課程平台為準；CRM 的聯繫紀錄不能改變學習與訂單事實。" },
+  { id: "course-finance", from: "course", to: "finance", what: "電商資料", plain: "課程平台交給財務：每一筆電商資料",
+    body: "課程平台向財務提供電商資料；關懷任務與聯繫紀錄不取代訂單及付款資料。" },
+  { id: "course-ecpay", from: "course", to: "ecpay", what: "付款請求", plain: "課程平台向綠界送出付款請求",
+    body: "送出請求不等於付款成功。" },
+  { id: "ecpay-course", from: "ecpay", to: "course", what: "付款結果", plain: "綠界回報付款結果",
+    body: "綠界金流呼叫課程平台的接收端點，回傳付款結果通知。" },
+  { id: "course-discord", from: "course", to: "discord", what: "課程通知", plain: "課程平台透過 Discord 發課程通知",
+    body: "課程平台透過組織使用的固定 Discord 對象發送課程通知。" },
+  { id: "course-cloudfront", from: "course", to: "cloudfront", what: "教材分發", unknown: true, check: "open",
+    plain: "學員從 CloudFront 拿教材，但誰把資料交給誰，約定沒寫清楚",
+    body: "這份約定的方向標示為「待確認」。" },
+];
+const unitById = Object.fromEntries(UNITS.map((u) => [u.id, u]));
+const params = new URLSearchParams(location.search);
+if (params.has("rec")) document.body.classList.add("rec");
+
+// ── 聲音：Web Audio 現場合成的背景音樂與音效（不用外部音檔）──
+const sound = (() => {
+  let ctx = null, master = null, musicGain = null, timer = null, nextTime = 0, step = 0;
+  let muted = false;
+  try { muted = localStorage.getItem("org-island-muted") === "1"; } catch {}
+  const BPM = 100, EIGHTH = 60 / BPM / 2;
+  const N = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  // C – Am – F – G，每個和弦一小節（8 個八分音符）
+  const CHORDS = [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]];
+  const ARP = [0, 1, 2, 1, 3, 2, 1, 2]; // 3＝高八度的根音
+  function init() {
+    if (ctx) { if (ctx.state === "suspended") ctx.resume(); return; }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    ctx = new AC();
+    const comp = ctx.createDynamicsCompressor();
+    master = ctx.createGain();
+    master.gain.value = muted ? 0 : 0.55;
+    master.connect(comp).connect(ctx.destination);
+    musicGain = ctx.createGain();
+    musicGain.gain.value = 0.55;
+    musicGain.connect(master);
+    nextTime = ctx.currentTime + 0.1;
+    timer = setInterval(schedule, 50);
+  }
+  function tone(freq, t, dur, { type = "sine", gain = 0.2, attack = 0.005, out = musicGain, detune = 0 } = {}) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.value = freq; o.detune.value = detune;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(gain, t + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(out);
+    o.start(t); o.stop(t + dur + 0.05);
+    return o;
+  }
+  function pluck(freq, t, gain = 0.16, out = musicGain) {
+    // 拇指琴：基音＋短促的高泛音
+    tone(freq, t, 0.9, { gain, out });
+    tone(freq * 3, t, 0.18, { gain: gain * 0.25, out });
+    tone(freq, t, 0.6, { type: "triangle", gain: gain * 0.35, out, detune: 6 });
+  }
+  let noiseBuf = null;
+  function noise(t, dur, { gain = 0.05, freq = 6000, q = 1, type = "highpass", out = musicGain, sweepTo = null } = {}) {
+    if (!noiseBuf) {
+      noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 0.5, ctx.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = noiseBuf; f.type = type; f.frequency.value = freq; f.Q.value = q;
+    if (sweepTo) f.frequency.exponentialRampToValueAtTime(sweepTo, t + dur);
+    g.gain.setValueAtTime(gain, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f).connect(g).connect(out);
+    src.start(t); src.stop(t + dur + 0.05);
+  }
+  function schedule() {
+    while (nextTime < ctx.currentTime + 0.25) {
+      const bar = Math.floor(step / 8) % 4, i = step % 8;
+      const chord = CHORDS[bar];
+      const n = ARP[i] === 3 ? chord[0] + 12 : chord[ARP[i]];
+      if (!(i === 7 && bar % 2 === 1)) pluck(N(n + 12), nextTime, i === 0 ? 0.15 : 0.1);
+      if (i === 0 || i === 4) tone(N(chord[0] - 12), nextTime, EIGHTH * 3.5, { gain: 0.16 });
+      if (i === 0) chord.forEach((m) => tone(N(m), nextTime, EIGHTH * 8, { type: "triangle", gain: 0.025, attack: 0.4 }));
+      if (i % 2 === 1) noise(nextTime, 0.06, { gain: 0.025 });
+      nextTime += EIGHTH; step++;
+    }
+  }
+  const now = () => ctx.currentTime + 0.01;
+  const fx = (fn) => { if (ctx && !muted) fn(now()); };
+  return {
+    start: init,
+    get muted() { return muted; },
+    toggle() {
+      init();
+      muted = !muted;
+      try { localStorage.setItem("org-island-muted", muted ? "1" : "0"); } catch {}
+      if (master) master.gain.setTargetAtTime(muted ? 0 : 0.55, ctx.currentTime, 0.05);
+      return muted;
+    },
+    whoosh: () => fx((t) => noise(t, 0.5, { gain: 0.12, type: "bandpass", freq: 600, q: 2, sweepTo: 3200, out: master })),
+    ok: () => fx((t) => { tone(N(88), t, 0.35, { gain: 0.09, out: master }); tone(N(95), t + 0.06, 0.3, { gain: 0.05, out: master }); }),
+    bad: () => fx((t) => { tone(N(57), t, 0.18, { type: "triangle", gain: 0.16, out: master }); tone(N(56), t + 0.16, 0.25, { type: "triangle", gain: 0.16, out: master }); }),
+    pop: () => fx((t) => { const o = tone(N(72), t, 0.18, { gain: 0.14, out: master }); o.frequency.exponentialRampToValueAtTime(N(84), t + 0.1); }),
+    answer: () => fx((t) => [72, 76, 79].forEach((m, k) => pluck(N(m), t + k * 0.07, 0.12, master))),
+    sparkle: () => fx((t) => [72, 76, 79, 84, 88].forEach((m, k) => pluck(N(m), t + k * 0.08, 0.1, master))),
+  };
+})();
+
+// 固定亂數，畫面每次一樣
+let seed = 20261024;
+const rand = () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const pick = (arr) => arr[Math.floor(rand() * arr.length)];
+
+// ── 場景 ──
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: params.has("rec") });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.95;
+document.getElementById("stage").appendChild(renderer.domElement);
+const labelRenderer = new CSS2DRenderer({ element: document.getElementById("labels") });
+
+const HORIZON = "#f4dcc0";
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(HORIZON, 80, 200);
+const camera = new THREE.PerspectiveCamera(30, 1, 0.5, 600);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.maxPolarAngle = 1.36;
+controls.minDistance = 16;
+controls.maxDistance = 260;
+
+scene.add(new THREE.HemisphereLight("#cfe8f5", "#7a6a55", 0.62));
+const sun = new THREE.DirectionalLight("#ffe2b8", 2.7);
+sun.position.set(-46, 34, 26);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -46, right: 46, top: 46, bottom: -46, near: 1, far: 160 });
+sun.shadow.bias = -0.0005;
+sun.shadow.normalBias = 0.02;
+scene.add(sun);
+
+// 天空：地平線暖、頂部藍
+const sky = new THREE.Mesh(new THREE.SphereGeometry(420, 32, 16), new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false,
+  uniforms: { top: { value: new THREE.Color("#7fb8e0") }, horizon: { value: new THREE.Color(HORIZON) } },
+  vertexShader: "varying vec3 vP; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vP = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }",
+  fragmentShader: "uniform vec3 top; uniform vec3 horizon; varying vec3 vP; void main(){ float h = clamp(normalize(vP).y * 2.4, 0.0, 1.0); gl_FragColor = vec4(mix(horizon, top, pow(h, 0.65)), 1.0); \n#include <colorspace_fragment>\n }",
+}));
+scene.add(sky);
+
+const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.85, ...extra });
+const M = {
+  wall: ["#f6efe3", "#efe3cf", "#f3e8d8"].map((c) => mat(c, { roughness: 0.9 })),
+  roof: ["#c0634a", "#a9533f", "#5f6e7d", "#8f6748"].map((c) => mat(c, { roughness: 0.7, flatShading: true })),
+  trim: mat("#5a4a3c", { roughness: 0.8 }),
+  glass: mat("#a9d6ec", { roughness: 0.15, metalness: 0.1, emissive: "#3c6e8a", emissiveIntensity: 0.15 }),
+  skirt: mat("#6b5d4f", { roughness: 1 }),
+  wood: mat("#9a6d48", { roughness: 0.9 }),
+  stone: mat("#cfc6b6", { roughness: 1, flatShading: true }),
+  leaf: ["#5f9e4f", "#4f8d48", "#79ad55"].map((c) => mat(c, { roughness: 0.9, flatShading: true })),
+  pine: mat("#3f7a4a", { roughness: 0.9, flatShading: true }),
+  trunk: mat("#7a5136"),
+  lamp: mat("#ffe7b0", { emissive: "#ffcf7a", emissiveIntensity: 0.6 }),
+  metal: mat("#5b636d", { roughness: 0.5, metalness: 0.4 }),
+};
+const shadowed = (m) => { m.castShadow = true; m.receiveShadow = true; return m; };
+
+// 海
+const seaGeo = new THREE.PlaneGeometry(700, 700, 140, 140);
+seaGeo.rotateX(-Math.PI / 2);
+const seaBase = seaGeo.attributes.position.array.slice();
+const sea = new THREE.Mesh(seaGeo, mat("#3e9fc8", { roughness: 0.3, metalness: 0.05, flatShading: true }));
+sea.receiveShadow = true;
+scene.add(sea);
+function waveSea(t) {
+  const p = seaGeo.attributes.position.array;
+  for (let i = 0; i < p.length; i += 3) {
+    const x = seaBase[i], z = seaBase[i + 2];
+    if (Math.abs(x) > 140 || Math.abs(z) > 140) continue;
+    p[i + 1] = Math.sin(x * 0.16 + t * 0.8) * 0.16 + Math.cos(z * 0.19 + t * 0.6) * 0.16 - 0.4;
+  }
+  seaGeo.attributes.position.needsUpdate = true;
+  seaGeo.computeVertexNormals();
+}
+
+// 遠山
+for (let i = 0; i < 46; i++) {
+  const a = (i / 46) * Math.PI * 2 + rand() * 0.1;
+  const r = 150 + rand() * 40;
+  const h = 10 + rand() * 22;
+  const m = new THREE.Mesh(new THREE.ConeGeometry(14 + rand() * 12, h, 5), mat(pick(["#7f9a86", "#8aa590", "#6f8c7c"]), { flatShading: true }));
+  m.position.set(Math.cos(a) * r, h / 2 - 1.5, Math.sin(a) * r);
+  m.rotation.y = rand() * 3;
+  scene.add(m);
+}
+// 雲
+const clouds = [];
+for (let i = 0; i < 7; i++) {
+  const g = new THREE.Group();
+  for (let k = 0; k < 4; k++) {
+    const puff = new THREE.Mesh(new THREE.IcosahedronGeometry(1.6 + rand() * 1.4, 0), mat("#ffffff", { flatShading: true, roughness: 1 }));
+    puff.position.set(k * 1.9 - 3, rand() * 0.8, rand() * 1.6);
+    puff.castShadow = true;
+    g.add(puff);
+  }
+  g.position.set(-70 + rand() * 140, 24 + rand() * 6, -60 + rand() * 90);
+  clouds.push({ g, v: 0.6 + rand() * 0.5 });
+  scene.add(g);
+}
+
+function posOf(u) {
+  if (u.angle === null) return new THREE.Vector3(0, 0, 0);
+  const a = THREE.MathUtils.degToRad(u.angle);
+  return new THREE.Vector3(Math.cos(a) * u.r, 0, -Math.sin(a) * u.r);
+}
+
+// ── 建物 ──
+function house(w, d, h) {
+  const g = new THREE.Group();
+  const skirt = shadowed(new THREE.Mesh(new THREE.BoxGeometry(w + 0.24, 0.1, d + 0.24), M.skirt));
+  skirt.position.y = 0.05;
+  const wall = shadowed(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), pick(M.wall)));
+  wall.position.y = h / 2 + 0.1;
+  // 斜屋頂（三角柱），兩側挑出屋簷
+  const r = (d + 0.5) / Math.sqrt(3);
+  const roofGeo = new THREE.CylinderGeometry(r, r, w + 0.4, 3);
+  roofGeo.rotateZ(Math.PI / 2);
+  roofGeo.rotateX(-Math.PI / 2);
+  const roof = shadowed(new THREE.Mesh(roofGeo, pick(M.roof)));
+  roof.position.y = h + 0.1 + r * 0.5;
+  g.add(skirt, wall, roof);
+  // 門與窗框
+  const door = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.72, 0.06), M.trim);
+  door.position.set(-w * 0.22, 0.46, d / 2 + 0.02);
+  const step = shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.08, 0.3), M.stone));
+  step.position.set(-w * 0.22, 0.12, d / 2 + 0.16);
+  g.add(door, step);
+  const wins = Math.max(1, Math.round(w / 1.1));
+  for (let i = 0; i < wins; i++) {
+    const x = -w / 2 + (w / (wins + 1)) * (i + 1) + (i === 0 ? 0.2 : 0);
+    if (Math.abs(x + w * 0.22) < 0.4 && h < 1.8) continue;
+    const frame = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.46, 0.05), M.trim);
+    frame.position.set(x, h * 0.62 + 0.1, d / 2 + 0.02);
+    const pane = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.34, 0.05), M.glass);
+    pane.position.set(x, h * 0.62 + 0.1, d / 2 + 0.04);
+    g.add(frame, pane);
+  }
+  if (rand() > 0.5) {
+    const chim = shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.6, 0.28), M.stone));
+    chim.position.set(w * 0.28, h + 0.1 + r * 0.6, -d * 0.15);
+    g.add(chim);
+  }
+  return g;
+}
+function datahouse() {
+  // 後端：石造機房，正面一排暖白指示燈
+  const g = new THREE.Group();
+  const base = shadowed(new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.7, 1.6), M.stone));
+  base.position.y = 0.95;
+  const cap = shadowed(new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.16, 1.8), M.metal));
+  cap.position.y = 1.88;
+  g.add(base, cap);
+  for (let i = 0; i < 3; i++) {
+    const led = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.07, 0.04), M.lamp);
+    led.position.set(0, 0.55 + i * 0.4, 0.82);
+    g.add(led);
+  }
+  const fan = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.2, 10), M.metal));
+  fan.position.set(0.5, 2.05, 0);
+  g.add(fan);
+  return g;
+}
+function tree(kind) {
+  const g = new THREE.Group();
+  const trunk = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.12, 0.6, 6), M.trunk));
+  trunk.position.y = 0.3;
+  g.add(trunk);
+  if (kind === "pine") {
+    for (let k = 0; k < 2; k++) {
+      const c = shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.62 - k * 0.16, 0.9, 7), M.pine));
+      c.position.y = 0.8 + k * 0.5;
+      g.add(c);
+    }
+  } else {
+    const c = shadowed(new THREE.Mesh(new THREE.IcosahedronGeometry(0.55 + rand() * 0.2, 0), pick(M.leaf)));
+    c.position.y = 1.0;
+    g.add(c);
+  }
+  g.scale.setScalar(0.85 + rand() * 0.45);
+  g.rotation.y = rand() * 6;
+  return g;
+}
+function lamp() {
+  const g = new THREE.Group();
+  const pole = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 1.3, 6), M.metal));
+  pole.position.y = 0.65;
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.11, 8, 6), M.lamp);
+  bulb.position.y = 1.34;
+  g.add(pole, bulb);
+  return g;
+}
+function dock(len) {
+  const g = new THREE.Group();
+  for (let i = 0; i < len; i++) {
+    const p = shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.08, 0.32), M.wood));
+    p.position.set(0, 0, i * 0.38);
+    g.add(p);
+  }
+  for (const x of [-0.4, 0.4]) {
+    const post = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.9, 6), M.trunk));
+    post.position.set(x, -0.3, (len - 1) * 0.38);
+    g.add(post);
+  }
+  return g;
+}
+function flag(color) {
+  const g = new THREE.Group();
+  const pole = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 2.2, 6), M.metal));
+  pole.position.y = 1.1;
+  const cloth = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.42), mat(color, { side: THREE.DoubleSide, roughness: 1 }));
+  cloth.position.set(0.36, 1.95, 0);
+  g.add(pole, cloth);
+  g.userData.cloth = cloth;
+  return g;
+}
+
+// ── 島 ──
+const islands = {};
+const foams = [];
+const flags = [];
+function bridgeDirs(u) {
+  // 這座島上橋頭的方向，建物與碼頭避開
+  return DEALS.filter((d) => d.from === u.id || d.to === u.id).map((d) => {
+    const other = unitById[d.from === u.id ? d.to : d.from];
+    const v = posOf(other).sub(posOf(u));
+    return Math.atan2(v.z, v.x);
+  });
+}
+function freeAngle(a, dirs, gap) { return dirs.every((b) => Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b))) > gap); }
+
+function makeIsland(u) {
+  const g = new THREE.Group();
+  g.position.copy(posOf(u));
+  const s = u.size;
+  // 淺灘與浪花
+  const shallow = new THREE.Mesh(new THREE.CircleGeometry(s * 1.75, 40), mat("#86dccf", { transparent: true, opacity: 0.6, roughness: 0.3 }));
+  shallow.rotation.x = -Math.PI / 2;
+  shallow.position.y = -0.3;
+  const foam = new THREE.Mesh(new THREE.RingGeometry(s * 1.2, s * 1.32, 48), new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0.7 }));
+  foam.rotation.x = -Math.PI / 2;
+  foam.position.y = -0.18;
+  foams.push(foam);
+  const sand = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(s * 1.1, s * 1.24, 1.1, 20), mat("#e8d1a0", { roughness: 1 })));
+  sand.position.y = -0.25;
+  // 草地：頂點色雜訊
+  const topGeo = new THREE.CylinderGeometry(s, s * 1.05, 0.5, 20, 1);
+  const cols = [];
+  const c1 = new THREE.Color(u.ext ? "#cfc6b6" : "#9cc27a"), c2 = new THREE.Color(u.ext ? "#bdb3a1" : "#86b066");
+  for (let i = 0; i < topGeo.attributes.position.count; i++) { const c = c1.clone().lerp(c2, rand()); cols.push(c.r, c.g, c.b); }
+  topGeo.setAttribute("color", new THREE.Float32BufferAttribute(cols, 3));
+  const top = shadowed(new THREE.Mesh(topGeo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, flatShading: !!u.ext })));
+  top.position.y = 0.5;
+  g.add(shallow, foam, sand, top);
+
+  const dirs = bridgeDirs(u);
+  const onTop = (obj, ang, rad) => { obj.position.set(Math.cos(ang) * rad, 0.75, Math.sin(ang) * rad); g.add(obj); return obj; };
+  if (u.ext) {
+    addExternal(g, u);
+  } else {
+    // 建物：一棟機房＋數棟房子，沿內圈排開並避開橋頭
+    const slots = [];
+    for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2 + 0.2; if (freeAngle(a, dirs, 0.42)) slots.push(a); }
+    const n = Math.min(u.houses + 1, slots.length);
+    for (let i = 0; i < n; i++) {
+      const a = slots[Math.floor((i * slots.length) / n)];
+      const b = i === 0 ? datahouse() : house(1.5 + rand() * 0.9, 1.3 + rand() * 0.5, 1.2 + rand() * 0.8);
+      const rad = s * (u.id === "course" ? 0.5 : 0.42);
+      onTop(b, a, rad);
+      b.rotation.y = -a - Math.PI / 2; // 正面朝島心
+    }
+    if (u.id === "course") {
+      // 中心鐘塔：多數約定的源頭
+      const tower = new THREE.Group();
+      const body = shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.2, 4.2, 1.2), M.wall[0]));
+      body.position.y = 2.1;
+      const clock = new THREE.Mesh(new THREE.CircleGeometry(0.36, 20), mat("#fffaf0", { emissive: "#ffe2a8", emissiveIntensity: 0.3 }));
+      clock.position.set(0, 3.5, 0.61);
+      const roof = shadowed(new THREE.Mesh(new THREE.ConeGeometry(1.05, 1.5, 4), M.roof[0]));
+      roof.position.y = 4.95;
+      roof.rotation.y = Math.PI / 4;
+      tower.add(body, clock, roof);
+      tower.position.set(0, 0.75, -2.6); // 鐘塔退到後方，島心留給 AllWill 字樣、水球與 Coomy
+      g.add(tower);
+    } else {
+      const f = flag(u.color);
+      f.position.set(0, 0.75, 0);
+      g.add(f);
+      flags.push(f);
+    }
+    // 樹、路燈、碼頭
+    for (let i = 0; i < 9; i++) {
+      const a = rand() * Math.PI * 2;
+      if (!freeAngle(a, dirs, 0.3)) continue;
+      onTop(tree(rand() > 0.6 ? "pine" : "round"), a, s * (0.78 + rand() * 0.12));
+    }
+    for (let i = 0; i < 3; i++) {
+      const a = (i / 3) * Math.PI * 2 + 0.9;
+      if (freeAngle(a, dirs, 0.3)) onTop(lamp(), a, s * 0.68);
+    }
+    const da = [0, 1, 2, 3, 4, 5].map((k) => k * 1.05 + 0.5).find((a) => freeAngle(a, dirs, 0.6));
+    if (da !== undefined) {
+      const dk = dock(6);
+      dk.position.set(Math.cos(da) * s * 0.98, 0.32, Math.sin(da) * s * 0.98);
+      dk.rotation.y = Math.PI / 2 - da;
+      g.add(dk);
+    }
+  }
+  scene.add(g);
+
+  const el = document.createElement("div");
+  el.className = "isl" + (u.ext ? " ext" : "");
+  el.innerHTML = `<span><i style="background:${u.color}"></i>${u.name}</span>`;
+  const label = new CSS2DObject(el);
+  label.position.set(0, u.ext ? 4.2 : u.id === "course" ? 7.2 : 4.8, 0);
+  g.add(label);
+  islands[u.id] = { group: g, unit: u, el };
+}
+
+function addExternal(g, u) {
+  const c = new THREE.Group();
+  if (u.ext === "kiosk") {
+    // 綠界：收銀亭加條紋遮陽篷
+    const booth = shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 1.2), M.wall[1]));
+    booth.position.y = 0.6;
+    const counter = shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.12, 0.4), M.wood));
+    counter.position.set(0, 0.85, 0.7);
+    c.add(booth, counter);
+    for (let i = 0; i < 4; i++) {
+      const stripe = shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.06, 1.0), mat(i % 2 ? "#ffffff" : "#2f9e6a")));
+      stripe.position.set(-0.66 + i * 0.44, 1.38, 0.55);
+      stripe.rotation.x = 0.35;
+      c.add(stripe);
+    }
+    const coin = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.08, 18), mat("#e8b83a", { metalness: 0.5, roughness: 0.35 })));
+    coin.rotation.x = Math.PI / 2;
+    coin.position.y = 1.9;
+    c.add(coin);
+  } else if (u.ext === "warehouse") {
+    // CloudFront：倉庫加輸送帶上的教材箱
+    const shed = shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.3, 1.4), M.stone));
+    shed.position.y = 0.65;
+    const roofGeo = new THREE.CylinderGeometry(1.0, 1.0, 2.1, 12, 1, false, 0, Math.PI);
+    roofGeo.rotateZ(Math.PI / 2);
+    const roof = shadowed(new THREE.Mesh(roofGeo, mat("#e39a3b", { roughness: 0.6 })));
+    roof.scale.set(1, 0.55, 0.75);
+    roof.position.y = 1.3;
+    const belt = shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, 1.6), M.metal));
+    belt.position.set(0.3, 0.45, 1.3);
+    c.add(shed, roof, belt);
+    for (let i = 0; i < 3; i++) {
+      const box = shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.24, 0.3), mat("#e9d6a8")));
+      box.position.set(0.3, 0.64, 0.8 + i * 0.45);
+      c.add(box);
+    }
+  } else {
+    if (u.ext === "allwill") {
+      // AllWill：青綠燈塔與機器人停機坪
+      const base = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.95, 0.5, 16), M.wall[0]));
+      base.position.set(-0.6, 0.25, -0.5);
+      const towerBody = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.62, 2.8, 16), mat("#f7f9fb", { roughness: 0.5 })));
+      towerBody.position.set(-0.6, 1.9, -0.5);
+      const stripe = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.54, 0.4, 16), mat("#14b89c")));
+      stripe.position.set(-0.6, 1.6, -0.5);
+      const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.36, 16, 12), mat("#bff7ec", { emissive: "#14b89c", emissiveIntensity: 1.1 }));
+      lamp.position.set(-0.6, 3.5, -0.5);
+      const cap = shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.5, 0.5, 16), mat("#14b89c")));
+      cap.position.set(-0.6, 3.95, -0.5);
+      const pad = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.06, 24), mat("#d6efe9"));
+      pad.position.set(1.0, 0.03, 0.6);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.04, 6, 32), mat("#14b89c", { emissive: "#14b89c", emissiveIntensity: 0.8 }));
+      ring.rotation.x = Math.PI / 2;
+      ring.position.set(1.0, 0.08, 0.6);
+      c.add(base, towerBody, stripe, lamp, cap, pad, ring);
+      c.position.y = 0.75;
+      g.add(c);
+      return;
+    }
+    // Discord：廣播塔與對話泡泡
+    const mast = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.28, 3.0, 6), M.metal));
+    mast.position.y = 1.5;
+    const bubble = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.75, 16, 12), mat("#5865f2", { roughness: 0.5 })));
+    bubble.scale.set(1.25, 0.85, 0.7);
+    bubble.position.y = 3.35;
+    const tail = shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.5, 6), mat("#5865f2")));
+    tail.rotation.z = Math.PI * 0.82;
+    tail.position.set(-0.55, 2.8, 0);
+    const hut = shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.7, 0.9), M.wall[2]));
+    hut.position.set(0.75, 0.35, 0.35);
+    c.add(mast, bubble, tail, hut);
+    for (let i = -1; i <= 1; i++) {
+      const dot = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 6), mat("#ffffff"));
+      dot.position.set(i * 0.3, 3.35, 0.5);
+      c.add(dot);
+    }
+  }
+  c.position.y = 0.75;
+  g.add(c);
+  const t = tree("round");
+  t.position.set(-u.size * 0.55, 0.75, -u.size * 0.3);
+  g.add(t);
+}
+UNITS.forEach(makeIsland);
+// AllWill 島：不屬於這個組織，在外海幫忙檢查約定；沒有橋
+const ALLWILL = { id: "allwill", name: "AllWill", color: "#14b89c", angle: 62, r: 31, size: 3.4, ext: "allwill",
+  say: "改動前，先檢查約定能不能同時成立；有矛盾，找對的人釐清。" };
+makeIsland(ALLWILL);
+
+// ── 課程平台島心：AllWill 字樣、水球、Coomy ──
+const mascots = {};
+{
+  const g = islands.course.group;
+  const ag = islands.allwill.group;
+  // AllWill 島上的立體字：往後斜躺，帶倒角與陰影
+  new FontLoader().load("https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json", (font) => {
+    const geo = new TextGeometry("AllWill", { font, size: 0.8, height: 0.3, curveSegments: 8,
+      bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.03, bevelSegments: 3 });
+    geo.computeBoundingBox();
+    const bb = geo.boundingBox;
+    geo.translate(-(bb.max.x + bb.min.x) / 2, -(bb.max.y + bb.min.y) / 2, 0);
+    const word = shadowed(new THREE.Mesh(geo, mat("#16a88f", { roughness: 0.45 })));
+    word.rotation.x = -1.05; // 往後斜躺，鏡頭看得清楚
+    word.position.set(0, 1.05, 2.0);
+    ag.add(word);
+    // 字底下一圈淺色石板
+    const slab = shadowed(new THREE.Mesh(new THREE.BoxGeometry(bb.max.x - bb.min.x + 0.7, 0.06, 1.25), M.stone));
+    slab.position.set(0, 0.76, 2.0);
+    ag.add(slab);
+  });
+
+  // 水球：圓滾滾的藍色水滴，頂上打個結
+  const water = new THREE.Group();
+  const blue = new THREE.MeshStandardMaterial({ color: "#7fd6ff", emissive: "#3aa8e0", emissiveIntensity: 0.3, roughness: 0.3 });
+  const ball = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.75, 32, 24), blue));
+  ball.scale.set(1, 1.08, 1);
+  ball.position.y = 0.8;
+  const neck = shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.3, 14), blue));
+  neck.position.y = 1.65;
+  neck.rotation.x = Math.PI;
+  const knot = shadowed(new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.05, 8, 16), blue));
+  knot.position.y = 1.82;
+  const shine = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 8), new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0.75 }));
+  shine.scale.set(1, 1.6, 0.4);
+  shine.position.set(-0.36, 1.12, 0.55);
+  water.add(ball, neck, knot, shine);
+  const eyeMat = new THREE.MeshBasicMaterial({ color: "#1d2433" });
+  const whiteMat = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+  const pinkMat = new THREE.MeshBasicMaterial({ color: "#ff9fb8", transparent: true, opacity: 0.8 });
+  for (const x of [-0.22, 0.22]) {
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 12), eyeMat);
+    eye.scale.set(1, 1.15, 0.6);
+    eye.position.set(x, 0.82, 0.69);
+    const hi = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), whiteMat);
+    hi.position.set(x + 0.04, 0.88, 0.77);
+    const hi2 = new THREE.Mesh(new THREE.SphereGeometry(0.022, 8, 6), whiteMat);
+    hi2.position.set(x - 0.04, 0.77, 0.77);
+    const blush = new THREE.Mesh(new THREE.CircleGeometry(0.1, 16), pinkMat);
+    blush.position.set(x * 1.75, 0.66, 0.64);
+    blush.rotation.y = x * 1.6;
+    water.add(eye, hi, hi2, blush);
+  }
+  const smile = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.022, 6, 16, Math.PI), eyeMat);
+  smile.position.set(0, 0.66, 0.74);
+  smile.rotation.z = Math.PI;
+  water.add(smile);
+  const wtag = document.createElement("div");
+  wtag.className = "me-tag wb";
+  wtag.textContent = "水球潘";
+  const wtagObj = new CSS2DObject(wtag);
+  wtagObj.position.set(-0.4, 2.2, 0);
+  water.add(wtagObj);
+  water.position.set(-0.95, 0.75, 0.2);
+  water.scale.setScalar(1.0);
+  g.add(water);
+  mascots.water = water;
+
+  // Coomy：粉色洋裝、丸子頭，揮手打招呼
+  const me = new THREE.Group();
+  const skinM = mat("#f7d4ba"), hairM = mat("#3b2a24", { roughness: 0.6 }), dressM = mat("#f39ab6", { roughness: 0.7 });
+  const dress = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.32, 0.55, 16), dressM));
+  dress.position.y = 0.62;
+  const head = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.27, 20, 16), skinM));
+  head.position.y = 1.15;
+  const hair = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.285, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), hairM));
+  hair.position.y = 1.17;
+  hair.rotation.x = -0.35;
+  const bun = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 12), hairM));
+  bun.position.set(0, 1.53, -0.04);
+  const band = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.03, 8, 16), mat("#ff4f86"));
+  band.rotation.x = Math.PI / 2;
+  band.position.set(0, 1.39, -0.03);
+  const collar = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.035, 8, 20), mat("#ffffff"));
+  collar.rotation.x = Math.PI / 2;
+  collar.position.y = 0.9;
+  me.add(dress, head, hair, bun, band, collar);
+  for (const x of [-0.1, 0.1]) {
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 10), eyeMat);
+    eye.scale.set(1, 1.3, 0.6);
+    eye.position.set(x, 1.14, 0.245);
+    const ehi = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 6), whiteMat);
+    ehi.position.set(x + 0.015, 1.17, 0.272);
+    me.add(ehi);
+    const blush = new THREE.Mesh(new THREE.CircleGeometry(0.045, 12), pinkMat);
+    blush.position.set(x * 1.6, 1.07, 0.235);
+    blush.rotation.y = x * 2.2;
+    me.add(eye, blush);
+    const leg = shadowed(new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.26, 3, 6), skinM));
+    leg.position.set(x * 0.8, 0.22, 0);
+    const shoe = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), mat("#8c4a5a")));
+    shoe.scale.set(1, 0.6, 1.4);
+    shoe.position.set(x * 0.8, 0.05, 0.03);
+    me.add(leg, shoe);
+  }
+  const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.04, 0.012, 6, 12, Math.PI), eyeMat);
+  mouth.position.set(0, 1.07, 0.26);
+  mouth.rotation.z = Math.PI;
+  me.add(mouth);
+  // 左手垂著，右手揮
+  const armL = shadowed(new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.24, 3, 6), skinM));
+  armL.position.set(-0.2, 0.72, 0);
+  armL.rotation.z = -0.25;
+  const handL = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), skinM));
+  handL.position.set(-0.24, 0.55, 0);
+  me.add(handL);
+  const wave = new THREE.Group();
+  const armR = shadowed(new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.24, 3, 6), skinM));
+  armR.position.y = -0.16;
+  const handR = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), skinM));
+  handR.position.y = -0.34;
+  wave.add(armR, handR);
+  wave.position.set(0.2, 0.86, 0);
+  me.add(armL, wave);
+  me.position.set(0.85, 0.75, 0.35);
+  me.rotation.y = -0.35;
+  me.scale.setScalar(1.6);
+  const tag = document.createElement("div");
+  tag.className = "me-tag";
+  tag.textContent = "Coomy";
+  const tagObj = new CSS2DObject(tag);
+  tagObj.position.set(0.35, 1.85, 0);
+  me.add(tagObj);
+  g.add(me);
+  mascots.wave = wave;
+  mascots.tags = [wtagObj, tagObj];
+  mascots.me = me;
+}
+
+// ── 橋：每份約定一座；方向未定的是斷續的虛線橋 ──
+const bridges = [];
+DEALS.forEach((d) => {
+  const a = unitById[d.from], b = unitById[d.to];
+  const pa = posOf(a), pb = posOf(b);
+  const dir = pb.clone().sub(pa).setY(0).normalize();
+  const side = new THREE.Vector3(-dir.z, 0, dir.x);
+  const pair = DEALS.some((o) => o.from === d.to && o.to === d.from);
+  const off = pair ? 1.25 : 0;
+  const start = pa.clone().addScaledVector(dir, a.size * 0.95).addScaledVector(side, off).setY(0.78);
+  const end = pb.clone().addScaledVector(dir, -b.size * 0.95).addScaledVector(side, off).setY(0.78);
+  const mid = start.clone().lerp(end, 0.5).addScaledVector(side, off * 0.8);
+  mid.y = 1.7;
+  const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+  const len = curve.getLength();
+  const color = new THREE.Color(a.ext ? b.color : a.color);
+
+  const group = new THREE.Group();
+  const deckMat = mat("#b98a5e", { transparent: true, roughness: 0.9 });
+  const railMat = mat("#7a5a3e", { transparent: true, emissive: color, emissiveIntensity: 0 });
+  const planks = Math.max(10, Math.round(len / 0.5));
+  for (let k = 0; k <= planks; k++) {
+    if (d.unknown && k % 3 !== 0) continue;
+    const t = k / planks;
+    const p = curve.getPointAt(t);
+    const plank = shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.12, 0.4), deckMat));
+    plank.position.copy(p);
+    plank.lookAt(p.clone().add(curve.getTangentAt(t)));
+    group.add(plank);
+  }
+  if (!d.unknown) {
+    for (const s of [-0.88, 0.88]) {
+      const pts = curve.getSpacedPoints(40).map((p, k, arr) => {
+        const tan = curve.getTangentAt(k / (arr.length - 1));
+        return p.clone().addScaledVector(new THREE.Vector3(-tan.z, 0, tan.x).normalize(), s).setY(p.y + 0.42);
+      });
+      group.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.05, 5), railMat));
+      for (let k = 0; k <= 8; k++) {
+        const p = pts[Math.round((k / 8) * (pts.length - 1))];
+        const post = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.45, 5), railMat));
+        post.position.copy(p).setY(p.y - 0.21);
+        group.add(post);
+      }
+    }
+  }
+  scene.add(group);
+
+  const el = document.createElement("div");
+  el.className = "brl off";
+  el.style.borderLeftColor = color.getStyle();
+  el.textContent = d.unknown ? `${d.what}・方向待確認` : d.what;
+  const label = new CSS2DObject(el);
+  label.position.copy(curve.getPointAt(0.5)).add(new THREE.Vector3(0, 1.6, 0));
+  scene.add(label);
+  bridges.push({ deal: d, curve, len, group, deckMat, railMat, el, color, glow: 0, glowTo: 0, delay: 0 });
+});
+const bridgeById = Object.fromEntries(bridges.map((b) => [b.deal.id, b]));
+
+// ── 小人 ──
+const SHIRTS = ["#e76f51", "#2a9d8f", "#e9c46a", "#264653", "#f4a261", "#8ab17d", "#6d597a", "#457b9d"];
+const SKIN = ["#f5d0b0", "#e8b896", "#c99470", "#f1c9a5"];
+const HAIR = ["#2b2321", "#4a3426", "#6b4a2f", "#1f1f24"];
+const PERSON_SCALE = 1.45;
+function makePerson(boxColor) {
+  const g = new THREE.Group();
+  const body = shadowed(new THREE.Mesh(new THREE.CapsuleGeometry(0.2, 0.36, 4, 8), mat(pick(SHIRTS))));
+  body.position.y = 0.72;
+  const head = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.19, 12, 10), mat(pick(SKIN))));
+  head.position.y = 1.24;
+  const hair = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), mat(pick(HAIR))));
+  hair.position.y = 1.27;
+  hair.rotation.x = -0.25;
+  const legs = [];
+  for (const x of [-0.09, 0.09]) {
+    const leg = new THREE.Group();
+    const m = shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.4, 0.1), mat("#39404d")));
+    m.position.y = -0.2;
+    leg.add(m);
+    leg.position.set(x, 0.44, 0);
+    legs.push(leg);
+    g.add(leg);
+  }
+  g.add(body, head, hair);
+  const arms = [];
+  const sleeve = body.material;
+  const skin = head.material;
+  for (const x of [-0.25, 0.25]) {
+    const arm = new THREE.Group();
+    const upper = shadowed(new THREE.Mesh(new THREE.CapsuleGeometry(0.06, 0.24, 3, 6), sleeve));
+    upper.position.y = -0.16;
+    const hand = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 6), skin));
+    hand.position.y = -0.34;
+    arm.add(upper, hand);
+    arm.position.set(x, 0.98, 0);
+    arm.rotation.z = x < 0 ? -0.12 : 0.12;
+    arms.push(arm);
+    g.add(arm);
+  }
+  let box = null;
+  if (boxColor) {
+    box = shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.3, 0.3), mat(boxColor, { roughness: 0.7 })));
+    box.position.set(0, 0.98, 0.3);
+    g.add(box);
+  }
+  g.scale.setScalar(PERSON_SCALE);
+  scene.add(g);
+  return { g, legs, box, arms };
+}
+// Agent：島上做事的居民是機器寵物，人類只有團隊
+function makePet(accent, boxColor) {
+  const g = new THREE.Group();
+  const shell = mat("#eef3f6", { roughness: 0.35 });
+  const acc = mat(accent, { roughness: 0.5 });
+  const body = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.3, 18, 14), shell));
+  body.scale.set(1, 0.72, 1.25);
+  body.position.y = 0.42;
+  const stripe = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.035, 6, 24), acc);
+  stripe.position.y = 0.42;
+  stripe.rotation.x = Math.PI / 2;
+  stripe.scale.set(1, 1.25, 1);
+  const head = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.23, 18, 14), shell));
+  head.position.set(0, 0.72, 0.3);
+  const face = new THREE.Mesh(new THREE.SphereGeometry(0.19, 16, 12), mat("#1c2a33", { roughness: 0.2 }));
+  face.scale.set(1, 0.72, 0.45);
+  face.position.set(0, 0.72, 0.44);
+  g.add(body, stripe, head, face);
+  for (const x of [-0.07, 0.07]) {
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 6), new THREE.MeshBasicMaterial({ color: "#8ff5e4" }));
+    eye.scale.set(1, 1.3, 0.5);
+    eye.position.set(x, 0.74, 0.525);
+    const ear = shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.16, 8), acc));
+    ear.position.set(x * 1.9, 0.94, 0.27);
+    ear.rotation.z = -x * 2.5;
+    g.add(eye, ear);
+  }
+  const legs = [];
+  for (const [x, z] of [[-0.14, 0.2], [0.14, 0.2], [-0.14, -0.2], [0.14, -0.2]]) {
+    const leg = new THREE.Group();
+    const m = shadowed(new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.12, 3, 6), mat("#9aa6b2")));
+    m.position.y = -0.1;
+    leg.add(m);
+    leg.position.set(x, 0.24, z);
+    legs.push(leg);
+    g.add(leg);
+  }
+  const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.28, 5), mat("#9aa6b2"));
+  tail.position.set(0, 0.62, -0.4);
+  tail.rotation.x = -0.6;
+  const tip = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), mat(accent, { emissive: accent, emissiveIntensity: 0.8 }));
+  tip.position.set(0, 0.74, -0.48);
+  g.add(tail, tip);
+  let box = null;
+  if (boxColor) {
+    box = shadowed(new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.26, 0.32), mat(boxColor, { roughness: 0.7 })));
+    box.position.set(0, 0.74, -0.08);
+    g.add(box);
+  }
+  g.scale.setScalar(1.35);
+  scene.add(g);
+  return { g, legs, box, arms: [] };
+}
+const walkers = [];
+bridges.forEach((br) => {
+  if (br.deal.unknown) return;
+  const n = 4;
+  for (let k = 0; k < n; k++) {
+    const p = makePet(br.color.getStyle(), br.color.getStyle());
+    walkers.push({ ...p, br, t: k / n, dir: k % 2 ? -1 : 1, speed: 2.0 + rand() * 0.7, phase: rand() * 6 });
+  }
+});
+const idlers = [];
+UNITS.forEach((u) => {
+  const n = u.ext ? 1 : 4;
+  for (let k = 0; k < n; k++) {
+    const p = makePet(u.color, null);
+    idlers.push({ ...p, center: posOf(u), rad: u.size * (0.62 + rand() * 0.12), a: rand() * 6.28,
+      speed: (0.22 + rand() * 0.18) * (k % 2 ? -1 : 1), phase: rand() * 6 });
+  }
+});
+
+// ── AllWill 機器人：沿橋檢查約定 ──
+const OK = "#14b89c", OPEN = "#e8613a", GAP = "#e6b422";
+const robot = new THREE.Group();
+{
+  const body = shadowed(new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.4, 6, 14), mat("#3fcfb6", { roughness: 0.35, emissive: "#14b89c", emissiveIntensity: 0.15 })));
+  body.position.y = 0.9;
+  const visor = new THREE.Mesh(new THREE.SphereGeometry(0.34, 18, 12, -Math.PI / 2.4, Math.PI / 1.2, Math.PI / 3, Math.PI / 3),
+    mat("#163b4a", { emissive: OK, emissiveIntensity: 0.9, roughness: 0.2 }));
+  visor.position.set(0, 1.15, 0.12);
+  visor.rotation.y = Math.PI / 2; // 面罩轉到正面
+  const ant = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.45, 6), M.metal));
+  ant.position.y = 1.72;
+  const tip = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), mat(OK, { emissive: OK, emissiveIntensity: 1.2 }));
+  tip.position.y = 1.97;
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.05, 8, 28), mat(OK, { emissive: OK, emissiveIntensity: 1, transparent: true, opacity: 0.8 }));
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = 0.25;
+  robot.add(body, visor, ant, tip, ring);
+  robot.userData = { visor, tip, ring };
+  const el = document.createElement("div");
+  el.className = "bot";
+  el.textContent = "AllWill";
+  const lab = new CSS2DObject(el);
+  lab.position.set(0, 2.5, 0);
+  robot.add(lab);
+  robot.userData.label = el;
+  robot.userData.labelObj = lab;
+}
+robot.scale.setScalar(2.1);
+robot.visible = false;
+scene.add(robot);
+function setBotColor(c) {
+  robot.userData.visor.material.emissive.set(c);
+  robot.userData.tip.material.color.set(c); robot.userData.tip.material.emissive.set(c);
+  robot.userData.ring.material.color.set(c); robot.userData.ring.material.emissive.set(c);
+}
+
+// 每座橋的檢查標記
+bridges.forEach((b) => {
+  const el = document.createElement("div");
+  el.className = "badge off";
+  const lab = new CSS2DObject(el);
+  lab.position.copy(b.curve.getPointAt(0.5)).add(new THREE.Vector3(0, 0.6, 0));
+  scene.add(lab);
+  b.badge = el;
+  b.checked = null;
+});
+const CHECK_TEXT = { ok: "沒發現問題", open: "待釐清", gap: "待補" };
+const CHECK_COLOR = { ok: OK, open: OPEN, gap: GAP };
+function markChecked(b) {
+  const st = b.deal.check || "ok";
+  b.checked = st;
+  st === "ok" ? sound.ok() : sound.bad();
+  b.railMat.emissive.set(CHECK_COLOR[st]);
+  b.glowTo = 1;
+  if (st !== "ok") { b.badge.textContent = CHECK_TEXT[st]; b.badge.style.background = CHECK_COLOR[st]; b.badge.classList.remove("off"); }
+}
+function clearChecks() {
+  bridges.forEach((b) => { b.checked = null; b.badge.classList.add("off"); b.railMat.emissive.copy(b.color); b.glowTo = 0; });
+}
+function owners(d) { const who = (u) => (u.ext ? `管 ${u.name} 的人` : `${u.name}的負責人`); return `${who(unitById[d.from])}與${who(unitById[d.to])}`; }
+
+// 巡檢：沿著每座橋走一趟，橋與橋之間飛過去
+const check = { on: false, i: 0, phase: "fly", t: 0, from: new THREE.Vector3(), done: null };
+function startCheck(onDone, fast = false, keepBot = false, plan = false) {
+  check.fast = fast;
+  check.plan = plan;
+  check.keepBot = keepBot;
+  clearChecks();
+  highlight(null, null);
+  check.on = true; check.i = 0; check.phase = "fly"; check.t = 0; check.done = onDone || null;
+  check.from.copy(posOf(ALLWILL)).add(new THREE.Vector3(1.0, 1.2, 0.6)); // 從 AllWill 島的停機坪起飛
+  robot.visible = true;
+  setBotColor(OK);
+  showCheckCaption();
+}
+function showCheckCaption() {
+  const b = bridges[Math.min(check.i, bridges.length - 1)];
+  const st = b.checked;
+  if (check.plan) {
+    const okN = bridges.filter((x) => x.checked === "ok").length;
+    const head = `<span class="chip"><i style="background:${OK}"></i>AllWill 檢查約定</span><span class="count">${Math.min(check.i + 1, bridges.length)} / ${bridges.length}</span>`;
+    if (st && st !== "ok" && b.deal.planQuote) {
+      setCaption(CHECK_COLOR[st], head, `${route(b.deal)}<b style="color:${CHECK_COLOR[st]}">　對不上</b>`,
+        `<div class="vs"><div><span>Plan 想要</span>${b.deal.planQuote}</div><div><span>約定原文</span>${b.deal.contractQuote}</div></div><div class="small">已沒發現問題 ${okN} 份</div>`, false);
+    } else if (st && st !== "ok") {
+      setCaption(CHECK_COLOR[st], head, `${route(b.deal)}<b style="color:${CHECK_COLOR[st]}">　${CHECK_TEXT[st]}</b>`, `${b.deal.body}<div class="small">已沒發現問題 ${okN} 份</div>`, false);
+    } else {
+      setCaption(OK, head, `沒發現問題 ${okN} 份`, "約定要定期檢查，改動時也要檢查。", false, true);
+    }
+    return;
+  }
+  setCaption(OK, `<span class="chip"><i style="background:${OK}"></i>AllWill</span><span class="count">${Math.min(check.i + 1, bridges.length)} / ${bridges.length}</span>`,
+    `${route(b.deal)}`, st ? (st !== "ok" ? `<b style="color:${CHECK_COLOR[st]}">${CHECK_TEXT[st]}</b>：${b.deal.body}` : `<b style="color:${OK}">沒發現問題</b>`) : "約定要定期檢查，改動時也要檢查。", false, true);
+}
+function checkSummary() {
+  const open = bridges.filter((b) => b.checked === "open"), gap = bridges.filter((b) => b.checked === "gap");
+  const ok = bridges.length - open.length - gap.length;
+  const who = [...open, ...gap].map((b) => `<li><span class="dot" style="background:${CHECK_COLOR[b.checked]}"></span>${route(b.deal)}<span class="who">找${owners(b.deal)}</span></li>`).join("");
+  setCaption(OK, `<span class="chip">檢查結果</span>`,
+    `${bridges.length} 份約定：${ok} 份沒發現問題、${open.length} 份待釐清、${gap.length} 份待補`,
+    `<ul class="who-list">${who}</ul>`, false);
+}
+function tickCheck(dt) {
+  robot.userData.labelObj.visible = robot.visible; // CSS2D 標籤不跟父物件隱藏
+  if (!check.on) return;
+  placeCamera(robot.position.clone().setY(0).add(new THREE.Vector3(0, 0, portrait() ? 3 : 1.5)), fitDistance(13, 11), portrait() ? 44 : 38);
+  if (!touring) manualFocus = 0.5;
+  const b = bridges[check.i];
+  const start = b.curve.getPointAt(0).clone().setY(b.curve.getPointAt(0).y + 0.1);
+  if (check.phase === "fly") {
+    check.t += dt / (check.plan && !b.deal.check ? 0.18 : check.fast ? 0.22 : 0.4);
+    const k = Math.min(check.t, 1);
+    robot.position.lerpVectors(check.from, start, k);
+    robot.position.y += Math.sin(k * Math.PI) * 3;
+    if (check.t >= 1) { check.phase = "walk"; check.t = 0; }
+  } else if (check.phase === "walk") {
+    check.t += dt / (b.deal.check ? (check.fast ? 0.7 : 1.1) : check.fast || check.plan ? 0.22 : 0.6);
+    const k = Math.min(check.t, 1);
+    const p = b.curve.getPointAt(k);
+    robot.position.copy(p).setY(p.y + 0.1);
+    const tan = b.curve.getTangentAt(k);
+    robot.rotation.y = Math.atan2(tan.x, tan.z);
+    if (check.t >= 0.5 && b.checked === null) { markChecked(b); setBotColor(CHECK_COLOR[b.checked]); showCheckCaption(); }
+    if (check.t >= 1) { check.phase = b.checked === "ok" ? "next" : "hold"; check.t = 0; }
+  } else if (check.phase === "hold") {
+    check.t += dt / (check.plan ? 3.2 : check.fast ? 0.9 : 1.2);
+    if (check.t >= 1) check.phase = "next";
+  } else {
+    setBotColor(OK);
+    check.from.copy(robot.position);
+    check.i += 1; check.t = 0; check.phase = "fly";
+    if (check.i >= bridges.length) {
+      check.on = false;
+      robot.visible = check.keepBot;
+      checkSummary();
+      if (check.done) check.done();
+    } else showCheckCaption();
+  }
+}
+
+
+// ── 團隊：Richard（PM）、Raymond（CTO）、ben、ccza（RD）和 Coomy 在島上到處走 ──
+const TEAM_SCALE = 1.55;
+function makeMate({ name, role, shirt, hair, glasses, tagColor }) {
+  const g = new THREE.Group();
+  const skinM = mat("#f5d2b6"), hairM = mat(hair === "curly" ? "#2a221f" : "#33261f", { roughness: 0.6 });
+  const eyeMat = new THREE.MeshBasicMaterial({ color: "#1d2433" }), whiteMat = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+  const body = shadowed(new THREE.Mesh(new THREE.CapsuleGeometry(0.19, 0.3, 4, 10), mat(shirt)));
+  body.position.y = 0.68;
+  const head = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.26, 20, 16), skinM));
+  head.position.y = 1.15;
+  g.add(body, head);
+  // 髮型
+  const cap = (theta, tilt = -0.3) => {
+    const m = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.275, 20, 14, 0, Math.PI * 2, 0, theta), hairM));
+    m.position.y = 1.16; m.rotation.x = tilt; g.add(m); return m;
+  };
+  if (hair === "bowl") {
+    // 西瓜皮：一圈水平齊瀏海
+    const m = cap(Math.PI * 0.44, 0);
+    m.scale.set(1.08, 1.02, 1.08);
+  } else if (hair === "side") {
+    // 半側瀏海中長髮：後髮垂到肩，瀏海斜蓋一邊額頭
+    cap(Math.PI * 0.5);
+    const back = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.32, 0.5, 18, 1, true, Math.PI / 2, Math.PI), hairM));
+    back.material.side = THREE.DoubleSide;
+    back.position.y = 1.02;
+    const bang = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 10), hairM));
+    bang.scale.set(1.25, 0.45, 0.55);
+    bang.rotation.z = 0.45;
+    bang.position.set(0.08, 1.29, 0.17);
+    g.add(back, bang);
+  } else if (hair === "curly") {
+    // 泡麵頭：一顆顆小捲
+    cap(Math.PI * 0.5, -0.15);
+    for (let i = 0; i < 34; i++) {
+      const phi = Math.acos(1 - rand() * 0.95), th = rand() * Math.PI * 2;
+      const c = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.075 + rand() * 0.02, 8, 6), hairM));
+      c.position.set(Math.sin(phi) * Math.cos(th) * 0.29, 1.16 + Math.cos(phi) * 0.29, Math.sin(phi) * Math.sin(th) * 0.29 - 0.02);
+      if (c.position.z > 0.12 && c.position.y < 1.3) continue;
+      g.add(c);
+    }
+  } else {
+    // 一般髮型加一點瀏海
+    cap(Math.PI * 0.52);
+    const fringe = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 10), hairM));
+    fringe.scale.set(1.2, 0.4, 0.5);
+    fringe.position.set(0, 1.3, 0.17);
+    g.add(fringe);
+  }
+  // 臉
+  for (const x of [-0.09, 0.09]) {
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), eyeMat);
+    eye.scale.set(1, 1.25, 0.6);
+    eye.position.set(x, 1.13, 0.24);
+    const hi = new THREE.Mesh(new THREE.SphereGeometry(0.016, 6, 5), whiteMat);
+    hi.position.set(x + 0.014, 1.16, 0.268);
+    g.add(eye, hi);
+  }
+  const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.011, 6, 12, Math.PI), eyeMat);
+  mouth.position.set(0, 1.05, 0.25);
+  mouth.rotation.z = Math.PI;
+  g.add(mouth);
+  if (glasses) {
+    const gm = mat("#2b2f3a", { roughness: 0.4 });
+    for (const x of [-0.095, 0.095]) {
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(0.068, 0.012, 6, 18), gm);
+      rim.position.set(x, 1.13, 0.26);
+      g.add(rim);
+    }
+    const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.014, 0.014), gm);
+    bridge.position.set(0, 1.14, 0.27);
+    g.add(bridge);
+  }
+  // 腿與手
+  const legs = [], arms = [];
+  for (const x of [-0.09, 0.09]) {
+    const leg = new THREE.Group();
+    const m = shadowed(new THREE.Mesh(new THREE.CapsuleGeometry(0.06, 0.26, 3, 6), mat("#3a4152")));
+    m.position.y = -0.18;
+    leg.add(m);
+    leg.position.set(x, 0.42, 0);
+    legs.push(leg); g.add(leg);
+    const arm = new THREE.Group();
+    const a = shadowed(new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.22, 3, 6), body.material));
+    a.position.y = -0.15;
+    const h = shadowed(new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), skinM));
+    h.position.y = -0.32;
+    arm.add(a, h);
+    arm.position.set(x * 2.6, 0.9, 0);
+    arm.rotation.z = x < 0 ? -0.15 : 0.15;
+    arms.push(arm); g.add(arm);
+  }
+  const tag = document.createElement("div");
+  tag.className = "me-tag";
+  tag.style.background = tagColor;
+  tag.textContent = `${name}・${role}`;
+  const tagObj = new CSS2DObject(tag);
+  tagObj.position.set(0, 1.85 + ({ Richard: 0, Raymond: 0.32, ben: 0.16, ccza: 0.48 }[name] || 0), 0);
+  g.add(tagObj);
+  g.scale.setScalar(TEAM_SCALE);
+  scene.add(g);
+  return { g, legs, arms, tagObj, name };
+}
+const team = {
+  richard: makeMate({ name: "Richard", role: "PM", shirt: "#f2a65a", hair: "side", tagColor: "#e08a3c" }),
+  raymond: makeMate({ name: "Raymond", role: "CTO", shirt: "#4f6fd1", hair: "bowl", tagColor: "#4f6fd1" }),
+  ben: makeMate({ name: "ben", role: "RD", shirt: "#3fae74", hair: "curly", glasses: true, tagColor: "#2f9a62" }),
+  ccza: makeMate({ name: "ccza", role: "RD", shirt: "#9a6ad6", hair: "plain", glasses: true, tagColor: "#8a5ac6" }),
+};
+mascots.tags.push(...Object.values(team).map((m) => m.tagObj));
+
+// 到處亂走：在島上挑點走，偶爾過橋到隔壁島
+const roamers = [...Object.values(team), { g: mascots.me, legs: [], arms: [], coomy: true }, { g: mascots.water, legs: [], arms: [], coomy: true, hop: 0.18 }].map((m, i) => ({
+  ...m, island: "course", mode: "wait", wait: 0.5 + i * 0.4, target: new THREE.Vector3(), br: null, dir: 1, t: 0, phase: rand() * 6,
+}));
+roamers.forEach((r, i) => { const a = (i / roamers.length) * Math.PI * 2; r.g.position.set(Math.cos(a) * 2.2, 0.75, Math.sin(a) * 2.2); });
+let roamFrozen = false;
+function pickPoint(u) {
+  const a = rand() * Math.PI * 2, rad = u.size * (0.25 + rand() * 0.45);
+  return posOf(u).add(new THREE.Vector3(Math.cos(a) * rad, 0.75, Math.sin(a) * rad));
+}
+function tickRoam(dt) {
+  for (const r of roamers) {
+    let moving = false;
+    if (!roamFrozen) {
+      if (r.mode === "wait") {
+        r.wait -= dt;
+        if (r.wait <= 0) {
+          const out = bridges.filter((b) => !b.deal.unknown && (b.deal.from === r.island || b.deal.to === r.island));
+          if (out.length && rand() < 0.4) {
+            r.br = pick(out); r.dir = r.br.deal.from === r.island ? 1 : -1;
+            r.target.copy(r.br.curve.getPointAt(r.dir === 1 ? 0 : 1)); r.mode = "toBridge";
+          } else { r.target.copy(pickPoint(unitById[r.island])); r.mode = "walk"; }
+        }
+      } else if (r.mode === "walk" || r.mode === "toBridge") {
+        const d = r.target.clone().sub(r.g.position).setY(0);
+        const step = 1.6 * dt;
+        if (d.length() <= step) {
+          r.g.position.x = r.target.x; r.g.position.z = r.target.z;
+          if (r.mode === "toBridge") { r.mode = "cross"; r.t = r.dir === 1 ? 0 : 1; }
+          else { r.mode = "wait"; r.wait = 0.8 + rand() * 2.5; }
+        } else {
+          d.normalize();
+          r.g.position.addScaledVector(d, step);
+          r.g.position.y = r.mode === "toBridge" ? THREE.MathUtils.lerp(r.g.position.y, r.target.y, 0.1) : 0.75;
+          r.g.rotation.y = Math.atan2(d.x, d.z);
+          moving = true;
+        }
+      } else if (r.mode === "cross") {
+        r.t += (r.dir * 1.6 * dt) / r.br.len;
+        const t = THREE.MathUtils.clamp(r.t, 0, 1);
+        const p = r.br.curve.getPointAt(t);
+        const tan = r.br.curve.getTangentAt(t).multiplyScalar(r.dir);
+        const sd = new THREE.Vector3(-tan.z, 0, tan.x).normalize();
+        r.g.position.copy(p).addScaledVector(sd, -0.45).setY(p.y + 0.06);
+        r.g.rotation.y = Math.atan2(tan.x, tan.z);
+        moving = true;
+        if (r.t >= 1 || r.t <= 0) {
+          r.island = r.dir === 1 ? r.br.deal.to : r.br.deal.from;
+          r.target.copy(pickPoint(unitById[r.island])); r.mode = "walk";
+        }
+      }
+    }
+    const s = elapsed * 8 + r.phase;
+    const sw = moving ? Math.sin(s) * 0.55 : 0;
+    if (r.legs[0]) { r.legs[0].rotation.x = sw; r.legs[1].rotation.x = -sw; }
+    if (r.arms[0] && !r.raised) { r.arms[0].rotation.x = -sw; r.arms[1].rotation.x = sw; }
+    if (r.coomy) {
+      if (r.mode !== "cross") r.g.position.y = 0.75;
+      r.g.position.y += r.hop ? Math.abs(Math.sin(elapsed * 2.2 + r.phase)) * r.hop : moving ? Math.abs(Math.sin(s)) * 0.05 : 0;
+    }
+  }
+}
+
+// ── 交接：Richard 丟出 Plan → AllWill 讀完、找出要問的事 → 每題送到對的人 → 人回答 → 交給 RD 開工 ──
+// 題目取自 benchmark questions.ts；回答取自同一份 Plan（mainline-plan）的 To-Be
+const PLAN_DEALS = ["course-assistant", "assistant-crm"];
+const PLAN_QS = [
+  { who: "richard", deals: [], q: "哪些學員需要關懷？", hint: "目前由助教人工查看學習進度。",
+    a: "課程未完成且七天無進度；還沒開始學習的，從取得課程資格起算。" },
+  { who: "ben", deals: [], q: "哪些助教可承接、怎麼分配？", hint: "人資只提供在職名單，不新增課程資格。",
+    a: "在職助教中，進行中任務最少者優先；平手照固定順序。" },
+  { who: "raymond", deals: ["course-assistant"], q: "什麼時候算完成任務？", hint: "會同時影響課程平台、助教和 CRM。",
+    a: "提交指定的下一份作業就完成，不等批改。" },
+  { who: "ccza", deals: ["assistant-crm"], q: "聯繫紀錄怎麼處理？", hint: "CRM 保存關懷紀錄。",
+    a: "保存聯繫時間與結果摘要；聯繫不等於任務完成。" },
+];
+const scroll = new THREE.Group();
+{
+  const paper = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.62, 14), mat("#fff6df", { roughness: 0.8 })));
+  paper.rotation.z = Math.PI / 2;
+  const ribbon = new THREE.Mesh(new THREE.TorusGeometry(0.125, 0.025, 6, 16), mat("#14b89c", { emissive: "#14b89c", emissiveIntensity: 0.2 }));
+  ribbon.rotation.y = Math.PI / 2;
+  scroll.add(paper, ribbon);
+  scroll.userData.ribbon = ribbon;
+  scroll.scale.setScalar(1.5);
+  scroll.visible = false;
+  scene.add(scroll);
+}
+// 4 張問題小卡：從卷軸飛到回答者頭上，答完變成勾
+const qcards = PLAN_QS.map((q, i) => {
+  const el = document.createElement("div");
+  el.className = "qcard off";
+  el.innerHTML = `<img src="" alt=""><span></span><b>?</b>`;
+  const o = new CSS2DObject(el);
+  scene.add(o);
+  return { el, o, q, i };
+});
+const ho = { on: false, t: 0, stage: -1 };
+const handPos = (m) => m.g.position.clone().add(new THREE.Vector3(0, 2.75, 0));
+const headPos = (m) => m.g.position.clone().add(new THREE.Vector3(0, 3.6, 0));
+function startHandoff() {
+  ho.on = true; ho.t = 0; ho.stage = -1; ho.msgs = []; ho.checked = false; ho.checking = false; ho.backFrom = null; ho.whooshed = false;
+  roamFrozen = true;
+  check.on = false;
+  clearChecks();
+  robot.visible = true; setBotColor(OK);
+  robot.position.copy(posOf(ALLWILL)).add(new THREE.Vector3(1.0, 1.2, 0.6));
+  scroll.visible = true;
+  team.richard.raised = true;
+  qcards.forEach((c) => { c.el.className = "qcard off"; c.el.querySelector("img").src = avatars[c.q.who]; c.el.querySelector("b").textContent = "?"; c.el.querySelector("span").textContent = WHO[c.q.who]; });
+}
+function endHandoff() {
+  if (!ho.on) return;
+  ho.on = false; roamFrozen = false;
+  robot.visible = false; scroll.visible = false;
+  Object.values(team).forEach((m) => { m.raised = false; });
+  qcards.forEach((c) => c.el.classList.add("off"));
+}
+function flyArc(a, b, k, h = 3) {
+  return a.clone().lerp(b, k).add(new THREE.Vector3(0, Math.sin(k * Math.PI) * h, 0));
+}
+const ease = (k) => (k < 0 ? 0 : k > 1 ? 1 : k * k * (3 - 2 * k));
+function hoChat(header, extra = "") {
+  const shown = ho.msgs.slice(-2);
+  setCaption(OK, `<span class="chip"><i style="background:#e08a3c"></i>Plan：提升學員完課率</span>${header}`,
+    "", chatHTML(shown, ["richard", "ben", "raymond", "ccza"]) + extra, false);
+  caption.classList.add("chat-mode");
+}
+const say = (who, text) => ho.msgs.push([who, text]);
+const Q0 = 5, QS = Q0 + 3, QLEN = 3.6; // Q0：檢查完、回到 Richard 旁；QS：第一題
+const HO = [
+  { at: 0, run: () => { say("richard", "我發了一份 Plan：<b>提升學員完課率</b>。"); hoChat(""); } },
+  { at: 2.6, run: () => { highlight(PLAN_DEALS, ["course", "assistant", "crm"], 0.3);
+      say("allwill", "讀完了。這份 Plan 會動到課程平台、助教，和 2 份約定。我先把約定檢查一輪。"); hoChat(""); } },
+  { at: Q0, run: () => { highlight(PLAN_DEALS, ["course", "assistant", "crm"]);
+      say("allwill", "檢查完了：這份 Plan 動到的 2 份約定，原文都寫著「尚未定義」。開工前，有 4 件事要先問對的人。"); hoChat(""); } },
+  ...PLAN_QS.flatMap((q, i) => [
+    { at: QS + i * QLEN, run: () => { sound.pop(); say("allwill", `<b>${q.q}</b><br><span class="hint">${q.hint}</span>`); hoChat(`<span class="count">第 ${i + 1} / 4 題</span>`); } },
+    { at: QS + i * QLEN + 1.9, run: () => { sound.answer(); say(q.who, `<span class="rule">這份 Plan 的規則</span>${q.a}`); hoChat(`<span class="count">第 ${i + 1} / 4 題</span>`);
+        q.deals.forEach((id) => { const b = bridgeById[id]; b.badge.textContent = "有答案・待確認"; b.badge.style.background = OK; b.railMat.emissive.set(OK); b.glowTo = 1; }); } },
+  ]),
+  { at: QS + 4 * QLEN, run: () => { highlight(PLAN_DEALS, ["course", "assistant", "crm"]);
+      sound.sparkle();
+      say("allwill", "4 件事都有人回答了。Richard 確認後，我把答案寫回這 2 份約定，大家照同一份 Plan 開工。"); hoChat(""); } },
+];
+const HO_END = QS + 4 * QLEN + 3.5;
+function tickHandoff(dt) {
+  if (!ho.on) return;
+  if (ho.t >= Q0 && !ho.checked) {
+    if (!ho.checking) {
+      ho.checking = true;
+      startCheck(() => { ho.checked = true; ho.checking = false; ho.backFrom = robot.position.clone(); robot.visible = true; }, false, true, true);
+      check.from.copy(robot.position);
+    }
+    scroll.position.copy(robot.position).add(new THREE.Vector3(0, 1.0, 0));
+    return; // 檢查期間由 tickCheck 控制機器人與鏡頭
+  }
+  ho.t += dt;
+  const t = ho.t;
+  if (t >= 1.4 && !ho.whooshed) { ho.whooshed = true; sound.whoosh(); } // Richard 丟出 Plan
+  for (let i = HO.length - 1; i >= 0; i--) if (t >= HO[i].at) { if (ho.stage < i) { for (let j = ho.stage + 1; j <= i; j++) HO[j].run(); ho.stage = i; } break; }
+  const pad = posOf(ALLWILL).add(new THREE.Vector3(1.0, 1.2, 0.6));
+  const R = team.richard, B = team.ben, C = team.ccza;
+  const hover = handPos(R).add(new THREE.Vector3(2.2, 1.6, 0));
+  let look;
+  // 機器人：飛到 Richard 旁邊 → 停在半空讀 Plan → 問答期間待在原地 → 最後飛向 RD
+  if (t < 1.4) robot.position.copy(flyArc(pad, hover, ease(t / 1.4), 6));
+  else if (t < Q0) robot.position.copy(hover).add(new THREE.Vector3(0, Math.sin(t * 2) * 0.15, 0));
+  else if (t < Q0 + 1.6) robot.position.copy(flyArc(ho.backFrom || hover, hover, ease((t - Q0) / 1.6), 3));
+  else if (t < QS) robot.position.copy(hover).add(new THREE.Vector3(0, Math.sin(t * 2) * 0.15, 0));
+  else if (t < QS + 4 * QLEN) {
+    const i = Math.min(3, Math.floor((t - QS) / QLEN)), m = team[PLAN_QS[i].who];
+    const prev = i === 0 ? hover : handPos(team[PLAN_QS[i - 1].who]).add(new THREE.Vector3(2, 1.4, 0));
+    robot.position.copy(flyArc(prev, handPos(m).add(new THREE.Vector3(2, 1.4, 0)), ease((t - QS - i * QLEN) / 1.0), 2.5));
+    robot.position.y += Math.sin(t * 2) * 0.12;
+  }
+  const rd = B.g.position.clone().lerp(C.g.position, 0.5);
+  const scrollAtBot = robot.position.clone().add(new THREE.Vector3(0, 1.0, 0));
+  // 卷軸：Richard 舉著 → 丟給 AllWill → AllWill 展開讀 → 最後交到 RD 中間
+  if (t < 1.4) { scroll.position.copy(handPos(R)); look = R.g.position; }
+  else if (t < 2.4) { R.raised = false; scroll.position.copy(flyArc(handPos(R), scrollAtBot, ease((t - 1.4) / 1.0), 1.5)); look = robot.position; }
+  else if (t < QS + 4 * QLEN) { scroll.position.copy(scrollAtBot); scroll.userData.ribbon.material.emissiveIntensity = t < Q0 ? 0.6 + Math.sin(t * 10) * 0.4 : 0.2; }
+  else {
+    const k = ease((t - QS - 4 * QLEN) / 2.2);
+    robot.position.copy(flyArc(handPos(team.ccza).add(new THREE.Vector3(2, 1.4, 0)), rd.clone().add(new THREE.Vector3(1.5, 3.5, 0)), k, 2));
+    scroll.position.copy(flyArc(scrollAtBot, rd.clone().add(new THREE.Vector3(0, 2.9, 0)), k, 2));
+    B.raised = C.raised = k >= 1;
+    look = rd;
+  }
+  scroll.rotation.y += dt * 1.5;
+  // 問題小卡
+  qcards.forEach((c, i) => {
+    const t0 = QS + i * QLEN, m = team[c.q.who];
+    if (t < t0) { c.el.classList.add("off"); return; }
+    c.el.classList.remove("off");
+    const k = ease((t - t0) / 1.2);
+    c.o.position.copy(flyArc(scrollAtBot, headPos(m), ease((t - t0 - 0.8) / 0.8), 1.2));
+    if (t >= t0 + 1.9) { c.el.classList.add("done"); c.el.querySelector("b").textContent = "✓"; }
+    if (t >= t0 && t < t0 + QLEN) look = m.g.position.clone().lerp(robot.position.clone().setY(0), 0.4);
+  });
+  for (const m of Object.values(team)) if (m.raised) m.arms[1].rotation.x = -2.6;
+  if (t >= 2.4 && t < QS) { if (portrait()) placeCamera(new THREE.Vector3(0, 0, -6), fitDistance(20, 19), 38); else placeCamera(new THREE.Vector3(0, 0, -5), fitDistance(30, 18), 34); }
+  else if (look) placeCamera(look.clone().setY(0).add(new THREE.Vector3(0, 0, portrait() ? 4 : 2)), fitDistance(12, 10), portrait() ? 42 : 34);
+}
+
+// ── 頭像：替每個角色拍一張 3D 大頭照，給聊天卡用 ──
+const avatars = {};
+{
+  const size = 128;
+  const ar = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+  ar.setSize(size, size);
+  ar.outputColorSpace = THREE.SRGBColorSpace;
+  const as = new THREE.Scene();
+  as.add(new THREE.HemisphereLight("#ffffff", "#c9b9a3", 1.4));
+  const key = new THREE.DirectionalLight("#fff1dc", 1.6);
+  key.position.set(2, 3, 4);
+  as.add(key);
+  const cam = new THREE.PerspectiveCamera(26, 1, 0.1, 50);
+  const shoot = (name, src, headY, dist) => {
+    const c = src.clone(true);
+    c.traverse((o) => { if (o.isCSS2DObject) o.parent && o.removeFromParent(); });
+    c.position.set(0, 0, 0); c.rotation.set(0, 0, 0);
+    c.visible = true;
+    as.add(c);
+    cam.position.set(0.15, headY + 0.05, dist);
+    cam.lookAt(0, headY, 0);
+    ar.render(as, cam);
+    avatars[name] = ar.domElement.toDataURL("image/png");
+    as.remove(c);
+  };
+  shoot("allwill", robot, 1.05 * 2.1, 6.4);
+  for (const [k, m] of Object.entries(team)) shoot(k, m.g, 1.2 * TEAM_SCALE, 2.0);
+  shoot("coomy", mascots.me, 1.28 * 1.6, 2.5);
+  shoot("water", mascots.water, 1.0, 4.0);
+  ar.dispose();
+}
+const WHO = {
+  allwill: "AllWill", richard: "Richard・PM", raymond: "Raymond・CTO", ben: "ben・RD", ccza: "ccza・RD", coomy: "Coomy",
+};
+// 聊天卡：msgs = [[who, text], …]；right 列出的人顯示在右側
+function chatHTML(msgs, right = []) {
+  return `<div class="chat">${msgs.map(([who, text], i) => `<div class="msg${right.includes(who) ? " me" : ""}" style="animation-delay:${i * 0.25}s">
+    <img src="${avatars[who]}" alt=""><div class="b"><span class="n">${WHO[who]}</span>${text}</div></div>`).join("")}</div>`;
+}
+
+// ── 導覽 ──
+const caption = document.getElementById("caption");
+// 手機版控制列貼在卡片上方
+new ResizeObserver(() => document.documentElement.style.setProperty("--cap-h", `${caption.offsetHeight}px`)).observe(caption);
+const CTA = "你們公司哪兩個部門之間的約定最常沒講清楚？留言告訴我。";
+const SOURCE = "資料取自範例組織（課程關懷）";
+const touchCourse = DEALS.filter((d) => d.from === "course" || d.to === "course");
+const STEPS = [
+  { kind: "overview", sec: 4.5 },
+  { kind: "ripple", sec: 5 },
+  { kind: "handoff" },
+  { kind: "closing", sec: 6 },
+]
+let stepIndex = 0, stepTime = 0, touring = params.has("rec"), firstPass = true, current = null;
+const camGoal = { pos: new THREE.Vector3(), target: new THREE.Vector3() };
+const portrait = () => innerHeight > innerWidth;
+
+function fitDistance(halfW, halfH) {
+  const v = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  return Math.max(halfW / (v * camera.aspect), halfH / v);
+}
+function placeCamera(target, dist, pitchDeg) {
+  const a = THREE.MathUtils.degToRad(pitchDeg);
+  camGoal.target.copy(target);
+  camGoal.pos.copy(target).add(new THREE.Vector3(0, Math.sin(a) * dist, Math.cos(a) * dist));
+}
+function overviewView() {
+  if (portrait()) placeCamera(new THREE.Vector3(0, 0, -11), fitDistance(21, 21), 36);
+  else placeCamera(new THREE.Vector3(0, 0, -6), fitDistance(36, 21), 33);
+}
+function focusOn(list) {
+  const box = new THREE.Box3();
+  list.forEach((b) => { box.expandByPoint(b.curve.v0); box.expandByPoint(b.curve.v2); });
+  const units = new Set(list.flatMap((b) => [b.deal.from, b.deal.to]));
+  const pad = Math.max(...[...units].map((id) => unitById[id].size)) + 1.5;
+  const c = box.getCenter(new THREE.Vector3()).setY(0);
+  const size = box.getSize(new THREE.Vector3());
+  const halfW = Math.max(size.x / 2 + pad, 9);
+  const halfD = Math.max(size.z / 2 + pad, 9);
+  const p = portrait();
+  placeCamera(c.add(new THREE.Vector3(0, 0, p ? 3.5 : 1)), fitDistance(halfW, halfD * 0.62) * (p ? 1.1 : 1.0), p ? 44 : 36);
+}
+function focusIsland(u) {
+  const p = portrait();
+  placeCamera(posOf(u).add(new THREE.Vector3(0, 0, p ? 7 : 5)), fitDistance(u.size + 4, u.size + 3) * (p ? 1.15 : 1.1), p ? 46 : 40);
+}
+
+const chip = (u, attr = "") => `<span class="chip"${attr}><i style="background:${u.color}"></i>${u.name}</span>`;
+function route(d) { return `${chip(unitById[d.from])}<span class="arrow">${d.unknown ? "↔" : "→"}</span>${chip(unitById[d.to])}`; }
+function setCaption(bar, top, big, small, withCount = true, quiet = false) {
+  caption.style.setProperty("--bar", bar);
+  const count = withCount && touring ? `<span class="count">${stepIndex + 1} / ${STEPS.length}</span>` : "";
+  const html = `<div class="top">${top}${count}</div><div class="big">${big}</div>${small ? `<div class="small">${small}</div>` : ""}<div class="src">${SOURCE}</div>`;
+  if (quiet && caption.querySelector(".swap")) { caption.querySelector(".swap").innerHTML = html; return; }
+  caption.classList.remove("chat-mode");
+  caption.innerHTML = `<button class="cap-close" type="button" aria-label="收起說明">×</button><div class="swap">${html}</div>`;
+}
+
+function highlight(activeIds, units, stagger = 0) {
+  const set = activeIds ? new Set(activeIds) : null;
+  let order = 0;
+  bridges.forEach((b) => {
+    const on = !set || set.has(b.deal.id);
+    b.deckMat.opacity = on ? 1 : 0.3;
+    b.railMat.opacity = on ? 1 : 0.3;
+    if (!b.checked) b.glowTo = set && on ? 1 : 0;
+    b.delay = set && on ? (order++) * stagger : 0;
+    b.el.classList.toggle("off", !(set && on && set.size <= 2));
+  });
+  Object.values(islands).forEach(({ unit, el }) => el.classList.toggle("dim", !!units && !units.includes(unit.id)));
+}
+
+function applyStep() {
+  const s = STEPS[stepIndex];
+  if (s.kind !== "handoff") endHandoff();
+  document.body.classList.toggle("focus", !["overview", "closing"].includes(s.kind));
+  if (s.kind === "overview") {
+    clearChecks();
+    overviewView();
+    highlight(null, null);
+    setCaption(OK, `<span class="chip">一張組織的 spec 地圖</span>`,
+      "改一個地方，好幾個部門跟著受影響；這些牽連平常看不見，改的人不知道要找誰。",
+      "這是一個組織的 spec 地圖：每座島是一個單位，每座橋是一份約定。小機器寵物是做事的 Agent；人負責做決定；外海的 AllWill 不屬於組織，只在改動前幫大家對約定。");
+  } else if (s.kind === "ripple") {
+    if (portrait()) placeCamera(new THREE.Vector3(0, 0, -6), fitDistance(20, 19), 38); else placeCamera(new THREE.Vector3(0, 0, -5), fitDistance(32, 19), 34);
+    highlight(touchCourse.map((d) => d.id), [...new Set(touchCourse.flatMap((d) => [d.from, d.to]))], 0.22);
+    setCaption(unitById.course.color, chip(unitById.course),
+      `10 份約定裡，有 ${touchCourse.length} 份連到課程平台`, `課程平台的 spec 一改，這 ${touchCourse.length} 條都要重新對過。`);
+  } else if (s.kind === "check") {
+    overviewView();
+    startCheck(() => { if (touring && STEPS[stepIndex].kind === "check") nextStep(); }, true);
+  } else if (s.kind === "summary") {
+    overviewView();
+    checkSummary();
+  } else if (s.kind === "handoff") {
+    highlight(null, null);
+    startHandoff();
+  } else if (s.kind === "deal") {
+    const list = s.ids.map((id) => bridgeById[id]);
+    focusOn(list);
+    highlight(s.ids, [...new Set(list.flatMap((b) => [b.deal.from, b.deal.to]))]);
+    const d = list[0].deal;
+    setCaption(OPEN, route(d), d.plain, `${d.body} 先找${owners(d)}釐清，確認後再更新約定。`);
+  } else {
+    overviewView();
+    highlight(null, null);
+    setCaption(OK, `<span class="chip">#組織 AI-native co-work</span>`,
+      "改動前，AllWill 先找出約定沒講清楚或對不上的地方，請對的人決定。",
+      `${CTA}<br><b>AllWill</b>：讓不同專業的人與 AI 共同規劃，讓 Plan、規格與知識持續同步。`);
+  }
+}
+function nextStep() {
+  if (stepIndex + 1 >= STEPS.length && !params.has("rec")) { touring = false; syncButtons(); return; } // 播完停在結尾
+  stepTime = 0; stepIndex = (stepIndex + 1) % STEPS.length; if (stepIndex === 0) firstPass = false; applyStep();
+}
+
+// ── 自己逛：點島看功能、點橋看約定 ──
+const tourBtn = document.getElementById("tourBtn");
+const exploreBtn = document.getElementById("exploreBtn");
+const checkBtn = document.getElementById("checkBtn");
+function syncButtons() {
+  document.body.classList.toggle("playing", touring);
+  tourBtn.textContent = touring || played ? "↻ 重播" : "▶ 播放";
+  tourBtn.classList.toggle("on", touring);
+  exploreBtn.classList.toggle("on", !touring && exploring);
+}
+let played = false, exploring = false;
+function startTour() {
+  if (!params.has("rec")) sound.start();
+  played = true; exploring = false;
+  touring = true;
+  endHandoff();
+  check.on = false; robot.visible = false; stepIndex = 0; stepTime = 0; firstPass = true;
+  document.body.classList.remove("cap-hidden");
+  // 從小人近景拉遠開場
+  const m = bridgeById["course-finance"].curve.getPointAt(0.45);
+  controls.target.copy(m);
+  camera.position.copy(m).add(new THREE.Vector3(2.5, 3.2, 6.5));
+  applyStep();
+  syncButtons();
+}
+function setMode(tour) {
+  if (tour) return startTour();
+  if (!params.has("rec")) sound.start();
+  touring = false; exploring = true;
+  endHandoff();
+  document.body.classList.remove("cap-hidden");
+  if (!check.on) exploreHint();
+  syncButtons();
+}
+document.getElementById("playCta").addEventListener("click", startTour);
+const soundBtn = document.getElementById("soundBtn");
+const syncSound = () => { soundBtn.textContent = sound.muted ? "🔇" : "🔊"; };
+syncSound();
+soundBtn.addEventListener("click", () => { sound.toggle(); syncSound(); });
+function exploreHint() {
+  current = null;
+  document.body.classList.remove("focus");
+  highlight(null, null);
+  setCaption(OK, `<span class="chip">自己逛</span>`, "點一座島看它有哪些功能，點一座橋看約定", `拖曳可以轉動視角，雙指或滾輪縮放。也可以按「AllWill」把約定檢查一輪。<br>${CTA}`, false);
+}
+tourBtn.addEventListener("click", startTour);
+exploreBtn.addEventListener("click", () => setMode(false));
+checkBtn.addEventListener("click", () => {
+  sound.start();
+  if (touring) setMode(false);
+  document.body.classList.add("focus");
+  overviewView(); manualFocus = 3;
+  startCheck();
+});
+controls.addEventListener("start", () => { if (touring) setMode(false); });
+
+function showIsland(u) {
+  current = { type: "island", id: u.id };
+  document.body.classList.add("focus");
+  focusIsland(u); manualFocus = 2.5;
+  const out = DEALS.filter((d) => d.from === u.id), inn = DEALS.filter((d) => d.to === u.id);
+  highlight([...out, ...inn].map((d) => d.id), [u.id, ...out.map((d) => d.to), ...inn.map((d) => d.from)]);
+  const dealChip = (d, other) => `<button class="deal" data-deal="${d.id}">${chip(unitById[other])}<span>${d.what}</span></button>`;
+  const feats = u.features
+    ? `<div class="sec">功能區 ${u.features.length} 個（數字是規格文件數）</div><div class="feats">${u.features.map(([n, c]) => `<span>${n}<em>${c} 份</em></span>`).join("")}</div>`
+    : u.id === "allwill" ? `<div class="small">AllWill 不屬於這個組織；它在旁邊檢查約定，決定還是由人來做。</div>`
+    : u.ext ? `<div class="sec">外部服務</div><div class="small">範例只寫了它在約定裡的角色。</div>`
+    : `<div class="sec">功能區</div><div class="small">範例裡還沒寫下這座島的規格，只有約定。</div>`;
+  const deals = `${out.length ? `<div class="sec">交出 ${out.length} 份</div><div class="deals">${out.map((d) => dealChip(d, d.to)).join("")}</div>` : ""}
+    ${inn.length ? `<div class="sec">收到 ${inn.length} 份</div><div class="deals">${inn.map((d) => dealChip(d, d.from)).join("")}</div>` : ""}`;
+  setCaption(u.color, chip(u), u.say, `${feats}${deals}`, false);
+}
+function showDeal(b) {
+  current = { type: "deal", id: b.deal.id };
+  document.body.classList.add("focus");
+  focusOn([b]); manualFocus = 2.5;
+  highlight([b.deal.id], [b.deal.from, b.deal.to]);
+  const i = bridges.indexOf(b);
+  const st = b.checked && b.checked !== "ok" ? `<b style="color:${CHECK_COLOR[b.checked]}">${CHECK_TEXT[b.checked]}</b>：找${owners(b.deal)}釐清。` : "";
+  setCaption(b.deal.check === "open" ? OPEN : b.color.getStyle(),
+    `${route(b.deal)}<span class="pager"><button data-step="-1" aria-label="上一份">‹</button>${i + 1} / ${bridges.length}<button data-step="1" aria-label="下一份">›</button></span>`,
+    b.deal.plain, `${b.deal.body}${st ? "<br>" + st : ""}`, false);
+}
+document.getElementById("capOpen").addEventListener("click", () => document.body.classList.remove("cap-hidden"));
+caption.addEventListener("click", (e) => {
+  if (e.target.closest(".cap-close")) { document.body.classList.add("cap-hidden"); return; }
+  const d = e.target.closest("[data-deal]");
+  if (d) { if (touring) setMode(false); showDeal(bridgeById[d.dataset.deal]); return; }
+  const s = e.target.closest("[data-step]");
+  if (s && current?.type === "deal") {
+    const i = bridges.indexOf(bridgeById[current.id]);
+    showDeal(bridges[(i + Number(s.dataset.step) + bridges.length) % bridges.length]);
+  }
+});
+// 卡片左右滑換下一份約定
+let swipeX = null;
+caption.addEventListener("pointerdown", (e) => { swipeX = e.clientX; });
+caption.addEventListener("pointerup", (e) => {
+  if (swipeX === null || current?.type !== "deal") return;
+  const dx = e.clientX - swipeX; swipeX = null;
+  if (Math.abs(dx) < 40) return;
+  const i = bridges.indexOf(bridgeById[current.id]);
+  showDeal(bridges[(i + (dx < 0 ? 1 : -1) + bridges.length) % bridges.length]);
+});
+
+const ray = new THREE.Raycaster();
+const ptr = new THREE.Vector2();
+let downAt = null;
+renderer.domElement.addEventListener("pointerdown", (e) => { downAt = [e.clientX, e.clientY]; });
+renderer.domElement.addEventListener("pointerup", (e) => {
+  if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return;
+  ptr.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const targets = [...bridges.map((b) => b.group), ...Object.values(islands).map((i) => i.group)];
+  const hit = ray.intersectObjects(targets, true)[0];
+  if (!hit) return;
+  if (touring) setMode(false);
+  if (check.on) return;
+  let o = hit.object;
+  while (o && !targets.includes(o)) o = o.parent;
+  const br = bridges.find((b) => b.group === o);
+  if (br) return showDeal(br);
+  const isl = Object.values(islands).find((i) => i.group === o);
+  if (isl) showIsland(isl.unit);
+});
+function followGoal(dt, rate) {
+  const k = 1 - Math.exp(-dt * rate);
+  camera.position.lerp(camGoal.pos, k);
+  controls.target.lerp(camGoal.target, k);
+}
+let manualFocus = 0;
+
+// ── 迴圈 ──
+function resize() {
+  renderer.setSize(innerWidth, innerHeight);
+  labelRenderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  if (touring && !["check", "handoff"].includes(STEPS[stepIndex].kind)) applyStep();
+}
+addEventListener("resize", resize);
+resize();
+// 開場：錄影模式直接從近景拉遠開始播；一般模式停在全貌，等使用者按播放
+if (!params.has("rec")) {
+  overviewView();
+  camera.position.copy(camGoal.pos);
+  controls.target.copy(camGoal.target);
+  exploreHint();
+  document.body.classList.add("cap-hidden");
+  syncButtons();
+} else {
+  const m = bridgeById["course-finance"].curve.getPointAt(0.45);
+  controls.target.copy(m);
+  camera.position.copy(m).add(new THREE.Vector3(2.5, 3.2, 6.5));
+}
+
+const clock = new THREE.Clock();
+let elapsed = 0;
+function tick(dt) {
+  elapsed += dt;
+  waveSea(elapsed);
+
+  if (touring) {
+    stepTime += dt;
+    const s = STEPS[stepIndex];
+    if (s.sec && stepTime > s.sec) nextStep();
+    if (s.kind === "handoff" && ho.t > HO_END) nextStep();
+    followGoal(dt, firstPass && stepIndex === 0 ? 0.9 : 1.5);
+  } else if (manualFocus > 0) {
+    manualFocus -= dt;
+    followGoal(dt, 2);
+  }
+  tickCheck(dt);
+  tickRoam(dt);
+  if (touring) tickHandoff(dt);
+  if (robot.visible) {
+    robot.userData.ring.scale.setScalar(1 + Math.sin(elapsed * 5) * 0.12);
+    robot.children[0].position.y = 0.9 + Math.sin(elapsed * 4) * 0.06;
+  }
+
+  for (const b of bridges) {
+    if (b.delay > 0) { b.delay -= dt; continue; }
+    b.glow += (b.glowTo - b.glow) * (1 - Math.exp(-dt * 6));
+    b.railMat.emissiveIntensity = b.glow * 0.9;
+  }
+  for (const w of walkers) {
+    w.t += (w.dir * w.speed * dt) / w.br.len;
+    if (w.t >= 1) { w.t = 1; w.dir = -1; }
+    if (w.t <= 0) { w.t = 0; w.dir = 1; }
+    w.box.visible = w.dir === 1; // 去程搬箱子，回程空手
+    const t = THREE.MathUtils.clamp(w.t, 0.001, 0.999);
+    const p = w.br.curve.getPointAt(t);
+    const tan = w.br.curve.getTangentAt(t).multiplyScalar(w.dir);
+    const sd = new THREE.Vector3(-tan.z, 0, tan.x).normalize();
+    const step = elapsed * 9 + w.phase;
+    w.g.position.copy(p).addScaledVector(sd, 0.42).setY(p.y + 0.06 + Math.abs(Math.sin(step)) * 0.08);
+    w.g.rotation.y = Math.atan2(tan.x, tan.z);
+    w.legs[0].rotation.x = Math.sin(step) * 0.6;
+    w.legs[1].rotation.x = -Math.sin(step) * 0.6;
+    w.legs[2].rotation.x = -Math.sin(step) * 0.6;
+    w.legs[3].rotation.x = Math.sin(step) * 0.6;
+  }
+  for (const w of idlers) {
+    w.a += (w.speed * dt) / (w.rad * 0.25);
+    const step = elapsed * 7 + w.phase;
+    w.g.position.set(w.center.x + Math.cos(w.a) * w.rad, 0.75 + Math.abs(Math.sin(step)) * 0.06, w.center.z + Math.sin(w.a) * w.rad);
+    const s = Math.sign(w.speed);
+    w.g.rotation.y = Math.atan2(-Math.sin(w.a) * s, Math.cos(w.a) * s);
+    w.legs[0].rotation.x = Math.sin(step) * 0.5;
+    w.legs[1].rotation.x = -Math.sin(step) * 0.5;
+    w.legs[2].rotation.x = -Math.sin(step) * 0.5;
+    w.legs[3].rotation.x = Math.sin(step) * 0.5;
+  }
+  if (mascots.water) {
+    mascots.water.scale.set(1 + Math.sin(elapsed * 4.4) * 0.03, 1 - Math.sin(elapsed * 4.4) * 0.03, 1);
+    mascots.wave.rotation.z = 2.5 + Math.sin(elapsed * 6) * 0.35;
+  }
+  for (const f of foams) { const k = 1 + Math.sin(elapsed * 1.2) * 0.025; f.scale.set(k, k, 1); f.material.opacity = 0.55 + Math.sin(elapsed * 1.2) * 0.15; }
+  for (const f of flags) f.userData.cloth.rotation.y = Math.sin(elapsed * 2.4 + f.position.x) * 0.25;
+  for (const c of clouds) { c.g.position.x += c.v * dt; if (c.g.position.x > 90) c.g.position.x = -90; }
+
+  if (mascots.tags) { const near = camera.position.distanceTo(islands.course.group.position) < 70; mascots.tags.forEach((t) => (t.visible = near)); }
+  controls.update();
+  const camDist = camera.position.distanceTo(controls.target);
+  scene.fog.near = camDist * 1.2;
+  scene.fog.far = camDist * 3.4 + 60;
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+}
+if (params.has("rec")) { window.__frame = (dt) => tick(dt); window.__avatars = avatars; }
+else renderer.setAnimationLoop(() => tick(Math.min(clock.getDelta(), 0.05)));
+</script>
+</body>
+</html>
