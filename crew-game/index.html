@@ -49,7 +49,7 @@
   .speech.tagline { background: #1c2430; color: #ffd36b; font-size: 12px; padding: 3px 9px; }
   .speech.tagline::after { border-top-color: #1c2430; }
   .speech { position: relative; max-width: 180px; white-space: normal; font-size: 12px; font-weight: 700; background: #fff; color: var(--ink); padding: 6px 10px;
-    border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: opacity .3s var(--ease), transform .4s cubic-bezier(0.34, 1.36, 0.64, 1); }
+    border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: opacity .3s var(--ease); } /* 不做位移動畫，避免跟著鏡頭抖 */
   .speech::after { content: ""; position: absolute; left: 50%; bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-top-color: #fff; border-bottom: 0; }
   .speech.off { opacity: 0; transform: translateY(6px) scale(0.85); }
   .egg { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--muted); line-height: 1.6; }
@@ -200,6 +200,10 @@
   .skill-tip .eff em { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; font-style: normal; font-size: 10px; font-weight: 900; margin-right: 3px; background: #fff; }
   .skill-tip .eff em.y { color: #c98a00; box-shadow: inset 0 0 0 2px #f2b51f; } .skill-tip .eff em.r { color: #ec4d2f; box-shadow: inset 0 0 0 2px #ec4d2f; } .skill-tip .eff em.b { background: #ec4d2f; color: #fff; font-size: 9px; }
   .skill-tip small.bg { opacity: .5; margin-top: 4px; }
+  .skill-tip .boon-list { margin-top: 6px; display: grid; gap: 4px; }
+  .skill-tip .boon-list div { display: grid; grid-template-columns: auto auto 1fr; gap: 6px; align-items: baseline; font-size: 12px; opacity: .5; }
+  .skill-tip .boon-list div.on { opacity: 1; }
+  .skill-tip .boon-list i { font-style: normal; font-weight: 900; color: #ffd36b; }
   .skill-tip small b { color: #ffd36b; }
   .stun-tag { position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%); white-space: nowrap; font-size: 11px; font-weight: 900; color: #fff;
     background: var(--sc, #e08a3c); padding: 2px 8px; border-radius: 999px; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
@@ -214,6 +218,9 @@
   .cine-skip { position: fixed; inset: 0; z-index: 9; border: 0; background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 35%, rgba(60,0,0,0.45) 100%); opacity: 0; pointer-events: none; transition: opacity var(--duration-slow) var(--ease-smooth-out); cursor: pointer; }
   body.cine .cine-skip { opacity: 1; pointer-events: auto; }
   body.cine .hud { opacity: 0.25; }
+  body.cine .heroes, body.cine #labels { opacity: 0 !important; }
+  body.cine::after { content: ""; position: fixed; inset: 0; z-index: 8; pointer-events: none; background: rgba(0,0,0,0.42); }
+  @media (max-width: 640px) { .banner { font-size: 16px; padding: 8px 12px; } .banner small { font-size: 12px; } }
   .skill-tip p { margin: 4px 0 0; font-size: 12.5px; line-height: 1.55; opacity: .92; }
   .skill-tip dl { margin: 6px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; font-size: 12px; }
   .skill-tip dt { font-weight: 900; color: var(--c, #14b89c); filter: brightness(1.4); }
@@ -251,6 +258,137 @@
   .card-flip .back span { font-size: 13px; line-height: 1.5; color: #3a4350; }
   .card-flip .back em { font-style: normal; font-size: 12px; font-weight: 900; color: #f0a33a; }
   @media (prefers-reduced-motion: reduce) { .card-flip.on .fc { animation: none; transform: rotateY(180deg); } }
+  /* 英雄小卡：左下角，只顯示已上線的英雄 */
+  .heroes { left: max(12px, env(safe-area-inset-left)) !important; right: auto !important; bottom: max(12px, env(safe-area-inset-bottom)) !important; top: auto !important;
+    flex-direction: column; justify-content: flex-end; align-items: flex-start; padding: 6px !important; border-radius: 16px; gap: 6px !important;
+    background: rgba(20,30,40,0.5) !important; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); width: auto !important; }
+  .hero.locked { display: none !important; }
+  .hero { background: none !important; box-shadow: none !important; padding: 0 !important; flex-direction: row !important; align-items: center !important; gap: 6px; }
+  .hero .ring { width: 44px !important; height: 44px !important; }
+  .hero.duo .ring { width: 66px !important; }
+  .hero .hname { display: none !important; }
+  .hero .badges { display: flex; gap: 3px; }
+  .hero .badges i { display: grid; place-items: center; min-width: 20px; height: 22px; padding: 0 4px; border-radius: 7px; background: var(--c); color: #fff; font-style: normal; font-size: 10px; font-weight: 900; line-height: 1; position: relative; }
+  .hero .badges i::after { content: ""; position: absolute; left: 3px; right: 3px; bottom: -4px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, #fff 0 var(--lvw), rgba(255,255,255,0.25) var(--lvw)); }
+  .hero .lvdots { display: none !important; }
+  .heroes .more { color: #fff; font-size: 12px; font-weight: 900; padding: 2px 6px; opacity: .8; }
+  @media (min-width: 700px) { .heroes { flex-direction: row; align-items: center; } .hero .ring { width: 52px !important; height: 52px !important; } .hero.duo .ring { width: 78px !important; } }
+  /* 舊版細條（已被上面覆寫） */
+  .heroes { gap: 8px !important; padding-top: 4px !important; background: none !important; }
+  .hero { flex: 0 0 auto !important; max-width: none !important; min-width: 0 !important; padding: 4px !important; border-radius: 999px !important; background: rgba(255,252,246,0.9) !important; }
+  .hero kbd, .hero .cardb, .hero b, .hero em { display: none !important; }
+  .hero .ring { width: 40px !important; height: 40px !important; }
+  .hero.duo .ring { width: 62px !important; }
+  .hero.locked .ring { opacity: .45; }
+  .hero .lvdots { display: flex; justify-content: center; gap: 3px; height: 6px; margin-top: 3px; }
+  .hero .lvdots s { width: 5px; height: 5px; border-radius: 50%; background: var(--c); text-decoration: none; }
+  .card-flip { left: auto !important; right: 12px; top: auto !important; bottom: calc(max(10px, env(safe-area-inset-bottom)) + 74px); margin: 0 !important; transform: scale(0.62); transform-origin: 100% 100%; }
+  body.picking #labels, body.picking .banner { opacity: 0 !important; transition: opacity .2s; }
+  #hCombo { display: none !important; }
+  .bp-use { display: flex; gap: 4px; margin: 2px 0; flex-wrap: wrap; }
+  .bp-use i { font-style: normal; font-size: 10.5px; font-weight: 900; padding: 1px 7px; border-radius: 999px; color: #fff; }
+  .bp-use .u-清黃 { background: #d9a400; } .bp-use .u-打紅 { background: #ec4d2f; } .bp-use .u-打魔王 { background: #6b2fd6; }
+  .hero .hname { display: block; font-size: 10px; font-weight: 900; text-align: center; color: var(--ink); line-height: 1.1; margin-top: 2px; white-space: nowrap; }
+  .skill-tip { pointer-events: auto !important; }
+  .skill-tip .tip-x { position: absolute; top: 6px; right: 8px; border: 0; background: none; color: #fff; font-size: 16px; cursor: pointer; padding: 4px 8px; }
+  .skill-tip .boon-list div { grid-template-columns: auto auto !important; }
+  .skill-tip .boon-list span { display: none; }
+  .legend3 { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .legend3 li { display: flex; flex-direction: column; align-items: center; gap: 2px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 4px; }
+  .legend3 .qb { animation: none; }
+  [hidden] { display: none !important; }
+  .legend3 .lg-pic { position: relative; width: 64px; height: 64px; border-radius: 16px; background: radial-gradient(circle at 50% 60%, #fff6dc, #f3e6c8); }
+  .legend3 .lg-pic.boss { background: radial-gradient(circle at 50% 60%, #ffd9d0, #f0b6a8); }
+  .legend3 .lg-pic img { width: 100%; height: 100%; display: block; }
+  .legend3 .lg-pic .qb { position: absolute; right: -6px; top: -6px; width: 24px; height: 24px; font-size: 14px; }
+  .legend3 b { font-size: 13px; font-weight: 900; } .legend3 em { font-style: normal; font-size: 11px; color: var(--muted); font-weight: 700; }
+  .hero.danger .ring { animation: dangerHero .4s steps(2) infinite; }
+  @keyframes dangerHero { 50% { box-shadow: 0 0 0 4px #ff3b2f; } }
+  .bossbar { position: absolute; left: 50%; top: calc(max(12px, env(safe-area-inset-top)) + 44px); background: #1c0a0a !important; z-index: 2; transform: translateX(-50%); width: min(92vw, 420px); padding: 7px 12px 8px; border-radius: 14px;
+    background: rgba(28,10,10,0.82); color: #fff; display: none; box-shadow: 0 6px 18px rgba(0,0,0,0.35); }
+  body.boss-on .bossbar { display: block; }
+  .bossbar b { display: block; font-size: 12.5px; font-weight: 900; letter-spacing: .04em; color: #ffb3a6; }
+  body.boss-on .xpbar { visibility: hidden; }
+  .bossbar .hp { margin-top: 4px; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.15); overflow: hidden;
+    background-image: repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), rgba(0,0,0,0.5) calc(25% - 1px) 25%); }
+  .bossbar .hp i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #ff3b2f, #ff8a3d); transition: width .25s var(--ease-smooth-out); }
+  .bossbar .dist { margin-top: 5px; display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 900; opacity: .9; }
+  .bossbar .dist div { flex: 1; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.15); overflow: hidden; }
+  .bossbar .dist i { display: block; height: 100%; width: 0; background: #ffd36b; }
+  .bossbar.near .dist i { background: #ff3b2f; animation: blink .35s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: .3; } }
+  .boss-vig { position: fixed; inset: 0; pointer-events: none; z-index: 4; opacity: 0; background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 50%, rgba(200,20,20,0.6) 100%); }
+  body.boss-on .boss-vig { animation: vig var(--vig-s, 1.6s) ease-in-out infinite; }
+  @keyframes vig { 50% { opacity: var(--vig-o, 0.35); } }
+  .title-card-fx { position: fixed; left: 0; right: 0; top: 34%; z-index: 13; pointer-events: none; padding: 14px 0; text-align: center; color: #fff;
+    background: linear-gradient(100deg, transparent 0, rgba(20,0,0,0.88) 12%, rgba(150,20,20,0.88) 50%, rgba(20,0,0,0.88) 88%, transparent 100%); transform: translateX(110%); opacity: 0; }
+  .title-card-fx.on { animation: tcard 1.6s var(--ease-smooth-out) forwards; }
+  @keyframes tcard { 0% { transform: translateX(110%); opacity: 1; } 22% { transform: translateX(0); } 78% { transform: translateX(-2%); opacity: 1; } 100% { transform: translateX(-110%); opacity: 0; } }
+  .title-card-fx small { display: block; font-size: 13px; font-weight: 900; letter-spacing: .4em; color: #ffb3a6; }
+  .title-card-fx b { display: block; font-family: "Noto Serif TC", serif; font-size: clamp(26px, 7vw, 44px); font-weight: 900; }
+  .title-card-fx span { display: block; font-size: 14px; font-weight: 700; opacity: .9; }
+  .narr.tag-y::before, .narr.tag-r::before { }
+  .xpbar { position: absolute; top: calc(max(12px, env(safe-area-inset-top)) + 44px); left: 12px; display: flex; align-items: center; gap: 8px; background: var(--paper); border-radius: 999px; padding: 4px 12px;
+    box-shadow: 0 4px 14px rgba(40,30,20,0.14); font-size: 12px; font-weight: 900; width: min(260px, calc(100vw - 120px)); }
+  .xpbar .bar { flex: 1; height: 8px; border-radius: 999px; background: rgba(34,42,54,0.1); overflow: hidden; }
+  .xpbar .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #8a5ac6, #ff4f86); transition: width .3s var(--ease-smooth-out); }
+  .xpbar b { min-width: 34px; text-align: right; color: #8a5ac6; }
+  .boon-pick { position: fixed; inset: 0; z-index: 12; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 10px;
+    padding: 16px 12px max(16px, env(safe-area-inset-bottom)); background: linear-gradient(rgba(28,36,48,0.15), rgba(28,36,48,0.72)); opacity: 0; pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-smooth-out); }
+  .boon-pick.open { opacity: 1; pointer-events: auto; }
+  .bp-hint { display: none; white-space: nowrap; color: #fff; font-size: 12.5px; font-weight: 700; background: rgba(0,0,0,0.45); padding: 6px 12px; border-radius: 999px; }
+  .bp-hint i { font-style: normal; font-weight: 900; padding: 1px 7px; border-radius: 999px; margin: 0 2px; }
+  .bp-hint .u-清黃 { background: #d9a400; } .bp-hint .u-打紅 { background: #ec4d2f; } .bp-hint .u-打魔王 { background: #6b2fd6; }
+  .boon-pick.tut .bp-hint { display: block; }
+  .boon-pick.tut .bp-use i { animation: usepulse .8s ease-in-out infinite; }
+  @keyframes usepulse { 50% { transform: scale(1.18); box-shadow: 0 0 0 3px rgba(255,255,255,0.7); } }
+  .slam-btn { position: fixed; right: max(14px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); z-index: 6; width: 76px; height: 76px; border-radius: 50%; border: 0; cursor: pointer;
+    background: conic-gradient(#2f9fd8 calc(var(--p, 1) * 360deg), rgba(28,36,48,0.55) 0); display: none; place-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.3); font: inherit; color: #fff; padding: 0; }
+  body.playing-game .slam-btn { display: grid; }
+  .slam-btn span { font-size: 26px; line-height: 1; margin-top: 8px; }
+  .slam-btn b { font-size: 11px; font-weight: 900; margin-top: -10px; }
+  .slam-btn.ready { animation: slamReady 1s ease-in-out infinite; }
+  .slam-btn.armed { box-shadow: 0 0 0 4px #ffd36b, 0 8px 20px rgba(0,0,0,0.3); }
+  @keyframes slamReady { 50% { transform: scale(1.08); } }
+  body.picking .slam-btn, body.cine .slam-btn, body.voyage .slam-btn { display: none !important; }
+  .bp-timer { width: min(100%, 440px); height: 5px; border-radius: 999px; background: rgba(255,255,255,0.25); overflow: hidden; }
+  .bp-timer i { display: block; height: 100%; width: 100%; background: #ffd36b; }
+  @media (min-width: 760px) { .bp-timer { width: min(100%, 860px); } }
+  .bp-title { color: #fff; font-size: 20px; font-weight: 900; text-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+  .bp-cards { display: flex; flex-direction: column; gap: 8px; width: min(100%, 440px); }
+  .bp-card { display: flex; gap: 10px; align-items: center; text-align: left; border: 0; border-radius: 16px; padding: 10px 12px; background: #fffaf2; color: var(--ink); font: inherit; cursor: pointer;
+    box-shadow: 0 0 0 3px var(--c, #14b89c), 0 10px 26px rgba(0,0,0,0.3); transform: translateY(20px); opacity: 0; min-height: 76px; }
+  .boon-pick.open .bp-card { animation: bpin var(--duration-slow) var(--ease-smooth-out) forwards; }
+  .boon-pick.open .bp-card:nth-child(2) { animation-delay: 70ms; } .boon-pick.open .bp-card:nth-child(3) { animation-delay: 140ms; }
+  @keyframes bpin { to { transform: none; opacity: 1; } }
+  .bp-card:active { transform: scale(0.97); }
+  .bp-card.duo { box-shadow: 0 0 0 3px #ffd36b, 0 0 22px rgba(255,211,107,0.7), 0 10px 26px rgba(0,0,0,0.3); background: linear-gradient(135deg, #fff7e0, #fffaf2); }
+  .bp-avs { display: flex; flex: none; }
+  .bp-avs img { width: 50px; height: 50px; border-radius: 50%; background: #e9f6f3; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .bp-avs img + img { margin-left: -14px; }
+  .bp-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .bp-txt b { font-size: 17px; font-weight: 900; }
+  .bp-txt em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--muted); }
+  .bp-txt p { margin: 2px 0 0; font-size: 13.5px; line-height: 1.45; }
+  .bp-tag { align-self: flex-start; font-style: normal; font-size: 10.5px; font-weight: 900; color: #fff; background: #f0a33a; border-radius: 999px; padding: 1px 8px; margin-bottom: 2px; }
+  .bp-tag.new { background: #14b89c; }
+  .bp-dots { display: flex; gap: 4px; margin-top: 4px; }
+  .bp-dots s { width: 9px; height: 9px; border-radius: 50%; background: rgba(34,42,54,0.15); text-decoration: none; }
+  .bp-dots s.on { background: var(--c, #14b89c); }
+  @media (min-width: 760px) {
+    .boon-pick { justify-content: center; }
+    .bp-cards { flex-direction: row; width: min(100%, 860px); }
+    .bp-card { flex: 1; flex-direction: column; text-align: center; padding: 18px 14px; min-height: 230px; }
+    .bp-txt { align-items: center; }
+    .bp-avs img { width: 72px; height: 72px; }
+    .bp-tag { align-self: center; }
+  }
+  @media (prefers-reduced-motion: reduce) { .boon-pick.open .bp-card { animation: none; transform: none; opacity: 1; } }
+  .combo-set { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .combo-set b { width: 100%; font-size: 12px; font-weight: 900; color: var(--muted); }
+  .combo-set span { font-size: 12px; font-weight: 900; padding: 3px 9px; border-radius: 999px; background: #fff; border: 1px solid var(--line); }
+  .combo-set span.duo { background: #fff3d1; border-color: #f0a33a; }
   .red-flash { position: fixed; inset: 0; pointer-events: none; z-index: 4; opacity: 0; box-shadow: inset 0 0 120px 30px rgba(236,77,47,0.75); }
   .red-flash.on { animation: redflash .7s var(--ease-smooth-out); }
   @keyframes redflash { 15% { opacity: 1; } 100% { opacity: 0; } }
@@ -280,7 +418,7 @@
   .combo.on { opacity: 1; transform: none; }
   .combo.pop { animation: numpop var(--duration-fast) var(--ease-bounce); }
   @keyframes numpop { from { transform: scale(1.35); filter: blur(2px); } to { transform: none; filter: none; } }
-  .banner { position: absolute; left: 50%; top: 22%; transform: translate(-50%, 0); max-width: min(92vw, 520px); text-align: center; font-weight: 900;
+  .banner { position: absolute; left: 50%; top: 22%; transform: translate(-50%, 0); width: max-content; max-width: min(94vw, 560px); word-break: keep-all; overflow-wrap: anywhere; text-align: center; font-weight: 900;
     font-size: clamp(18px, 5vw, 26px); line-height: 1.35; color: #fff; background: rgba(28,36,48,0.86); padding: 10px 18px; border-radius: 16px;
     opacity: 0; filter: blur(var(--blur-medium)); transition: opacity var(--duration-slow) var(--ease-smooth-out), filter var(--duration-slow) var(--ease-smooth-out), transform var(--duration-slow) var(--ease-smooth-out); }
   .banner small { display: block; font-size: 13px; font-weight: 700; opacity: .85; margin-top: 2px; }
@@ -342,7 +480,7 @@
   .qb { width: 34px; height: 34px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-weight: 900; font-size: 19px; line-height: 1;
     box-shadow: 0 3px 8px rgba(0,0,0,0.25); border: 3px solid var(--q-yellow); color: #c98a00; transition: transform var(--duration-quick) var(--ease-bounce), opacity var(--duration-quick); }
   .qb.r { border-color: var(--q-red); color: var(--q-red); animation: qshake .5s ease-in-out infinite; }
-  .qb.boss { width: auto; height: auto; border-radius: 14px; padding: 6px 12px; font-size: 15px; border-color: var(--q-red); color: var(--q-red); flex-direction: column; gap: 4px; display: flex; }
+  .qb.boss { width: auto; height: auto; max-width: 9em; border-radius: 12px; padding: 4px 9px; font-size: 12px; white-space: nowrap; border-color: var(--q-red); color: var(--q-red); flex-direction: column; gap: 4px; display: flex; }
   .qb.boss i { display: block; width: 110px; height: 6px; border-radius: 999px; background: rgba(236,77,47,0.2); overflow: hidden; }
   .qb.boss i::after { content: ""; display: block; height: 100%; width: var(--hp, 100%); background: var(--q-red); transition: width var(--duration-fast) var(--ease-smooth-out); }
   .qb.dance { transform: rotate(-12deg) scale(0.9); }
@@ -456,6 +594,10 @@
 <section class="caption" id="caption" aria-live="polite"></section>
 <button class="cap-open" id="capOpen" type="button">顯示說明</button>
 <div class="rotate"><div><b>📱</b>把手機轉成直式來玩</div></div>
+<div class="boon-pick" id="boonPick" role="dialog" aria-label="挑一張技能"><div class="bp-title">達成共識！挑一張</div><div class="bp-hint">看標籤：<i class="u-清黃">清黃</i>＝矛盾 <i class="u-打紅">打紅</i>＝衝突 <i class="u-打魔王">打魔王</i></div><div class="bp-cards"></div><div class="bp-timer"><i></i></div></div>
+<div class="boss-vig" id="bossVig"></div>
+<div class="title-card-fx" id="titleFx"><small></small><b></b><span></span></div>
+<button class="slam-btn" id="slamBtn" type="button" aria-label="先拍板"><span>🎩</span><b>先拍板！</b><i></i></button>
 <div class="red-flash" id="redFlash"></div>
 <div class="card-flip" id="cardFlip" aria-live="polite"></div>
 <div class="cine-bars" aria-hidden="true"><i></i><i></i></div>
@@ -465,6 +607,8 @@
     <div class="timer" id="hTime">3:00</div>
     <div class="shipbar" id="hShip"><span>AllWill 號</span><div class="bar"><i id="hBar"></i><s title="魔王出現"></s></div><b id="hPct">0%</b></div>
   </div>
+  <div class="bossbar" id="bossBar"><b>BOSS　迷霧魔王・對不齊</b><div class="hp"><i></i></div><div class="dist"><span>離船塢</span><div><i></i></div></div></div>
+  <div class="xpbar" id="hXp"><span>共識</span><div class="bar"><i></i></div><b>0</b></div>
   <div class="combo" id="hCombo">釐清 ×0</div>
   <div class="banner" id="hBanner"></div>
   <div class="intro" id="hIntro" role="status"></div>
@@ -475,9 +619,10 @@
   <div class="panel t-stagger">
     <span class="tag">#AllWill 開發團隊</span> <span class="tag">#AI-native cowork</span>
     <h2>AllWill 船塢守衛戰</h2>
-    <p>六個人、五座島，一起把 AllWill 號蓋出海。<br>邊玩邊收集 <b>6 張成員卡</b>，認識 AllWill 開發團隊。</p>
+    <p>黃 ? 是小矛盾，紅 ! 是互相打架的衝突，100 秒後魔王「對不齊」登場。<br>英雄會<b>自動</b>打；共識條滿了，就從三張技能卡<b>挑一張</b>。</p>
+    <ul class="legend3"><li><span class="lg-pic"><img id="lgY" alt=""><span class="qb">?</span></span><b>矛盾</b><em>打 1 下</em></li><li><span class="lg-pic"><img id="lgR" alt=""><span class="qb r">!</span></span><b>衝突</b><em>打 3 下</em></li><li><span class="lg-pic boss"><img id="lgB" alt=""></span><b>魔王</b><em>100 秒後</em></li></ul>
     <button class="btn" id="startBtn" type="button"><i>▶</i>開始守衛<em>一局約 2 分半</em></button>
-    <p class="tut-note" id="tutNote">第一次會有導覽，可以跳過</p>
+
     <button class="alt link" id="replayTut" type="button" hidden>重看教學</button>
     <a class="alt" href="../">只想認識團隊？看 AllWill 團隊的一天 →</a>
   </div>
@@ -583,22 +728,29 @@ const sound = (() => {
     src.connect(f).connect(g).connect(out);
     src.start(t); src.stop(t + dur + 0.05);
   }
+  let mode = "normal";
+  const BOSS_CHORDS = [[57, 60, 64], [53, 57, 60], [52, 56, 59], [57, 60, 64]]; // Am–F–E–Am
   function schedule() {
     while (nextTime < ctx.currentTime + 0.25) {
       const bar = Math.floor(step / 8) % 4, i = step % 8;
-      const chord = CHORDS[bar];
+      const chord = (mode === "normal" ? CHORDS : BOSS_CHORDS)[bar].map((m) => m + (mode === "rage" ? 1 : 0));
+      if (mode !== "normal" && (i === 0 || i === 4)) noise(nextTime, 0.12, { gain: 0.09, type: "lowpass", freq: 160 }); // 低音鼓
       const n = ARP[i] === 3 ? chord[0] + 12 : chord[ARP[i]];
       if (!(i === 7 && bar % 2 === 1)) pluck(N(n + 12), nextTime, i === 0 ? 0.15 : 0.1);
       if (i === 0 || i === 4) tone(N(chord[0] - 12), nextTime, EIGHTH * 3.5, { gain: 0.16 });
       if (i === 0) chord.forEach((m) => tone(N(m), nextTime, EIGHTH * 8, { type: "triangle", gain: 0.025, attack: 0.4 }));
       if (i % 2 === 1) noise(nextTime, 0.06, { gain: 0.025 });
-      nextTime += EIGHTH; step++;
+      nextTime += mode === "normal" ? EIGHTH : EIGHTH * 0.62; step++;
     }
   }
   const now = () => ctx.currentTime + 0.01;
   const fx = (fn) => { if (ctx && !muted) fn(now()); };
   return {
     start: init,
+    setMode(m) { mode = m; },
+    thump: () => fx((t) => { tone(N(33), t, 0.25, { type: "sine", gain: 0.28, out: master }); noise(t, 0.12, { gain: 0.12, type: "lowpass", freq: 200, out: master }); }),
+    sit: () => fx((t) => { const o = tone(N(57), t, 0.35, { type: "sine", gain: 0.18, out: master }); o.frequency.exponentialRampToValueAtTime(N(45), t + 0.3); }),
+    roar: () => fx((t) => noise(t, 0.9, { gain: 0.22, type: "bandpass", freq: 300, q: 1.5, sweepTo: 90, out: master })),
     get muted() { return muted; },
     toggle() {
       init();
@@ -1025,9 +1177,9 @@ function makeIsland(u) {
   el.className = "isl" + (u.ext ? " ext" : "");
   el.innerHTML = `<span><i style="background:${u.color}"></i>${u.name}</span>`;
   const label = new CSS2DObject(el);
-  label.position.set(0, u.ext ? 4.2 : 6.4, u.ext ? 0 : -u.size * 0.95); // 島名放在島後方的高處，畫面上落在人物頭頂之上
+  label.position.set(0, u.ext ? 4.2 : 6.8, u.ext ? 0 : -u.size * 0.9); // 島名在島後緣、人物頭頂之上，不壓人物
   g.add(label);
-  islands[u.id] = { group: g, unit: u, el };
+  islands[u.id] = { group: g, unit: u, el, grass: top.material };
 }
 
 function addExternal(g, u) {
@@ -3033,7 +3185,7 @@ let manualFocus = 0;
 // 黃色（?）帶著小疑問、紅色（!）卡住了：英雄回答它們，Spec 才送得到
 const V3 = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 const YARD = V3(0, 0, 21);
-const TIME_LIMIT = 180;
+const TIME_LIMIT = 165;
 const G = { on: false, demo: true, sailing: false, seq: null, t: 0, points: 0, goal: 170, shown: 0, inflight: 0, combo: 0, comboT: 0, maxCombo: 0,
   solved: 0, split: 0, missed: 0, spawnT: 1.2, warn: null, boss: null, bossSpawned: false, bossDown: false, bossAt: 0, rapid: 0, double: 0, spot: 0,
   async: null, hitstop: 0, shake: 0, jaw: 0, blink: 2, happy: 0, uses: {}, phase: -1, lastSfx: 0, milestone: 0, bannerT: 0 };
@@ -3274,6 +3426,71 @@ function makeGamePet(boss = false) {
 }
 for (let i = 0; i < 18; i++) makeGamePet();
 const bossPet = makeGamePet(true);
+const BOSS_SCALE = 6.0;
+{
+  const g = bossPet.g, horn = mat("#7a1414", { flatShading: true });
+  for (const x of [-0.13, 0.13]) { const h = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.26, 6), horn); h.position.set(x, 0.98, 0.26); h.rotation.z = -x * 2.4; g.add(h); }
+  bossPet.eyes = [-0.07, 0.07].map((x) => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), new THREE.MeshBasicMaterial({ color: "#ffe04a" })); e.position.set(x, 0.75, 0.53); g.add(e); return e; });
+  const fogTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(255,80,60,0.9)"); gr.addColorStop(1, "rgba(255,80,60,0)"); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+  bossPet.fog = Array.from({ length: 7 }, (_, i) => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: fogTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.5 })); sp.scale.setScalar(0.5); sp.userData.t = i / 7; g.add(sp); return sp; });
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.32, 0.42, 32), new THREE.MeshBasicMaterial({ color: "#7a1414", transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false }));
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.02; g.add(ring); bossPet.shadowRing = ring;
+  bossPet.bub.position.set(0.32, 1.05, 0); // 台詞放在身側
+}
+const titleFx = document.getElementById("titleFx"), bossBarEl = document.getElementById("bossBar"), bossVig = document.getElementById("bossVig");
+function showTitleCard(small, big, sub) {
+  titleFx.querySelector("small").textContent = small; titleFx.querySelector("b").textContent = big; titleFx.querySelector("span").textContent = sub;
+  titleFx.classList.remove("on"); void titleFx.offsetWidth; titleFx.classList.add("on");
+}
+function tickBossHud() {
+  const b = G.boss, on = !!(b && b.active && G.on);
+  if (on && !b.rage && G.bossFirstT != null && G.t - G.bossFirstT >= 20) hit(b, 0, null); // 觸發狂暴保底
+  document.body.classList.toggle("boss-on", on);
+  sound.setMode?.(on ? (b.rage ? "rage" : "boss") : "normal");
+  if (!on) return;
+  bossBarEl.querySelector(".hp i").style.width = `${(Math.max(0, b.hp) / b.maxHp) * 100}%`;
+  const d = b.state === "walk" ? 1 - b.u : 0;
+  bossBarEl.querySelector(".dist i").style.width = `${d * 100}%`;
+  bossBarEl.classList.toggle("near", d > 0.7);
+  document.documentElement.style.setProperty("--vig-s", `${1.6 - d * 1.2}s`);
+  document.documentElement.style.setProperty("--vig-o", `${0.2 + d * 0.5}`);
+  if (d > 0.7 && !b.nearSaid) { b.nearSaid = true; banner("再 3 步就上岸！", "全員集火！", true, 2); sound.alarm(); }
+  if (d < 0.5) b.nearSaid = false;
+}
+// 開始畫面的小怪大頭照：直接拍遊戲裡的 3D 模型
+{
+  const size = 128, ar = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+  ar.setSize(size, size); ar.outputColorSpace = THREE.SRGBColorSpace;
+  const as = new THREE.Scene();
+  as.add(new THREE.HemisphereLight("#ffffff", "#c9b9a3", 1.5));
+  const key = new THREE.DirectionalLight("#fff1dc", 1.7); key.position.set(2, 3, 4); as.add(key);
+  const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+  const shot = (obj, y, dist, id) => {
+    const c = obj.clone(true);
+    const drop = []; c.traverse((o) => { if (o.isCSS2DObject || o.isSprite) drop.push(o); }); drop.forEach((o) => o.removeFromParent());
+    c.position.set(0, 0, 0); c.rotation.set(0, -0.5, 0); c.scale.setScalar(1); c.visible = true;
+    as.add(c); cam.position.set(0.9, y + 0.25, dist); cam.lookAt(0, y, 0); ar.render(as, cam); as.remove(c);
+    const img = document.getElementById(id); if (img) img.src = ar.domElement.toDataURL("image/png");
+  };
+  const tint = (pet, color) => { const g = pet.g.clone(true); g.traverse((o) => { if (o.isMesh && o.material === pet.shell) { o.material = pet.shell.clone(); o.material.color.set(color); } }); return g; };
+  const y = makeGamePet(), r = makeGamePet();
+  shot(tint(y, QCOL.y), 0.55, 2.3, "lgY");
+  shot(tint(r, QCOL.r), 0.55, 2.3, "lgR");
+  const b = tint(bossPet, "#ef5b3c"); shot(b, 0.6, 2.4, "lgB");
+  [y, r].forEach((p) => { pets.splice(pets.indexOf(p), 1); scene.remove(p.g); });
+  ar.dispose();
+}
+function tickBossLook(dt) {
+  const b = bossPet; if (!b.active) return;
+  const rage = b.rage, t = elapsed;
+  b.eyes.forEach((e) => (e.material.color.setHSL(rage ? (Math.sin(t * 20) > 0 ? 0 : 0.15) : 0.14, 1, 0.55 + Math.sin(t * 6) * 0.1)));
+  b.fog.forEach((f) => { f.userData.t = (f.userData.t + dt * (rage ? 0.7 : 0.35)) % 1; const k = f.userData.t; f.position.set(Math.sin(k * 9 + f.id) * 0.25, 0.4 + k * 0.9, -0.15); f.scale.setScalar((rage ? 0.8 : 0.5) * (0.6 + k)); f.material.opacity = (rage ? 0.75 : 0.45) * (1 - k); });
+  if (rage) b.shell.emissive.set(Math.sin(t * 16) > 0 ? "#ff2a2a" : "#ffffff"), (b.shell.emissiveIntensity = 0.35);
+  // 台詞間歇閃現
+  b.q.classList.toggle("off", (t % 2.6) > 1.2);
+  // 腳步震動
+  if (b.state === "walk") { b.stepT = (b.stepT || 0) - dt; if (b.stepT <= 0) { b.stepT = rage ? 0.5 : 0.8; G.shake = Math.min(0.25, G.shake + 0.12); sound.thump?.(); shockwave(b.g.position, "#7a1414", 2.4, 0.4); b.shadowRing.scale.setScalar(1.3); } b.shadowRing.scale.lerp(V3(1, 1, 1), 0.15); }
+}
 
 const LANE_IDS = ["jc", "richard", "raymond", "ccza", "ben"];
 const lanes = LANE_IDS.map((id) => {
@@ -3288,7 +3505,10 @@ const lanes = LANE_IDS.map((id) => {
   const band = new THREE.Mesh(new THREE.TubeGeometry(br.curve, 40, 0.75, 8, false), new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0, depthWrite: false }));
   band.position.y = 0.25; band.visible = false; band.renderOrder = 2;
   scene.add(band);
-  return { id, br, stall: 0, el, o, mark: 0, band };
+  // 快漏到島上的預警光圈
+  const warnRing = new THREE.Mesh(new THREE.RingGeometry(2.2, 2.8, 40), new THREE.MeshBasicMaterial({ color: "#ffd23f", transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+  warnRing.rotation.x = -Math.PI / 2; warnRing.position.copy(br.curve.getPointAt(0)).setY(0.95); scene.add(warnRing);
+  return { id, br, stall: 0, el, o, mark: 0, band, jam: [], fire: 0, warnRing };
 });
 const laneById = Object.fromEntries(lanes.map((l) => [l.id, l]));
 
@@ -3299,16 +3519,17 @@ function paintPet(p) {
   p.box.material = p.gold ? GOLD : p.specMat;
   p.bub.visible = q;
   p.q.className = "qb" + (p.type === "r" ? " r" : "") + (p.type === "boss" ? " boss" : "") + (q ? "" : " off");
-  p.q.innerHTML = p.type === "boss" ? `到底要做什麼？<i></i>` : p.type === "r" ? "!" : "?";
+  p.q.innerHTML = p.type === "boss" ? `${BOSS_LINES[G.bossLine = ((G.bossLine ?? -1) + 1) % BOSS_LINES.length]}` : p.type === "r" ? "!" : "?";
   if (p.type === "boss") p.el.style.setProperty("--hp", `${(Math.max(0, p.hp) / p.maxHp) * 100}%`);
-  p.g.scale.setScalar(p.type === "boss" ? 3.2 : p.type === "r" ? 1.95 : p.type === "y" ? 1.7 : 1.35);
+  p.g.scale.setScalar(p.type === "boss" ? BOSS_SCALE : p.type === "r" ? 1.95 : p.type === "y" ? 1.7 : 1.35);
 }
 function spawn(type, lane, at = null) {
   const p = type === "boss" ? bossPet : pets.find((x) => !x.active && !x.boss);
   if (!p || p.active) return null;
   Object.assign(p, { active: true, type, lane, gold: false, stun: 0, incoming: 0, flash: 0, warned: false, side: (rand() - 0.5) * 0.8 });
   p.gen++;
-  p.hp = p.maxHp = type === "boss" ? 16 : type === "r" ? 3 : type === "y" ? 1 : 0;
+  p.hp = p.maxHp = type === "boss" ? 125 : type === "r" ? 3 : type === "y" ? 1 : 0;
+  if (type === "boss" && G.bossHp != null) p.hp = G.bossHp; // 魔王傷害累積，漏掉不回滿
   p.speed = type === "boss" ? 0.34 : type === "r" ? 0.8 : type === "y" ? 1.05 : 1.5;
   p.g.visible = true;
   p.g.rotation.set(0, 0, 0);
@@ -3319,8 +3540,18 @@ function spawn(type, lane, at = null) {
     const src = lanes[Math.floor(rand() * lanes.length)].br.curve.getPointAt(0).clone().setY(1.6);
     emitSpec(src, cave.localToWorld(V3(0, 4.6, 0)), 0.6); p.state = "fly"; p.t = 0; p.from = MOUTH(); p.to = lane.br.curve.getPointAt(1).clone(); p.u = 1; G.jaw = 0.45; }
   if (type === "boss") G.boss = p;
+  if (G.on && type === "y") onb("y", p, "矛盾", "小矛盾，英雄順手就解了");
+  if (G.on && type === "r") onb("r", p, "衝突 ×3", "兩份 Spec 打起來了");
   return p;
 }
+function statusTag(p, label, color) {
+  if (p.stun > 0 || p.type === "boss") return;
+  p.st.textContent = label; p.st.style.setProperty("--sc", color); p.st.classList.remove("off");
+  clearTimeout(p._stT); p._stT = setTimeout(() => { if (!(p.stun > 0)) p.st.classList.add("off"); }, 1500);
+}
+const RAGE_LINES = ["我只改一點點", "下週一一定要上！"];
+const BOSS_LINES = ["到底要做什麼？", "AI 弄一下很快吧？", "這個很簡單吧？", "下週一能上嗎？", "跟上次講的不一樣", "我只改一點點"];
+setInterval(() => { const b = G.boss; if (b && b.active && b.type === "boss") { const L = b.rage ? RAGE_LINES : BOSS_LINES; G.bossLine = ((G.bossLine ?? 0) + 1) % L.length; b.q.textContent = L[G.bossLine]; } }, 2600);
 function setStun(p, sec, color, label) {
   p.stun = sec; p.stunC = color;
   p.q.classList.add("dance");
@@ -3328,6 +3559,7 @@ function setStun(p, sec, color, label) {
   shockwave(p.g.position, color, 1.6, 0.4);
 }
 function retire(p) {
+  if (p.state === "jam") { const L = p.lane; const i = L.jam.indexOf(p); if (i >= 0) L.jam.splice(i, 1); p.state = "gone"; }
   p.st.classList.add("off");
   p.active = false; p.g.visible = false; p.bub.visible = false; p.q.classList.add("off"); p.gen++;
   if (p === G.boss) G.boss = null;
@@ -3389,8 +3621,14 @@ function shakeCamera(dt) {
 
 // 船：分數換成磚塊；掉磚時磚塊翻落海裡
 function addPoints(n) {
-  const cap = G.bossDown ? G.goal : Math.floor(G.goal * 0.9);
+  const cap = G.bossDown ? G.goal : Math.floor(G.goal * 0.85);
   const before = G.points;
+  // 船砲：船蓋到上限後，多的 Spec 每 2 塊打魔王 1 下
+  if (n > 0 && !G.bossDown && G.points + n > cap) {
+    G.cannon = (G.cannon || 0) + (G.points + n - cap);
+    if (!G.boss) { if (G.cannon > 9) { addXP(Math.floor((G.cannon - 9) / 3)); G.cannon = 9; } } // 魔王來之前最多存 3 發，多的換成共識
+    if (G.boss && G.cannon >= 3 && G.t - (G.cannonT ?? -9) >= 1) { G.cannon -= 3; G.cannonT = G.t; const shots = 1; for (let i = 0; i < shots; i++) setTimeout(() => G.boss && hit(G.boss, 1, null), i * 120); emitSpec(YARD.clone().add(V3(0, 5, 0)), G.boss.g.position.clone().add(V3(0, 2, 0)), 0.6); floatText(YARD.clone().add(V3(0, 7, 0)), "船砲：這版先 freeze！", "gold"); }
+  }
   G.points = THREE.MathUtils.clamp(G.points + n, 0, cap);
   syncBricks();
   const pct = G.points / G.goal;
@@ -3436,6 +3674,7 @@ const HEROES = [
   { key: "ben", av: "ben", bub: "ben", lane: "ben", c: "#2f9a62", skill: "舞台演出", cd: 13, auto: 4.2, title: "最佳男主角 ben", say: "看我這邊！", obj: () => team.ben.g, hy: 3.2 },
 ];
 const heroByKey = Object.fromEntries(HEROES.map((h) => [h.key, h]));
+Object.entries({ johnny: 2.0, jc: 1.7, raymond: 1.7, richard: 1.8, ccza: 2.0, ben: 1.8 }).forEach(([k, a]) => (heroByKey[k].auto = a)); // 全自動戰鬥的基本攻速
 // 英雄分批登場：一次介紹一位（文案只用團隊提供的真實資料）
 const INTRO = {
   jc: { at: 16, who: "水球潘・CEO ＆ Coomy・Frontend Lead", bg: "水球潘創辦水球軟體學院，社群一年長到 6,000 人以上；Coomy 是團隊的節拍器。", how: "船長帽清掉全場黃色，Coomy 接著連打", tag: ["一呼百應！", "抓節拍！"] },
@@ -3487,18 +3726,19 @@ function fireOrb(h, p, dmg, opt = {}) {
   }
   const kind = opt.kind || null;
   Object.assign(o, { active: true, t: 0, dur: opt.dur || 0.4, p, gen: p.gen, dmg, h, kind, delay: opt.delay || 0, arc: opt.arc ?? 1.8, sky: !!opt.sky });
-  o.from = o.sky ? p.g.position.clone().add(V3(0, 10, 0)) : heroPos(h);
-  o.m.material.color.set(kind ? h.c : "#ffffff");
+  o.from = opt.from ? opt.from.clone() : o.sky ? p.g.position.clone().add(V3(0, 10, 0)) : heroPos(h);
+  o.fromFixed = !!opt.from;
+  o.m.material.color.set(h.c);
   o.m.scale.setScalar(kind ? opt.size || 1 : 0.7);
   if (kind) { o.sp.material.map = kindTex(kind); o.sp.material.needsUpdate = true; o.sp.scale.setScalar((kind === "heart" ? 0.9 : 1.6) * (portrait() ? (kind === "heart" ? 1.6 : 1.6) : 1)); }
-  o.m.visible = false; // 自動攻擊不畫小白球，只留命中閃光
+  o.m.visible = !kind && o.delay <= 0; // 自動攻擊：英雄色的小球
   o.sp.visible = !!kind && o.delay <= 0;
   p.incoming += dmg;
 }
 function tickOrbs(dt) {
   for (const o of orbs) {
     if (!o.active) continue;
-    if (o.delay > 0) { o.delay -= dt; if (o.delay > 0) continue; o.m.visible = false; o.sp.visible = !!o.kind; o.from = o.sky ? o.p.g.position.clone().add(V3(0, 10, 0)) : heroPos(o.h); }
+    if (o.delay > 0) { o.delay -= dt; if (o.delay > 0) continue; o.m.visible = !o.kind; o.sp.visible = !!o.kind; if (!o.fromFixed) o.from = o.sky ? o.p.g.position.clone().add(V3(0, 10, 0)) : heroPos(o.h); }
     o.t += dt / o.dur;
     const k = Math.min(o.t, 1);
     const to = o.p.g.position.clone().add(V3(0, 0.9, 0));
@@ -3510,7 +3750,14 @@ function tickOrbs(dt) {
       o.active = false; o.m.visible = false; o.sp.visible = false;
       if (o.p.gen !== o.gen) continue;
       o.p.incoming = Math.max(0, o.p.incoming - o.dmg);
-      if (o.p.active && o.p.type !== "n") hit(o.p, o.dmg, o.h, o.kind);
+      if (o.p.active && o.p.type !== "n") {
+        hit(o.p, o.dmg, o.h, o.kind);
+        if (o.h.key === "raymond" && !o.kind && has("pierce")) {
+          const near = active((q) => q !== o.p && q.lane === o.p.lane).sort((a, c) => Math.abs(a.u - o.p.u) - Math.abs(c.u - o.p.u)).slice(0, [0, 2, 4, 99][lv("pierce")]);
+          near.forEach((q) => pierceBeam(o.p.g.position, q.g.position, o.h.c));
+          near.forEach((q) => hit(q, has("d_version") && (q.slowT || 0) > 0 ? 3 : 1, o.h));
+        }
+      }
     }
   }
 }
@@ -3528,54 +3775,86 @@ function popAvatar(pos, kind, h) {
   a.el.style.setProperty("--c", h.c);
   a.el.classList.remove("off"); a.o.position.copy(pos); a.y = pos.y; a.t = 0; a.o.visible = true;
 }
+let BOSS_USE = null;
+function bossMult(h) {
+  BOSS_USE ??= new Set(Object.keys(USE).filter((k) => USE[k].includes("打魔王")));
+  if (!h) return 1;
+  const mine = BOONS.filter((b) => b.hero === (h.credit || h.key) && lv(b.id));
+  let m = 1;
+  if (mine.some((b) => BOSS_USE.has(b.id))) m = Math.max(m, 1.5);              // 「打魔王」卡 ×1.5
+  if (DUOS.some((d) => has(d.id) && d.req.some((r) => boonById[r].hero === (h.credit || h.key)))) m = Math.max(m, 2); // 共鳴 ×2
+  if (h.key === "raymond") m = Math.max(m, 2);
+  return m;
+}
 function hit(p, dmg, h, kind = null) {
-  if ((p.type === "r" || p.type === "boss") && h?.key === "raymond") dmg *= 2;
+  if (p.type === "boss") { dmg *= bossMult(h); dmg = Math.min(dmg, p.maxHp * 0.06); } // 單次最多扣 6%
+  else if (p.type === "r" && h?.key === "raymond") dmg *= 2;
   if (G.double > 0) dmg *= 2;
+  if (p.stun > 0 && has("d_rehearse")) dmg *= 2;
+  if ((p.markT || 0) > 0) dmg *= 1 + [0, 0.5, 1, 2][lv("lang")];
+  if (h?.key === "richard" && has("lang")) { p.markT = 4; statusTag(p, "🎯 翻成人話", "#e08a3c"); }
+  if (has("lock")) { p.slowT = 3; if (!(p.markT > 0)) statusTag(p, "❄ Code Freeze", "#8a5ac6"); }
   p.hp -= dmg; p.flash = 0.14;
   const at = p.g.position.clone().add(V3(0, 1, 0));
   burst(at, p.type === "y" ? "#f5c43a" : "#ef5b3c", 5, 3);
-  if (kind === "fist" && (p.type === "r" || p.type === "boss")) taskProgress("raymond", 1, "add");
   if (kind) { popAvatar(at.clone().setY(at.y + 2), kind, h); burst(at, h.c, 10, 5); shockwave(p.g.position, h.c, 2.6, 0.45); }
   if (G.double > 0) burst(at.clone().setY(at.y + 0.6), "#3fd17a", 8, 4); // ben 加倍期間噴綠星
   if (p.type === "boss") {
+    G.lastBossHp = Math.max(0, p.hp);
+    if ((p.hp <= p.maxHp / 3 || G.t - (G.bossFirstT ?? G.t) >= 20) && !p.rage) { p.rage = true; p.speed *= 1.3; G.hitstop = 0.3; G.shake = 0.5; showTitleCard("RAGE", "狂暴！", "牠開始說「我只改一點點」"); flashRed(); sound.roar?.(); }
     p.el.style.setProperty("--hp", `${(Math.max(0, p.hp) / p.maxHp) * 100}%`);
     G.shake = Math.max(G.shake, 0.12);
+    if (!G.bossHalf && p.hp <= p.maxHp / 2 && p.hp > 0) { // 魔王半血：吐出 4 個衝突
+      G.bossHalf = true; banner("魔王吐出 4 個衝突！", "需求拆不清了", true, 2.4);
+      G.bossPickHeld = false; G.pendingPicks = Math.max(1, G.pendingPicks); setTimeout(maybeOpenPicker, 900); // 魔王半血：合併挑一次
+      for (let i = 0; i < 4; i++) G.waveQ.push({ at: G.t + i * 0.3, type: "r", lane: LANE_IDS[Math.floor(rand() * LANE_IDS.length)] });
+    }
     if (p.hp <= 0) bossSolved(p, h);
     return;
   }
   if (p.type === "r") G.redsDone++;
   if (p.hp <= 0) { p.st.classList.add("off"); return solve(p, h, kind); }
-  if (p.type === "r") {
-    // 大問題拆成兩個小問題
-    p.type = "y"; p.hp = 1; paintPet(p); G.split++;
+  if (p.type === "r" && has("split")) {
+    // 只是步驟多了點：大問題拆成兩個小問題
+    G.split++;
+    if (lv("split") >= 3) { floatText(at.clone().setY(at.y + 1.6), "步驟拆完了！", "gold"); p.st.classList.add("off"); G.solved += 2; addXP(2); return solve(p, h, kind); }
+    p.type = "y"; p.hp = 1; paintPet(p);
     const q = spawn("y", p.lane, Math.min(1, p.u + 0.06));
-    if (q) q.side = -p.side;
+    if (q) { q.side = -p.side; if (lv("split") >= 2) q.speed *= 0.7; }
+    if (lv("split") >= 2) p.speed *= 0.7;
     floatText(at.clone().setY(at.y + 1.6), "拆成兩個小矛盾");
     sound.pop();
   }
 }
 function credit(h, n = 1) { if (h) { const k = h.credit || h.key; G.uses[k] = (G.uses[k] || 0) + n; } }
 function solve(p, h, kind = null) {
+  addXP(p.type === "r" ? 3 : 1);
+  if (has("ssot") && rand() < [0, 0.3, 0.45, 0.6][lv("ssot")]) { // 單一事實來源：連鎖打下一個
+    const next = active((q) => q !== p).sort((a, c) => a.g.position.distanceTo(p.g.position) - c.g.position.distanceTo(p.g.position))[0];
+    if (next) fireOrb(heroByKey.jc, next, 1, { kind: "heart", from: p.g.position.clone().add(V3(0, 1.4, 0)), dur: 0.35, arc: 1.2 });
+  }
+  if (has("feedback") && ++G.fbCount >= [0, 10, 8, 6][lv("feedback")]) { G.fbCount = 0; addPoints(1); floatText(p.g.position.clone().add(V3(0, 3, 0)), "客戶回饋 +1 磚", "gold"); if (G.boss) hit(G.boss, 1, null); }
   G.solved++; G.combo++; G.comboT = 3.2; G.maxCombo = Math.max(G.maxCombo, G.combo); syncCombo(true);
   if (G.combo % 5 === 0) addGoldShown(3); // 連擊每 5，船殼多 3 塊金磚
-  if (G.double > 0) { G.stageCombo = Math.max(G.stageCombo, G.combo); taskProgress("ben", ++G.stageSolves); }
-  if (kind === "heart" && G.rapid > 0) taskProgress("coomy", ++G.rapidSolves);
+  if (G.double > 0) G.stageCombo = Math.max(G.stageCombo, G.combo);
   G.hitstop = 0.06; G.shake = Math.max(G.shake, 0.1);
   const at = p.g.position.clone().add(V3(0, 1.6, 0));
   burst(at, "#ffffff", 10, 5); burst(at, "#ffd36b", 6, 4);
   shockwave(p.g.position, "#ffd36b", 2.2, 0.45);
   if (!kind) floatText(at.clone().setY(at.y + 1), G.combo >= 3 ? `對齊了！×${G.combo}` : "對齊了！", "gold");
+  if (p.state === "jam") { const L = p.lane, i = L.jam.indexOf(p); if (i >= 0) L.jam.splice(i, 1); retire(p); credit(h); if (elapsed - G.lastSfx > 0.09) { sound.answer(); G.lastSfx = elapsed; } return; }
   p.type = "n"; p.gold = true; p.speed = 1.6; p.stun = 0; paintPet(p);
   credit(h);
   if (elapsed - G.lastSfx > 0.09) { sound.answer(); G.lastSfx = elapsed; }
 }
 function bossSolved(p, h) {
+  G.bossKillT = G.t;
   credit(h, 4);
   const at = p.g.position.clone().add(V3(0, 2.5, 0));
   for (let i = 0; i < 4; i++) burst(at, ["#ffffff", "#ffd36b", "#ef5b3c", "#3fe0cc"][i], 14, 8);
   shockwave(p.g.position, "#ffd36b", 7, 0.9);
   G.shake = 0.6; G.hitstop = 0.25;
-  floatText(at.clone().setY(at.y + 1.5), "想清楚了！", "gold big");
+  floatText(at.clone().setY(at.y + 1.5), "對齊了。這次真的就這樣。", "gold big");
   retire(p);
   G.bossDown = true;
   sound.sparkle();
@@ -3589,26 +3868,54 @@ function bossSolved(p, h) {
 function arrive(p) {
   const L = p.lane, at = L.br.curve.getPointAt(0).clone();
   const { type, gold } = p;
+  // 橋堵住：矛盾漏到島門口不消失，一隻疊一隻
+  if (type === "y" && G.on && !G.tut && !G.tut2 && !G.demo && p.state !== "jam") {
+    p.state = "jam"; p.u = 0; p.hp = 2; p.maxHp = 2; p.incoming = 0;
+    L.jam.push(p);
+    p.q.textContent = "???"; p.q.classList.remove("near");
+    sound.thump?.();
+    G.missed++; G.combo = 0; syncCombo(); onb("miss", null, "", "沒人拍板，島就停工"); flashRed();
+    if (!G.explainY) { G.explainY = true; banner("漏 1 隻矛盾 → 堵在島門口", "英雄坐下 4 秒，Spec 送不出去；疊到 4 隻就停工", true, 3.2, true); }
+    heroSit(L, 4, ["到底誰要回？", "這題上次不是講過？"][L.jam.length % 2]);
+    floatText(at.clone().setY(at.y + 2.6 + L.jam.length * 0.9), `矛盾塞車中 ×${L.jam.length}`, "bad");
+    if (L.jam.length >= 4) { // 疊滿：開會釐清，停工 8 秒
+      L.jam.forEach((q) => retire(q)); L.jam.length = 0; L.stall = Math.max(L.stall, 8); addPoints(-4);
+      G.shake = 0.4; bannerOnce("jam", "開會釐清中…", "矛盾疊太高，這座島停工 8 秒", true, 2.4, at.clone().setY(at.y + 3));
+    }
+    return;
+  }
   retire(p);
   if (G.demo || !G.on) return;
   if (type === "n") {
-    if (L.stall > 0) { floatText(at.clone().setY(at.y + 2.4), "停工中，Spec 送不出去", "bad"); return; }
+    if (L.stall > 0 || L.jam.length) { floatText(at.clone().setY(at.y + 2.4), L.jam.length ? "門口塞住了，Spec 送不出去" : "停工中，Spec 送不出去", "bad"); return; }
     const pts = gold ? 2 : 1;
     G.inflight++;
     emitSpec(at.clone().setY(at.y + 1.8), nextBrickPos(), 1.25, () => { G.inflight = Math.max(0, G.inflight - 1); if (G.on) addPoints(pts); });
     if (gold) floatText(at.clone().setY(at.y + 2.6), "金色 Spec ×2", "gold");
     return;
   }
-  if (G.tut) return;
+  if (G.tut || G.tut2) return;
+  if (type !== "boss" && G.stopUsed < [0, 2, 3, 4][lv("stop")] && (G.t >= 100 || G.stopUsed < 1)) { G.stopUsed++; floatText(at.clone().setY(at.y + 2.6), "一個月止血！攔下了", "gold"); burst(at, "#e08a3c", 10, 4); return; }
+  if (type !== "boss" && G.retroUsed < [0, 1, 2, 3][lv("retro")] && (G.t >= 100 || G.retroUsed < 1)) { G.retroUsed++; spawn(type, L, 0.55); floatText(at.clone().setY(at.y + 2.6), "回顧會議！再打一次", "gold"); return; }
   G.missed++; G.combo = 0; syncCombo();
+  if (type === "r" && !G.explainR) { G.explainR = true; banner("漏 1 隻衝突 → 島失火、停工、掉 6 磚", "英雄坐下、每 2 秒再掉 1 磚，直到火滅", true, 3.2, true); }
+  onb("miss", null, "", "沒人拍板，島就停工");
   if (G.phase === 3) G.bloomMiss++;
   sound.miss();
   flashRed();
   dust(at);
-  if (type === "y") { L.stall = Math.max(L.stall, 5); addPoints(-2); G.shake = Math.max(G.shake, 0.2); floatText(at.clone().setY(at.y + 2.6), "漏掉了！停工、掉 2 塊磚", "bad"); }
-  else if (type === "r" && !G.firstLeak) { G.firstLeak = true; L.stall = Math.max(L.stall, 3); G.shake = 0.3; banner("衝突漏進船塢了", "這次先停工 3 秒，下次記得按大招", true, 2.8); sayB(BUB.allwill, "沒人拍板，Plan 就卡住。", 2.6); floatText(at.clone().setY(at.y + 2.6), "停工 3 秒", "bad"); }
-  else if (type === "r") { L.stall = Math.max(L.stall, 7); addPoints(-6); G.shake = 0.45; floatText(at.clone().setY(at.y + 2.6), "衝突沒解！船掉了 6 塊磚", "bad big"); }
-  else { L.stall = 8; addPoints(-18); G.shake = 0.7; G.bossAt = G.t + 3; floatText(at.clone().setY(at.y + 3), "魔王衝上島！船塌了一角", "bad big"); }
+  if (type === "y") { L.stall = Math.max(L.stall, 5); addPoints(-3); heroSit(L, 4, "到底誰要回？"); G.shake = Math.max(G.shake, 0.2); floatText(at.clone().setY(at.y + 2.6), `${["已讀不回！", "這誰負責的？", "需求沒人認領，"][G.missed % 3]}-3 磚`, "bad"); }
+  else if (type === "r" && !G.firstLeak) { G.firstLeak = true; L.stall = Math.max(L.stall, 3); addPoints(-6); setFire(L); heroSit(L, 6, "兩邊都說自己對…"); G.shake = 0.3; banner("衝突漏進船塢了", "這次先停工 3 秒，挑對技能就擋得住", true, 2.8); sayB(BUB.allwill, "沒人拍板，Plan 就卡住。", 2.6); floatText(at.clone().setY(at.y + 2.6), "停工 3 秒", "bad"); }
+  else if (type === "r") { L.stall = Math.max(L.stall, 7); addPoints(-6); setFire(L); heroSit(L, 6, "兩邊都說自己對…"); G.shake = 0.45; floatText(at.clone().setY(at.y + 2.6), "衝突沒解！船掉了 6 塊磚", "bad big"); }
+  else {
+    G.bossHp = Math.min(125, Math.max(1, G.lastBossHp ?? 125) + 12); G.bossLeaks++; // 衝島回 12 血
+    let loss = 10;
+    if (has("stop")) loss = Math.round(loss / 2);           // 一個月止血：懲罰減半
+    if (has("retro") && G.bossLeaks === 1) loss = 0;       // 回顧會議：第一次不扣磚
+    L.stall = 8; if (loss) addPoints(-loss); G.shake = 0.7; G.bossAt = G.t + 3;
+    floatText(at.clone().setY(at.y + 3), loss ? `魔王衝上島！船掉 ${loss} 塊磚` : "回顧會議：這次沒掉磚！", "bad big");
+    banner("魔王衝上島了！", `牠還剩 ${G.bossHp} 血，傷害有留著，再打一次`, true, 2.6);
+  }
 }
 
 const redFlash = document.getElementById("redFlash");
@@ -3627,6 +3934,12 @@ function tickPets(dt, only = null) {
       continue;
     }
     const cv = p.lane.br.curve;
+    if (p.state === "jam") {
+      const i = p.lane.jam.indexOf(p), base = cv.getPointAt(0);
+      p.g.position.set(base.x, base.y + 0.1 + i * 0.9 + Math.abs(Math.sin(elapsed * 6 + i)) * 0.08, base.z);
+      p.g.rotation.y += dt * 1.5;
+      continue;
+    }
     if (p.stun > 0) {
       // 跳舞／看戲：原地轉圈
       p.stun -= dt;
@@ -3637,7 +3950,9 @@ function tickPets(dt, only = null) {
       continue;
     }
     const hes = p.type === "y" && Math.sin(elapsed * 2.6 + p.side * 12) > 0.55 ? 0.2 : 1; // 黃色走走停停
-    const sp = p.speed * hes * (G.demo ? 0.8 : 1);
+    if (p.slowT > 0) p.slowT -= dt;
+    if (p.markT > 0) p.markT -= dt;
+    const sp = p.speed * hes * (G.demo ? 0.8 : 1) * (p.slowT > 0 ? 1 - [0, 0.3, 0.5, 0.7][lv("lock")] : 1);
     p.u -= (sp * dt) / p.lane.br.len;
     const u = THREE.MathUtils.clamp(p.u, 0.001, 0.999);
     const pt = cv.getPointAt(u), tan = cv.getTangentAt(u).multiplyScalar(-1);
@@ -3658,7 +3973,7 @@ function tickPets(dt, only = null) {
 function pickTarget(laneIds, maxU, yellowOnly = false) {
   let best = null;
   for (const p of pets) {
-    if (!p.active || p.type === "n" || p.state !== "walk" || p.u > maxU || p.hp - p.incoming <= 0) continue;
+    if (!p.active || p.type === "n" || (p.state !== "walk" && p.state !== "jam") || p.u > maxU || p.hp - p.incoming <= 0) continue;
     if (yellowOnly && p.type !== "y") continue;
     if (laneIds && !laneIds.includes(p.lane.id)) continue;
     if (!best || p.u < best.u) best = p;
@@ -3667,16 +3982,24 @@ function pickTarget(laneIds, maxU, yellowOnly = false) {
 }
 function tickHeroes(dt) {
   for (const h of HEROES) {
-    h.cool = Math.max(0, h.cool - dt);
-    const rapid = h.key === "jc" && G.rapid > 0;
-    h.timer -= dt;
-    if (h.timer > 0) continue;
+    if (!h.unlocked || h.sitT > 0) continue;
     let lane = h.lane;
-    if (h.key === "ben" && !G.benHome) { const r = ACT.ben; if (r.mode === "cross" || r.mode === "toBridge" || !laneById[r.island]) { h.timer = 0.2; continue; } lane = r.island; } // 串門子：幫所在的那座島
-    const t = rapid ? pickTarget(["jc", "ccza", "raymond"], 0.95) : pickTarget(h.global ? null : [lane], h.global ? 0.35 : 0.4, true); // 自動只回答黃色；紅色和魔王要靠大招
+    if (h.key === "ben" && !G.benHome) { const r = ACT.ben; if (r.mode === "cross" || r.mode === "toBridge" || !laneById[r.island]) { h.timer = 0.2; continue; } lane = r.island; } // 串門子中：幫所在的那座島
+    const speed = (1 + [0, 0.4, 0.8, 1.5][lv("beat")]) * ((G.laneBoost[lane] || 0) > 0 ? 2 : 1) * (h.key === "ccza" && lv("remote") >= 3 ? 1.3 : 1);
+    h.timer -= dt * speed;
+    if (h.timer > 0) continue;
+    const global = h.key === "ccza" && has("remote");
+    // 還沒上線的英雄那幾條橋，先由水球潘 & Coomy 代守
+    const cover = h.lane === "jc" ? ["jc", ...BTN_HEROES.filter((x) => !x.unlocked).map((x) => x.lane)] : [lane];
+    const t = pickTarget(global ? null : cover, global ? [0, 0.75, 0.85, 0.95][lv("remote")] : G.t < 100 ? 0.42 : 0.6); // 全自動：黃色、紅色、魔王都打
     if (!t) { h.timer = 0.12; continue; }
-    h.timer = rapid ? 0.2 : h.auto;
-    fireOrb(h, t, 1, rapid ? { kind: "heart", dur: 0.3, arc: 1 } : {});
+    h.timer = h.auto * (G.t < 100 ? 1.25 : 1); // 魔王來之前英雄稍慢，前段才會有漏怪壓力
+    const top = heroTopLv(h);
+    fireOrb(h, t, top >= 3 ? 2 : 1, { size: [0.6, 0.8, 1.0, 1.25][top], dur: 0.4 / (1 + [0, 0.4, 0.8, 1.5][lv("beat")] * 0.4) });
+    if (h.key === "ben" && has("multi")) {
+      const extra = active((p) => p !== t && p.u <= 0.6).sort((a, c) => a.u - c.u).slice(0, [0, 1, 3, 5][lv("multi")]);
+      extra.forEach((p, i) => fireOrb(h, p, 1, { size: 0.6, delay: 0.05 * (i + 1) }));
+    }
   }
 }
 const SKILL = {
@@ -3752,10 +4075,10 @@ function heroPoses(dt) {
 
 // 出怪節奏：教學 → 加速 → 紅色登場 → 需求大爆發 → 魔王
 const PHASES = [
-  { until: 16, every: 1.5, y: 0.2, r: 0, b: ["AllWill 開工了！", "黃色 ? 是 Spec 對不上的地方，英雄會自動回答"] },
+  { until: 16, every: 1.1, y: 0.6, r: 0, b: ["AllWill 開工了！", "英雄會自動解矛盾，共識條滿了就挑技能"] },
   { until: 26, every: 1.0, y: 0.4, r: 0 },
-  { until: 52, every: 0.95, y: 0.38, r: 0.1, redTut: true },
-  { until: 100, every: 0.8, y: 0.36, r: 0.2, b: ["衝突變多了！", "記得用大招"], ben: true },
+  { until: 52, every: 0.68, y: 0.45, r: 0.14 },
+  { until: 100, every: 0.41, y: 0.36, r: 0.3, b: ["衝突變多了！", "挑對技能就擋得住"] },
   { until: 132, every: 0.5, y: 0.38, r: 0.24, b: ["需求大爆發！", "Agent 吐得更快了"], danger: true },
   { until: 999, every: 0.8, y: 0.34, r: 0.18 },
 ];
@@ -3763,6 +4086,8 @@ const WAVES = [
   { at: 31, lanes: ["jc", "raymond", "ccza"], seq: ["y", "y", "y", "y", "y", "y"], say: "這波很多！" },
   { at: 38, lanes: ["richard", "ben", "ccza"], seq: ["y", "y", "y", "y", "y"], say: "又一波！三座島一起來了！" },
   { at: 47, lanes: ["auto"], seq: ["y", "y", "r", "y", "y"], say: "這條橋塞車了！" },
+  { at: 64, lanes: ["auto"], seq: ["r", "y", "y", "r", "y", "y"], say: "這條橋又吵起來了！" },
+  { at: 82, lanes: ["auto"], seq: ["r", "y", "y", "r", "y", "y"], say: "需求又改了！" },
 ];
 function tickSpawn(dt) {
   const ph = PHASES.findIndex((x) => G.t < x.until);
@@ -3784,14 +4109,16 @@ function tickSpawn(dt) {
     W.seq.forEach((type, i) => G.waveQ.push({ at: G.t + i * 0.18, type, lane: pickLane || W.lanes[i % W.lanes.length] }));
   }
   for (let i = G.waveQ.length - 1; i >= 0; i--) { const q = G.waveQ[i]; if (G.t >= q.at && spawn(q.type, laneById[q.lane])) G.waveQ.splice(i, 1); }
+  if (!G.firstRed && G.t >= 12) { G.firstRed = true; const q = spawn("r", laneById[LANE_IDS[Math.floor(rand() * LANE_IDS.length)]]); if (q) q.hp = q.maxHp = 2; }
   // 魔王：時間到 132 秒，或船蓋到九成
-  if (!G.bossSpawned && (G.t >= 132 || G.points >= Math.floor(G.goal * 0.9))) {
+  if (!G.bossSpawned && G.t >= 100) {
     G.bossSpawned = true; G.bossAt = G.t + 1.4; G.warn = { type: "boss", t: 1.4 };
   }
   if (G.bossSpawned && !G.bossDown && !G.boss && G.t >= G.bossAt) {
     const L = lanes[Math.floor(rand() * lanes.length)];
     spawn("boss", L); G.warn = null;
-    if (!G.bossCineDone) { G.bossCineDone = true; G.cine = { t: 0, lane: L, short: bossSeen(), said: {} }; document.body.classList.add("cine"); sound.miss(); }
+    if (G.bossFirstT == null) G.bossFirstT = G.t;
+    if (!G.bossCineDone) { G.bossCineDone = true; G.cine = { t: 0, lane: L, short: false, canSkip: bossSeen(), said: {} }; sound.setMode?.("silent"); document.body.classList.add("cine"); sound.miss(); }
     else banner("魔王又來了！", "全員集火！", true, 2.4);
   }
   if (G.warn && G.warn.type !== "boss") {
@@ -3838,22 +4165,25 @@ const bossSeen = () => { try { return localStorage.getItem(BOSS_KEY) === "1"; } 
 function endCine() {
   if (!G.cine) return;
   G.cine = null;
+  G.bossPickHeld = true; // 魔王戰：選卡延到半血合併一次
   document.body.classList.remove("cine");
   try { localStorage.setItem(BOSS_KEY, "1"); } catch {}
-  if (G.boss) G.boss.g.scale.setScalar(3.2);
+  if (G.boss) G.boss.g.scale.setScalar(BOSS_SCALE);
   caveParts.head.position.x = 0;
   gameView();
-  banner("魔王：到底要做什麼？", "Raymond 重擊、ccza 整條橋，全員集火！", true, 3.2);
+  banner("全員集火！", "別讓牠到船塢", true, 2.2);
   sayB(BUB.raymond, "全員集火！", 2);
   ["raymond", "ccza"].forEach((k) => { const b = hud.btn[k]; b.classList.remove("cast"); void b.offsetWidth; b.classList.add("cast"); });
 }
 function tickCine(dt) {
-  const C = G.cine, k = C.short ? 0.45 : 1, t = (C.t += dt) / k;
+  const C = G.cine, t = (C.t += dt);
   const boss = G.boss;
-  caveParts.head.position.x = t < 0.6 ? Math.sin(elapsed * 60) * 0.12 : 0; // AllWill 抖一下
-  if (t > 0.5) {
-    const at = C.lane.br.curve.getPointAt(0.9);
-    if (portrait()) placeCamera(at.clone().setY(at.y + 3.5), fitDistance(6, 9), 20); else placeCamera(at.clone().setY(at.y + 2), fitDistance(8, 7), 14);
+  caveParts.head.position.x = t < 0.8 ? Math.sin(elapsed * 60) * 0.12 : 0; // AllWill 抖一下
+  if (t < 0.8) { G.jaw = 0.45; caveParts.eyeMat.color.set(Math.sin(elapsed * 40) > 0 ? "#ff3b2f" : "#ffffff"); }
+  if (t > 1.6 && !C.said.card) { C.said.card = true; showTitleCard("BOSS", "迷霧魔王「對不齊」", "需求還沒定，牠先到了"); sound.roar?.(); if (boss) { G.shake = 0.4; burst(boss.g.position.clone().add(V3(0, 3, 0)), "#ff3b2f", 24, 6); } }
+  if (t > 0.8) {
+    const bp = boss ? boss.g.position : C.lane.br.curve.getPointAt(0.9);
+    if (portrait()) placeCamera(bp.clone().add(V3(0, 4, 0)), fitDistance(5, 8), 18); else placeCamera(bp.clone().add(V3(0, 3.5, 0)), fitDistance(6, 5), 12);
     followGoal(dt, 4);
   }
   if (boss && t > 0.55) tickPets(dt * 1.1, boss);
@@ -3861,11 +4191,10 @@ function tickCine(dt) {
     C.said.land = true; G.shake = 0.55; navigator.vibrate?.(40); shockwave(boss.g.position, "#ef5b3c", 9, 0.8); sound.bad();
     burst(boss.g.position.clone().add(V3(0, 2, 0)), "#ef5b3c", 20, 7);
   }
-  if (boss && C.said.land) { const q = Math.min(1, (t - 1.4) / 0.4); boss.g.scale.setScalar(3.2 + Math.max(0, Math.sin(Math.max(0, q) * Math.PI)) * 0.5); }
-  if (!C.short && t > 1.8 && !C.said.line) { C.said.line = true; sayB(BUB.allwill, "這份需求，誰都說不清…", 1.6); }
-  if (t > 3) endCine();
+  if (boss && C.said.land) { const q = Math.min(1, (t - 1.6) / 0.6); boss.g.scale.setScalar(BOSS_SCALE + Math.max(0, Math.sin(Math.max(0, q) * Math.PI)) * 0.6); }
+  if (t > 3.2) endCine();
 }
-document.getElementById("cineSkip").addEventListener("pointerdown", (e) => { e.preventDefault(); endCine(); });
+document.getElementById("cineSkip").addEventListener("pointerdown", (e) => { e.preventDefault(); if (G.cine?.canSkip && G.cine.t > 0.8) endCine(); });
 // 紅色教學：第一隻紅色固定走 Raymond 的橋，停住等玩家按 Raymond
 const RED_KEY = "allwill-game-redtut";
 const redTutDone = () => { try { return localStorage.getItem(RED_KEY) === "1"; } catch { return false; } };
@@ -3919,7 +4248,7 @@ function tickDemo(dt) {
 
 function tickCave(dt) {
   const { eyes, eyeMat, jaw, head, bulb } = caveParts;
-  const warn = G.warn ? (G.warn.type === "y" ? "#ffd23f" : "#ff5a3c") : "#8ff5e4";
+  const warn = G.boss && G.boss.active ? (Math.sin(elapsed * 4) > 0 ? "#ff3b2f" : "#7a1414") : G.warn ? (G.warn.type === "y" ? "#ffd23f" : "#ff5a3c") : "#8ff5e4";
   eyeMat.color.set(G.warn && Math.sin(elapsed * 30) < -0.3 ? "#ffffff" : warn);
   G.blink -= dt;
   let sy = 1.25;
@@ -4001,21 +4330,23 @@ const AUTO_INFO = "平時：只會自動回答自己橋上、靠近島的<b>黃�
 const tip = document.createElement("div");
 tip.className = "skill-tip";
 document.getElementById("hud").appendChild(tip);
-function showTip(h, intro = false) {
-  const I = SKILL_INFO[h.key], b = hud.btn[h.key], E = EFFECT[h.key];
-  tip.innerHTML = `${intro ? `<i class="new">英雄登場</i>` : ""}<b>${heroName(h)}・${h.skill}</b><p>${I.effect}</p>
-    <div class="eff"><span><em class="y">?</em>對黃色<br><strong>${E[0]}</strong></span><span><em class="r">!</em>對紅色<br><strong>${E[1]}</strong></span><span><em class="b">魔</em>對魔王<br><strong>${E[2]}</strong></span></div>
-    <dl><dt>範圍</dt><dd>${I.range}</dd><dt>冷卻</dt><dd>${h.cd} 秒${h.unlocked ? (h.cool > 0 ? `（還要 ${Math.ceil(h.cool)} 秒）` : "（可以放）") : "（還沒登場）"}</dd></dl>
-    <small>${h.key === "ccza" ? "平時：遠端，全場靠近島的<b>黃色</b>都打得到；紅色要靠大招" : AUTO_INFO}</small>${CARD_ORDER.filter((k) => CARD_RULES[k].hero === h.key).map((k) => `<div class="task${ownedCards[k] ? " ok" : ""}">🃏 ${MEMBERS[k].name}成員卡：${CARD_RULES[k].cond}<b>${ownedCards[k] ? "✓ 已收集" : `${Math.min(G.task?.[k] || 0, CARD_RULES[k].need)} / ${CARD_RULES[k].need}`}</b></div>`).join("")}
-    <small class="bg">${INTRO[h.key].who}｜${INTRO[h.key].bg}</small>`;
+function showTip(h) {
+  const b = hud.btn[h.key];
+  const mine = BOONS.filter((x) => x.hero === h.key);
+  const duos = DUOS.filter((d) => d.req.some((r) => boonById[r].hero === h.key));
+  tip.innerHTML = `<button class="tip-x" type="button" aria-label="關閉">×</button><b>${heroName(h)}${h.unlocked ? "" : "・未上線"}</b><p>${h.unlocked ? "會自動解自己橋上的矛盾。" : "挑到他的技能卡就會上線。"}</p>
+    <div class="boon-list">${mine.map((x) => `<div class="${lv(x.id) ? "on" : ""}"><b>${x.name}</b><i>${lv(x.id) ? `Lv${lv(x.id)}` : "—"}</i><span>${x.desc[Math.max(0, lv(x.id) - 1)]}</span></div>`).join("")}</div>
+    ${duos.length ? `<small>共鳴：${duos.map((d) => `${has(d.id) ? "✓ " : ""}${d.name}（${d.req.map((r) => boonById[r].name).join("＋")}）`).join("、")}</small>` : ""}
+    ${CARD_ORDER.filter((k) => CARD_RULES[k].hero === h.key).map((k) => `<div class="task${ownedCards[k] ? " ok" : ""}">🃏 ${MEMBERS[k].name}成員卡：${CARD_RULES[k].cond}<b>${ownedCards[k] ? "✓ 已收集" : ""}</b></div>`).join("")}`;
   tip.style.setProperty("--c", h.c);
   const r = b.getBoundingClientRect();
   if (MOBILE || innerWidth < 700) { tip.style.left = "50%"; tip.style.bottom = `${innerHeight - hud.heroes.getBoundingClientRect().top + 12}px`; }
   else { tip.style.left = `${Math.min(Math.max(r.left + r.width / 2, 150), innerWidth - 150)}px`; tip.style.bottom = `${innerHeight - r.top + 10}px`; }
   tip.classList.add("on");
-  G.preview = { h, lanes: I.lanes(), main: typeof I.main === "function" ? I.main() : I.main || I.lanes() };
+  G.preview = null;
 }
 function hideTip() { tip.classList.remove("on"); G.preview = null; }
+tip.addEventListener("click", (e) => { if (e.target.closest(".tip-x")) hideTip(); });
 hud.heroes.querySelectorAll(".hero").forEach((b) => {
   hud.btn[b.dataset.k] = b;
   const h = heroByKey[b.dataset.k];
@@ -4024,23 +4355,23 @@ hud.heroes.querySelectorAll(".hero").forEach((b) => {
   b.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") hideTip(); });
   b.addEventListener("pointerdown", (e) => {
     e.preventDefault();
-    if (e.pointerType === "mouse") { cast(h); if (G.preview) showTip(h); return; }
+    if (e.pointerType === "mouse") return;
     held = false; clearTimeout(hold);
     hold = setTimeout(() => { held = true; navigator.vibrate?.(8); showTip(h); }, 300); // 手機長按看說明，短按放招
   });
   b.addEventListener("pointerup", (e) => {
     if (e.pointerType === "mouse") return;
     clearTimeout(hold);
-    if (held) hideTip(); else cast(h);
+    if (held) hideTip(); else showTip(h); // 點一下看他的技能，按 × 關
   });
   b.addEventListener("pointercancel", () => { clearTimeout(hold); hideTip(); });
   b.addEventListener("contextmenu", (e) => e.preventDefault());
-  b.addEventListener("click", (e) => { if (e.detail === 0) cast(heroByKey[b.dataset.k]); }); // 鍵盤 Enter／空白鍵
   b.addEventListener("animationend", () => b.classList.remove("is-shaking", "cast"));
 });
-addEventListener("keydown", (e) => {
-  const i = Number(e.key) - 1;
-  if (i >= 0 && i < BTN_HEROES.length && !e.repeat) cast(BTN_HEROES[i]);
+addEventListener("keydown", (e) => { // 選卡時可用 1–3 挑
+  if (!G.paused || !picker.classList.contains("open")) return;
+  const c = picker.querySelectorAll("[data-id]")[Number(e.key) - 1];
+  if (c) pickBoon(c.dataset.id);
 });
 hud.intro.addEventListener("pointerdown", hideIntro);
 const fmt = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
@@ -4058,14 +4389,33 @@ function updateHud() {
   }
   for (const h of BTN_HEROES) {
     const b = hud.btn[h.key];
-    const p = 1 - h.cool / h.cd;
+    const mine = BOONS.filter((x) => x.hero === h.key && lv(x.id));
+    const timed = mine.filter((x) => x.cd);
+    const p = timed.length ? Math.max(...timed.map((x) => 1 - Math.max(0, G.boonT[x.id] || 0) / boonCd(x))) : 1;
     b.style.setProperty("--p", p.toFixed(3));
     const locked = !h.unlocked;
-    b.classList.toggle("ready", G.on && h.cool <= 0 && !locked);
-    b.classList.toggle("wait", h.cool > 0 || locked);
+    b.classList.toggle("ready", false); b.classList.toggle("urge", false);
+    b.classList.toggle("wait", locked);
     b.classList.toggle("locked", locked);
-    b.classList.toggle("urge", G.on && !G.tut && !locked && h.cool <= 0 && G.urge);
+    const em = b.querySelector("em:not(.away)"), away = b.querySelector(".away");
+    const txt = mine.length ? mine.map((x) => `${x.name.slice(0, 2)}${lv(x.id)}`).join("・") : "自動攻擊";
+    let bd = b.querySelector(".badges"); if (!bd) { bd = document.createElement("span"); bd.className = "badges"; b.appendChild(bd); }
+    const bkey = mine.map((x) => x.id + lv(x.id)).join();
+    if (bd.dataset.k !== bkey) { bd.dataset.k = bkey; bd.innerHTML = mine.map((x) => `<i title="${x.name}" style="--lvw:${(lv(x.id) / 3) * 100}%">${x.name.slice(0, 2)}</i>`).join(""); }
+    if (!b.querySelector(".hname")) { const nm = document.createElement("span"); nm.className = "hname"; nm.textContent = h.key === "jc" ? "水球潘＆Coomy" : heroName(h); b.querySelector(".ring").after(nm); }
+    let dots = b.querySelector(".lvdots"); if (!dots) { dots = document.createElement("span"); dots.className = "lvdots"; b.appendChild(dots); }
+    const n = mine.reduce((a, x) => a + lv(x.id), 0);
+    if (dots.childElementCount !== n) dots.innerHTML = "<s></s>".repeat(Math.min(n, 9));
+    if (em.textContent !== txt) em.textContent = txt;
+    if (away.textContent !== "未上線") away.textContent = "未上線";
   }
+  const off = BTN_HEROES.filter((h) => !h.unlocked).length;
+  let more = hud.heroes.querySelector(".more"); if (!more) { more = document.createElement("span"); more.className = "more"; hud.heroes.appendChild(more); }
+  more.textContent = off ? `+${off}` : "";
+  const lo = G.xpIdx ? XP_TH[G.xpIdx - 1] : 0, hi = XP_TH[G.xpIdx] ?? lo + 1;
+  hud.xpI ||= document.querySelector("#hXp i"); hud.xpB ||= document.querySelector("#hXp b");
+  hud.xpI.style.width = `${Math.min(100, ((G.xp - lo) / (hi - lo)) * 100)}%`;
+  hud.xpB.textContent = G.pendingPicks > 0 ? `待挑 ${G.pendingPicks}` : `下一張 ${Math.max(0, hi - G.xp)}`;
 }
 function calcUrge() {
   const qs = active();
@@ -4076,7 +4426,12 @@ function syncCombo(pop = false) {
   hud.combo.classList.toggle("on", G.combo >= 2);
   if (pop && G.combo >= 2) { hud.combo.classList.remove("pop"); void hud.combo.offsetWidth; hud.combo.classList.add("pop"); }
 }
-function banner(main, sub = "", danger = false, sec = 2.6) {
+const bannerQ = [];
+function banner(main, sub = "", danger = false, sec = 2.6, force = false) {
+  if (!force && (G.cine || (G.bannerT > 0.4 && hud.banner.classList.contains("on")))) { if (bannerQ.length < 3) bannerQ.push([main, sub, danger, sec]); return; }
+  showBanner(main, sub, danger, sec);
+}
+function showBanner(main, sub, danger, sec) {
   hud.banner.innerHTML = `${main}${sub ? `<small>${sub}</small>` : ""}`;
   hud.banner.classList.toggle("danger", !!danger);
   hud.banner.classList.add("on");
@@ -4084,7 +4439,7 @@ function banner(main, sub = "", danger = false, sec = 2.6) {
 }
 
 // ── 標籤不跑出畫面：島名、飄字、頭像標籤超出左右邊就往內推 ──
-const clampEls = () => [...Object.values(islands).map((i) => i.el), ...floats.map((f) => f.el), ...avPops.map((a) => a.el), ...lanes.map((l) => l.el)];
+const clampEls = () => [...labelRenderer.domElement.children];
 function clampLabels() {
   const W = innerWidth;
   for (const el of clampEls()) {
@@ -4095,6 +4450,17 @@ function clampLabels() {
     if (x + w / 2 < 0 || x - w / 2 > W) continue; // 整個在畫面外的不硬拉回來
     const shift = x - w / 2 < 8 ? 8 - (x - w / 2) : x + w / 2 > W - 8 ? W - 8 - (x + w / 2) : 0;
     if (shift) el.style.transform += ` translateX(${shift}px)`;
+  }
+  // 島名讓位：碰到對話泡泡、? 標記、飄字、頭像標籤、魔王泡泡就變淡
+  const busy = [...labelRenderer.domElement.querySelectorAll(".speech:not(.off), .qb:not(.off), .ftx:not(.off), .hitav:not(.off), .stall:not(.off)")]
+    .filter((x) => x.offsetWidth).map((x) => x.getBoundingClientRect());
+  const isl = Object.values(islands);
+  for (const I of isl) {
+    if (!I.el.offsetWidth) continue;
+    const r = I.el.getBoundingClientRect();
+    const others = I.unit.id === "course" ? isl.filter((o) => o !== I && o.el.offsetWidth).map((o) => o.el.getBoundingClientRect()) : [];
+    const hit = busy.concat(others).some((b) => b.left < r.right && b.right > r.left && b.top < r.bottom && b.bottom > r.top);
+    I.el.style.opacity = hit ? "0.18" : "";
   }
 }
 // ── 鏡頭 ──
@@ -4130,11 +4496,14 @@ function resetGame() {
   bricks.forEach((b) => { b.shown = false; b.drop = null; b.t = 1; b.o.visible = false; b.o.position.copy(b.home); b.o.rotation.x = b.rx; b.o.scale.setScalar(1); });
   Object.assign(G, { t: 0, points: 0, shown: 0, inflight: 0, combo: 0, comboT: 0, maxCombo: 0, solved: 0, split: 0, missed: 0, spawnT: 1.2, warn: null, boss: null,
     bossSpawned: false, bossDown: false, bossAt: 0, rapid: 0, double: 0, spot: 0, async: null, hitstop: 0, uses: {}, phase: -1, milestone: 0, seq: null, sailing: false,
+    onb: {}, onbOn: !onbDone(), firstRed: false, bossHp: null, lastBossHp: null, bossLeaks: 0, bossFirstT: null, bossKillT: null, cannon: 0, focusT: 0, lastPickT: null,
+    explainY: false, explainR: false, slamT: 0, slamArmed: false, cannonT: null, bossPickHeld: false, pickAuto: 8, tut2: null, xp: 0, xpIdx: 0, pendingPicks: 0, picks: 0, boons: {}, boonT: {}, laneBoost: {}, stopUsed: 0, retroUsed: 0, fbCount: 0, bossHalf: false, paused: false,
     preview: null, task: {}, fresh: [], rapidSolves: 0, stageSolves: 0, casts: {}, waveQ: [], wavesDone: {}, firstLeak: false, redTut: null, cine: null, bossCineDone: false, slow: 0, intro: null, introQ: [], bloomMiss: 0, redsDone: 0, asyncMax: 0, stageCombo: 0, tut: null, tutFreeze: false });
   document.body.classList.remove("tutorial", "cine", "voyage");
   hideIntro();
-  lanes.forEach((l) => { l.stall = 0; l.mark = 0; });
-  HEROES.forEach((h) => { h.cool = 0; h.timer = 0.8 + rand() * 1.2; h.cast = 0; h.unlocked = !!h.noBtn; h.unlockT = null; });
+  lanes.forEach((l) => { l.stall = 0; l.mark = 0; l.jam = []; l.fire = 0; islands[l.id]?.grass?.color.set("#ffffff"); });
+  HEROES.forEach((h) => { h.sitT = 0; });
+  HEROES.forEach((h) => { h.cool = 0; h.timer = 0.8 + rand() * 1.2; h.cast = 0; h.unlocked = !!h.noBtn || h.key === "jc"; h.unlockT = h.unlocked ? 0 : null; });
   big.position.set(YARD.x, 0.45, YARD.z);
   farIslands.forEach((f) => { f.g.visible = false; f.el.classList.add("off"); });
   resetDecos();
@@ -4218,14 +4587,61 @@ function tickTutorial(dt) {
     if (T.t > 4.6) endTutorial(false);
   }
 }
-document.getElementById("skipTut").addEventListener("click", () => endTutorial(true));
-document.getElementById("replayTut").addEventListener("click", () => { try { localStorage.removeItem(TUT_KEY); } catch {} startGame(); });
-if (tutDone()) { document.getElementById("tutNote").hidden = true; document.getElementById("replayTut").hidden = false; }
+// ── 新手教學（祝福版，只有第一局）：特寫黃怪、紅怪，第一次選卡教看標籤 ──
+const TUT2_KEY = "allwill-game-tut2";
+const tut2Done = () => { try { return localStorage.getItem(TUT2_KEY) === "1"; } catch { return false; } };
+function startTut2() {
+  G.tut2 = { step: 0, t: 0, said: {} }; G.onbOn = false;
+  document.body.classList.add("tutorial");
+  tutView(V3(0, 2.5, 0), 8);
+}
+function endTut2() {
+  if (!G.tut2) return;
+  G.tut2 = null;
+  document.body.classList.remove("tutorial");
+  picker.classList.remove("tut");
+  try { localStorage.setItem(TUT2_KEY, "1"); localStorage.setItem(ONB_KEY, "1"); } catch {}
+  document.getElementById("replayTut").hidden = false;
+  G.t = 0; G.xp = 0; G.xpIdx = Math.max(G.xpIdx, 1); G.pendingPicks = 0; G.spawnT = 0.8;
+  gameView();
+  BUB.allwill.until = 0;
+}
+function tickTut2(dt) {
+  const T = G.tut2; T.t += dt;
+  const once = (k) => (T.said[k] ? false : (T.said[k] = true));
+  const jc = laneById.jc, ray = laneById.raymond;
+  if (T.step === 0) {
+    if (once("a")) sayB(BUB.allwill, "大家的 Spec 都會送來我這裡對一對。", 2.6);
+    if (T.t > 2.8) { T.step = 1; T.t = 0; T.y = spawn("y", jc); }
+  } else if (T.step === 1) {
+    const p = T.y; if (p?.active && p.type === "y") tutView(p.g.position.clone(), 8);
+    if (once("y")) sayB(BUB.allwill, "黃色 ? 是「矛盾」：Spec 之間對不上。", 3.2);
+    if (p && once("ytag")) { p.st.textContent = "矛盾・打 1 下"; p.st.style.setProperty("--sc", "#d9a400"); p.st.classList.remove("off"); }
+    if (T.t > 2.6 && once("yauto")) sayB(BUB.allwill, "英雄會自動把它解掉。", 2.2);
+    if (T.t > 4.6 || (!p?.active && T.t > 2) || (p && p.type !== "y" && T.t > 3)) { p?.st.classList.add("off"); T.step = 2; T.t = 0; T.r = spawn("r", ray); }
+  } else if (T.step === 2) {
+    const p = T.r; if (p?.active) tutView(p.g.position.clone(), 8);
+    if (once("r")) sayB(BUB.allwill, "紅色 ! 是「衝突」：兩份 Spec 打起來了。", 3.2);
+    if (p && once("rtag")) { p.st.textContent = "衝突・打 3 下"; p.st.style.setProperty("--sc", "#ec4d2f"); p.st.classList.remove("off"); }
+    if (T.t > 3 && once("rmore")) sayB(BUB.allwill, "要打 3 下，沒解掉的話島會停工。", 2.6);
+    if (T.t > 5.6) { p?.st.classList.add("off"); T.step = 3; T.t = 0; gameView(); }
+  } else if (T.step === 3) {
+    if (once("pick")) { sayB(BUB.allwill, "達成共識就能挑一張技能卡！", 2.4); picker.classList.add("tut"); G.pendingPicks = 1; G.lastPickT = -99; openPicker(); }
+    if (T.picked) { T.step = 4; T.t = 0; picker.classList.remove("tut"); }
+  } else if (T.step === 4) {
+    if (once("boss")) sayB(BUB.allwill, "100 秒後魔王「對不齊」會來，挑對卡！", 2.6);
+    if (T.t > 2.6) endTut2();
+  }
+}
+document.getElementById("skipTut").addEventListener("click", () => { if (G.tut2) { if (G.paused) { picker.classList.remove("open", "tut"); G.paused = false; document.body.classList.remove("picking"); } endTut2(); } });
+document.getElementById("replayTut").addEventListener("click", () => { try { localStorage.removeItem(TUT2_KEY); } catch {} startGame(); });
+document.getElementById("replayTut").hidden = !tut2Done();
 function startGame() {
   sound.start();
   resetGame();
   G.demo = false; G.on = true;
-  if (!tutDone()) startTutorial();
+  picker.classList.remove("open");
+  if (!tut2Done() && !params.has("notut")) startTut2(); else setTimeout(() => sayB(BUB.allwill, "Spec 對不上的地方，我丟出來。", 3), 0);
   startScreen.classList.remove("open"); endScreen.classList.remove("open");
   document.body.classList.add("playing-game");
 }
@@ -4242,7 +4658,7 @@ function lose() {
   if (G.seq) return;
   G.on = false;
   G.seq = { kind: "lose", t: 0 };
-  banner("時間到！", `AllWill 號蓋到 ${Math.floor((G.points / G.goal) * 100)}%`, true, 2.4);
+  banner(G.bossFirstT != null ? "霧沒散，下週一再對一次。" : "時間到！", `AllWill 號蓋到 ${Math.floor((G.points / G.goal) * 100)}%`, true, 2.4);
   sound.bad();
 }
 function boardShip() {
@@ -4287,19 +4703,19 @@ function tickSail(dt) {
 }
 // 成員卡收集：每位成員一個綁在大招上的任務，邊玩邊看得到進度；進度跨局存在玩家自己的瀏覽器
 const CARD_RULES = {
-  johnny: { hero: "jc", need: 4, bg: "水球軟體學院創辦人，社群一年 6,000+", cond: "一次船長帽清掉 4 隻黃色" },
-  coomy: { hero: "jc", need: 6, bg: "前 Onramp Lab FE Tech Lead，團隊的節拍器", cond: "連打期間解掉 6 個" },
-  raymond: { hero: "raymond", need: 5, bg: "Appier 出身，SurveyCake 初期核心開發", cond: "一拳打掉 5 個紅色（累計）" },
-  richard: { hero: "richard", need: 4, bg: "SlideArt 設計 Nike、Google、BMW", cond: "一次 Solo 定住 4 隻" },
-  ccza: { hero: "ccza", need: 4, bg: "AllWill 背後的主力工程師", cond: "一次 Async 清掉 4 隻" },
-  ben: { hero: "ben", need: 6, bg: "在客戶端帶導入的人", cond: "看戲期間解掉 6 個" },
+  johnny: { hero: "jc", need: 1, bg: "水球軟體學院創辦人，社群一年 6,000+", cond: "拍板定案或回顧會議升到 Lv2，或觸發含它的共鳴" },
+  coomy: { hero: "jc", need: 1, bg: "前 Onramp Lab FE Tech Lead，團隊的節拍器", cond: "對齊節拍或單一事實來源升到 Lv2，或觸發含它的共鳴" },
+  raymond: { hero: "raymond", need: 1, bg: "Appier 出身，SurveyCake 初期核心開發", cond: "Raymond 任一技能升到 Lv2，或觸發含他的共鳴" },
+  richard: { hero: "richard", need: 1, bg: "SlideArt 設計 Nike、Google、BMW", cond: "Richard 任一技能升到 Lv2，或觸發含他的共鳴" },
+  ccza: { hero: "ccza", need: 1, bg: "AllWill 背後的主力工程師", cond: "ccza 任一技能升到 Lv2，或觸發含她的共鳴" },
+  ben: { hero: "ben", need: 1, bg: "在客戶端帶導入的人", cond: "ben 任一技能升到 Lv2，或觸發含他的共鳴" },
 };
 const CARD_ORDER = ["johnny", "coomy", "raymond", "richard", "ccza", "ben"];
 const loadCards = () => { try { return JSON.parse(localStorage.getItem("allwill-crew-cards-v2") || "{}"); } catch { return {}; } };
 const saveCards = (c) => { try { localStorage.setItem("allwill-crew-cards-v2", JSON.stringify(c)); } catch {} };
 let ownedCards = loadCards();
 // 更新任務進度；達成就立刻翻牌解鎖
-function taskProgress(k, v, mode = "max") {
+function taskProgress() { return; // 舊的大招任務已改成技能等級與共鳴（見 checkCards）
   if (!G.on) return;
   const R = CARD_RULES[k];
   G.task[k] = mode === "add" ? (G.task[k] || 0) + v : Math.max(G.task[k] || 0, v);
@@ -4311,6 +4727,7 @@ function taskProgress(k, v, mode = "max") {
 }
 const flip = document.getElementById("cardFlip");
 function showCardFlip(k) {
+  if (G.paused) { setTimeout(() => showCardFlip(k), 500); return; }
   const m = MEMBERS[k];
   flip.innerHTML = `<div class="fc"><div class="face front">成員卡<br><b>解鎖！</b></div><div class="face back"><img src="${avatars[m.av]}" alt=""><b>${m.name}・${m.role}</b><span>${CARD_RULES[k].bg}</span><em>成員卡 ${Object.keys(ownedCards).length} / 6</em></div></div>`;
   flip.style.setProperty("--c", heroByKey[CARD_RULES[k].hero].c);
@@ -4327,40 +4744,50 @@ function syncCardBadges() {
     b.classList.toggle("done", got === ks.length);
   }
 }
+function bossTime() { return G.bossKillT != null && G.bossFirstT != null ? G.bossKillT - G.bossFirstT : null; }
 function starsOf(won) {
   if (!won) return 0;
-  if (G.t <= 150 && G.missed === 0) return 3;
-  return G.missed <= 3 ? 2 : 1;
+  const bt = bossTime();
+  if (bt != null && bt <= 25 && G.missed <= 2) return 3;
+  if ((bt != null && bt <= 40) || G.missed <= 4) return 2;
+  return 1;
 }
 function showEnd(won) {
   const pct = Math.floor((G.points / G.goal) * 100);
-  // 稱號看「大招使用率」：能放的機會裡放了幾次，不受登場早晚與自動攻擊影響
+  // 稱號看哪位英雄的技能等級加總最高
   let h = null, bestRate = 0;
   for (const x of BTN_HEROES) {
-    const n = G.casts[x.key] || 0;
-    if (!n || x.unlockT == null) continue;
-    const rate = n / Math.max(1, Math.floor((G.t - x.unlockT) / x.cd) + 1) + (G.uses[x.key] || 0) * 1e-4;
-    if (rate > bestRate) { bestRate = rate; h = x; }
+    const sum = BOONS.filter((b) => b.hero === x.key).reduce((a, b) => a + lv(b.id), 0) + (G.uses[x.key] || 0) * 1e-4;
+    if (sum > bestRate) { bestRate = sum; h = x; }
   }
+  const owned = BOONS.filter((b) => lv(b.id)), ownedDuos = DUOS.filter((d) => has(d.id));
   h ||= { key: "rookie", avs: ["allwill"], title: "AllWill 見習船員" };
+  // 稱號：水球潘和 Coomy 依各自技能分開
+  const TITLES = { johnny: "拍板船長 水球潘", coomy: "人形節拍器 Coomy", raymond: "步驟多了點 CTO Raymond", richard: "止血吉他手 Richard", ccza: "海邊狙擊手 ccza", ben: "最佳串門男主角 ben" };
+  if (h.key === "jc") { const jo = ["hat", "retro"].reduce((a, k) => a + lv(k), 0), co = ["beat", "ssot"].reduce((a, k) => a + lv(k), 0); h = { ...h, key: co > jo ? "coomy" : "johnny", avs: [co > jo ? "coomy" : "water"], title: TITLES[co > jo ? "coomy" : "johnny"] }; }
+  else if (TITLES[h.key]) h = { ...h, title: TITLES[h.key] };
+  if (starsOf(won) === 3) h = { ...h, key: "perfect", title: `零失誤船長・${h.title}` };
   const hobbyOf = (k) => MEMBERS[k].lines[0].replace(/<span[^>]*>.*?<\/span>/, "");
   const order = ["johnny", "coomy", "richard", "raymond", "ccza", "ben"];
   const stars = starsOf(won);
   const cards = ownedCards, fresh = G.fresh;
   const got = CARD_ORDER.filter((k) => cards[k]).length;
   const nextK = CARD_ORDER.find((k) => !cards[k]);
-  const starLine = won ? ["", "把船蓋完了。下一顆星：漏掉的矛盾不超過 3 個", "漏掉不超過 3 個。最後一顆星：2:30 內出海、零漏接", "零漏接！2:30 內出海、一個矛盾都沒漏"][stars] : "時間到，船還沒蓋完。蓋完出海就有第一顆星";
-  const share = encodeURIComponent(`我集到 ${got}/6 張 AllWill 成員卡，拿到${stars ? ` ${"★".repeat(stars)}` : ""}「${h.title}」！${won ? `${fmt(G.t)} 把 AllWill 號蓋好出海了。` : ""}你也來認識這個團隊 👉 ${location.origin}${location.pathname}`);
+  const bt = bossTime();
+  const gapT = bt != null ? Math.max(0, Math.ceil(bt - 25)) : null, gapM = Math.max(0, G.missed - 2);
+  const starLine = won ? ["", `下一顆星：魔王 40 秒內倒（這局 ${bt != null ? Math.round(bt) : "—"} 秒），或漏怪 ≤4`, `差一點 3 星：${gapT ? `再快 ${gapT} 秒` : ""}${gapT && gapM ? "、" : ""}${gapM ? `少漏 ${gapM} 個` : ""}`, "零失誤船長！魔王 25 秒內倒、漏怪 ≤2"][stars] : G.bossFirstT != null ? "魔王沒打倒。挑「打魔王」的卡，傷害會累積" : "時間到，船還沒蓋完";
+  const share = encodeURIComponent(`漏 ${G.missed} 個｜魔王 ${bt != null ? Math.round(bt) + " 秒" : "沒倒"}｜總時間 ${fmt(G.t)}
+被魔王問了一整局「到底要做什麼？」，解掉 ${G.solved} 個矛盾${ownedDuos.length ? `，靠「${ownedDuos[0].name}」` : ""}${won ? `把船開出港${stars ? ` ${"★".repeat(stars)}` : ""}` : "還是沒出海"}。我是「${h.title}」，集到 ${got}/6 張 AllWill 成員卡。你的需求也每天在改嗎？來挑戰 👉 ${location.origin}${location.pathname}`);
   G.endInfo = { won, stars, h, got };
   endPanel.innerHTML = `<div class="t-stagger">
     <span class="tag">#AllWill 船塢守衛戰</span>
     <h2>${won ? "AllWill 號出航！" : `還差 ${100 - pct}%，船還沒蓋好`}</h2>
     <div class="stars" aria-label="${stars} 顆星">${"★".repeat(stars)}<s>${"★".repeat(3 - stars)}</s><small>${starLine}</small></div>
-    <p>${won ? `用了 ${fmt(G.t)}，${bricks.length} 塊磚全部蓋上。地平線後面有美國、有日本，也有還沒畫進地圖的島。` : "Spec 的矛盾沒解完，船塢停在半路。再派一次英雄？"}</p>
-    <div class="stats"><div><b>${G.solved}</b><span>解掉的矛盾</span></div><div><b>${G.missed}</b><span>漏掉的矛盾</span></div><div><b>×${G.maxCombo}</b><span>最大連擊</span></div></div>
+    <div class="stats"><div><b>${G.solved}</b><span>解掉的矛盾</span></div><div><b>${G.missed}</b><span>漏掉的怪</span></div><div><b>${bt != null ? `${Math.round(bt)} 秒` : "—"}</b><span>打倒魔王</span></div></div>
+    <div class="combo-set"><b>本局共識組合</b>${owned.map((b) => `<span>${b.name} Lv${lv(b.id)}</span>`).join("")}${ownedDuos.map((d) => `<span class="duo">共鳴・${d.name}</span>`).join("") || ""}</div>
     <div class="title-card"><span class="avs">${(h.avs || [h.av]).map((a) => `<img src="${avatars[a]}" alt="">`).join("")}</span><div><small>你的稱號</small><b>${h.title}</b><span>${TITLE_LINE[h.key]}</span></div></div>
     <div class="collect"><b>成員卡 ${got} / 6</b><span>${fresh.length ? `這局新收集：${fresh.map((k) => MEMBERS[k].name).join("、")}` : got === 6 ? "全部集滿！你認識整個 AllWill 開發團隊了" : "這局沒有新卡，看看下面還差哪些任務"}</span></div>
-    <div class="crew">${CARD_ORDER.map((k) => `<div class="${cards[k] ? "" : "off"}"><img src="${avatars[MEMBERS[k].av]}" alt=""><div><b>${MEMBERS[k].name}・${MEMBERS[k].role}${fresh.includes(k) ? "<em>新</em>" : ""}</b><span>${CARD_RULES[k].bg}</span><i>${cards[k] ? hobbyOf(k) : `任務：${CARD_RULES[k].cond}（這局 ${Math.min(G.task[k] || 0, CARD_RULES[k].need)}/${CARD_RULES[k].need}）`}</i></div></div>`).join("")}</div>
+    <div class="crew">${CARD_ORDER.map((k) => `<div class="${cards[k] ? "" : "off"}"><img src="${avatars[MEMBERS[k].av]}" alt=""><div><b>${MEMBERS[k].name}${fresh.includes(k) ? "<em>新</em>" : ""}</b><span>${cards[k] ? CARD_RULES[k].bg : "還沒收集"}</span></div></div>`).join("")}</div>
     ${nextK ? `<div class="next">下一張：${MEMBERS[nextK].name}・${CARD_RULES[nextK].cond}</div>` : ""}
     <div class="end-actions"><div class="row2"><button class="btn" id="imgBtn" type="button">存成分享圖</button><a class="btn ghost" id="shareBtn" href="https://www.threads.net/intent/post?text=${share}" target="_blank" rel="noopener">分享到 Threads</a></div>
     <button class="btn ghost" id="againBtn" type="button">再玩一次</button></div>
@@ -4411,6 +4838,9 @@ async function saveShareImage() {
 }
 // 稱號卡：喜好＋一句經歷，有水球潘的評語就放上
 const TITLE_LINE = {
+  perfect: "魔王 25 秒內倒、漏怪不超過 2 個。這艘船沒有人背鍋。",
+  johnny: "水球軟體學院創辦人，喜歡當船長。拍板之後，全場安靜。",
+  coomy: "團隊的節拍器，三個月的東西一個月到一個半月交付。",
   rookie: "這局還沒放過大招。下一局冷卻好就點英雄頭像，看看大家的招！",
   jc: "水球潘喜歡當船長，Coomy 很愛打遊戲；水球潘說她是「團隊的節拍器」。",
   richard: "玩音樂、常背著吉他。在 SlideArt 經手 Nike、Google、BMW 的設計案，也讓只剩一個月 Runway 的公司兩個月轉虧為盈。",
@@ -4419,12 +4849,387 @@ const TITLE_LINE = {
   ben: "也跑馬拉松，還是話劇社的。在客戶端帶導入的人。",
 };
 
+
+// ── 祝福系統：英雄全自動解矛盾；共識條滿了，就從三張技能卡挑一張 ──
+const BOONS = [
+  { id: "hat", hero: "jc", who: "johnny", name: "拍板定案", cd: [8, 6, 6], desc: ["每 8 秒，船長帽清掉全場黃色", "冷卻縮短到 6 秒", "船長帽連紅色也扣血"] },
+  { id: "beat", hero: "jc", who: "coomy", name: "對齊節拍", desc: ["全隊攻速 +20%", "全隊攻速 +35%", "全隊攻速 +50%"] },
+  { id: "ssot", hero: "jc", who: "coomy", name: "單一事實來源", desc: ["解掉時 30% 機率連鎖打下一個", "連鎖機率 45%", "連鎖機率 60%"] },
+  { id: "retro", hero: "jc", who: "johnny", name: "回顧會議", desc: ["漏掉的矛盾回放重打，每局 1 次", "每局 2 次", "每局 3 次"] },
+  { id: "split", hero: "raymond", name: "只是步驟多了點", desc: ["紅色被打中就拆成 2 個黃色", "拆出來的黃色走得更慢", "拆出來的黃色直接解掉"] },
+  { id: "punch", hero: "raymond", name: "重訓一拳", cd: [7, 7, 7], desc: ["每 7 秒，一拳打最前面 3 個紅色或魔王", "一拳傷害 +1", "一拳傷害 +2"] },
+  { id: "pierce", hero: "raymond", name: "根因分析", desc: ["Raymond 的攻擊穿透 1 個", "穿透 2 個", "穿透 3 個"] },
+  { id: "review", hero: "richard", name: "設計評審", cd: [10, 10, 10], desc: ["每 10 秒，附近三座島定住 2 秒", "定住 3 秒", "定住 4 秒"] },
+  { id: "stop", hero: "richard", name: "一個月止血", desc: ["每局攔下 2 個快漏掉的矛盾", "攔下 3 個", "攔下 4 個"] },
+  { id: "lang", hero: "richard", name: "共同語言", desc: ["Richard 打過的矛盾受傷 +25%", "受傷 +40%", "受傷 +60%"] },
+  { id: "async", hero: "ccza", name: "非同步回覆", cd: [9, 7.5, 6], desc: ["每 9 秒，最塞的那條橋整條清掉", "冷卻 7.5 秒", "冷卻 6 秒"] },
+  { id: "remote", hero: "ccza", name: "遠端協作", desc: ["ccza 支援任何一座島", "射程更遠", "射程最遠、攻速 +30%"] },
+  { id: "lock", hero: "ccza", name: "版本鎖定", desc: ["被打過的矛盾移速 -30%", "移速 -40%", "移速 -50%"] },
+  { id: "demo", hero: "ben", name: "導入 Demo", cd: [15, 13, 11], desc: ["每 15 秒全場定住 3 秒，期間傷害 ×2", "冷卻 13 秒", "冷卻 11 秒"] },
+  { id: "visit", hero: "ben", name: "串門子", cd: [12, 12, 12], desc: ["每 12 秒巡一座島，那裡攻速 ×2 持續 4 秒", "持續 5 秒", "持續 6 秒"] },
+  { id: "feedback", hero: "ben", name: "客戶回饋", desc: ["每解 10 個，船多一塊磚", "每解 8 個", "每解 6 個"] },
+  { id: "multi", hero: "ben", name: "一人分飾多角", desc: ["ben 的攻擊分裂成 2 發", "分裂成 3 發", "分裂成 4 發"] },
+];
+const DUOS = [
+  { id: "d_record", name: "決策紀錄", req: ["hat", "split"], desc: "船長帽打中紅色時，直接拆解清掉" },
+  { id: "d_relay", name: "時差接力", req: ["beat", "async"], desc: "非同步回覆冷卻減半" },
+  { id: "d_rehearse", name: "彩排", req: ["review", "demo"], desc: "定住時間 ×2，定住中傷害 ×2" },
+  { id: "d_version", name: "單一版本", req: ["lock", "pierce"], desc: "穿透打中減速的目標，傷害 ×3" },
+  { id: "d_patrol", name: "船長巡島", req: ["hat", "visit"], desc: "ben 巡到哪座島，船長帽就跟去清場" },
+];
+const boonById = Object.fromEntries([...BOONS, ...DUOS].map((b) => [b.id, b]));
+// 卡片用途標籤
+const USE = { hat: ["清黃"], beat: ["清黃", "打紅", "打魔王"], ssot: ["清黃"], retro: ["打魔王"], split: ["打紅"], punch: ["打紅", "打魔王"], pierce: ["打紅", "打魔王"],
+  review: ["清黃", "打魔王"], stop: ["打魔王"], lang: ["打紅", "打魔王"], async: ["清黃", "打紅"], remote: ["打魔王"], lock: ["打紅"], demo: ["打紅", "打魔王"], visit: ["清黃"], feedback: ["打魔王"], multi: ["清黃", "打紅"] };
+BOONS.find((b) => b.id === "retro").desc = ["漏掉的矛盾回放重打 1 次；魔王第一次衝島不扣磚", "回放 2 次", "回放 3 次"];
+BOONS.find((b) => b.id === "stop").desc = ["攔下 2 個快漏掉的矛盾；魔王衝島懲罰減半", "攔下 3 個", "攔下 4 個"];
+BOONS.find((b) => b.id === "review").desc = ["每 10 秒，附近三座島定住 2 秒（魔王也定住 1 秒）", "定住 3 秒", "定住 4 秒"];
+BOONS.find((b) => b.id === "feedback").desc = ["每解 10 個，船多一塊磚、魔王扣 1 血", "每解 8 個", "每解 6 個"];
+BOONS.find((b) => b.id === "pierce").desc = ["Raymond 的攻擊多打穿 1 個", "多打穿 2 個", "多打穿 3 個"];
+BOONS.find((b) => b.id === "lang").desc = ["Richard 打過的矛盾，大家打它多 25% 傷害", "多 40%", "多 60%"];
+BOONS.find((b) => b.id === "lock").desc = ["被打過的矛盾走慢 30%", "走慢 40%", "走慢 50%"];
+// 梗文案（病毒行銷版）
+Object.assign(boonById.hat, { name: "老闆說就這樣", desc: ["每 8 秒拍板清光黃色；「先拍板！」冷卻 15 秒", "拍板只要 6 秒；先拍板冷卻 12 秒、範圍更大", "連紅色一起拍掉"] });
+Object.assign(boonById.beat, { name: "明天交 POC", desc: ["全隊攻速 +40%", "今天下班前交：+80%", "現在就要：+150%"] });
+Object.assign(boonById.ssot, { name: "以 Spec 為準", desc: ["解掉時 30% 連鎖打下一個", "連鎖 45%，少吵一輪", "連鎖 60%，群組安靜了"] });
+Object.assign(boonById.retro, { name: "這個上次講過", desc: ["漏掉的回放重打 1 次，魔王首衝不扣磚", "Retro 再開一輪（2 次）", "Retro 開到第三輪"] });
+Object.assign(boonById.split, { name: "只是步驟多了點", desc: ["紅色一打就拆成 2 個黃色", "拆完的走更慢", "拆完直接解掉"] });
+Object.assign(boonById.punch, { name: "健身房直送一拳", desc: ["每 7 秒揍最前面 3 個紅色或魔王", "練胸日：傷害 +1", "不跳腿日：傷害 +2"] });
+Object.assign(boonById.pierce, { name: "Root Cause 追到底", desc: ["Raymond 的攻擊多打穿 2 個", "再追兩層（穿 4）", "追到上游（整條橋）"] });
+Object.assign(boonById.review, { name: "這版 Figma 先別動", desc: ["每 10 秒定住附近三島 2 秒，魔王也停", "定住 3 秒", "定住 4 秒，全場屏息"] });
+Object.assign(boonById.stop, { name: "Runway 只剩 1 個月", desc: ["攔下 2 個快漏掉的，魔王衝島懲罰減半", "先砍預算再說（攔 3 個）", "兩個月轉虧為盈（攔 4 個）"] });
+Object.assign(boonById.lang, { name: "翻成人話", desc: ["Richard 打過的，大家打它多 50%", "多 100%", "多 200%，工程師聽懂了"] });
+Object.assign(boonById.async, { name: "已讀，晚點回", desc: ["每 9 秒清空最塞的那條橋", "7.5 秒就回", "6 秒，比 Slack 快"] });
+Object.assign(boonById.remote, { name: "在海邊 WFH", desc: ["ccza 可以支援任何一座島", "Wi-Fi 更遠", "海風加持，攻速 +30%"] });
+Object.assign(boonById.lock, { name: "上線前 Code Freeze", desc: ["被打過的矛盾走慢 30%", "慢 50%", "慢 70%，誰都別動"] });
+Object.assign(boonById.demo, { name: "客戶在看別出包", desc: ["每 15 秒全場定住 3 秒，傷害 ×2", "冷卻 13 秒", "冷卻 11 秒，安可"] });
+Object.assign(boonById.visit, { name: "你有抽到馬拉松？", desc: ["每 12 秒串門一座島，攻速 ×2 持續 4 秒", "聊 5 秒", "聊 6 秒才走"] });
+Object.assign(boonById.feedback, { name: "客戶說這要改", desc: ["每解 10 個，船 +1 磚、魔王 -1 血", "每 8 個", "每 6 個"] });
+Object.assign(boonById.multi, { name: "PM、QA 我都演", desc: ["ben 的攻擊分裂成 2 發", "分裂成 4 發", "分裂成 6 發，劇組免請人"] });
+Object.assign(boonById.d_record, { name: "老闆拍板，CTO 拆單", desc: "船長帽打中紅色時，直接拆光" });
+Object.assign(boonById.d_relay, { name: "節拍器催已讀", desc: "「已讀，晚點回」冷卻減半" });
+Object.assign(boonById.d_rehearse, { name: "Demo 前一晚彩排", desc: "定住時間 ×2、定住時傷害 ×2" });
+Object.assign(boonById.d_version, { name: "Freeze 後抓 Root Cause", desc: "打穿被減速的目標，傷害 ×3" });
+Object.assign(boonById.d_patrol, { name: "老闆跟著串門子", desc: "ben 走到哪，帽子就清到哪" });
+
+const MEMBER_BOONS = { johnny: ["hat", "retro"], coomy: ["beat", "ssot"], raymond: ["split", "punch", "pierce"], richard: ["review", "stop", "lang"], ccza: ["async", "remote", "lock"], ben: ["demo", "visit", "feedback", "multi"] };
+const XP_TH = [6, 14, 24, 36, 50, 66, 84, 104, 126, 150];
+const lv = (id) => G.boons?.[id] || 0;
+const has = (id) => lv(id) > 0;
+const boonHero = (b) => heroByKey[b.hero];
+const ONB_KEY = "allwill-game-onboard";
+const onbDone = () => { try { return localStorage.getItem(ONB_KEY) === "1"; } catch { return false; } };
+function onb(k, pet, tag, line) {
+  if (G.onb[k] || !G.onbOn) return; G.onb[k] = true;
+  sayB(BUB.allwill, line, 2.6);
+  if (pet) { pet.st.textContent = tag; pet.st.style.setProperty("--sc", tag.startsWith("衝") ? "#ec4d2f" : tag === "停工" ? "#ec4d2f" : "#d9a400"); pet.st.classList.remove("off"); setTimeout(() => pet.st.classList.add("off"), 3000); }
+  if (Object.keys(G.onb).length >= 4) { try { localStorage.setItem(ONB_KEY, "1"); } catch {} }
+}
+function addXP(n) {
+  if (!G.on || G.seq) return;
+  G.xp += n;
+  while (G.xpIdx < XP_TH.length && G.xp >= XP_TH[G.xpIdx]) { G.xpIdx++; G.pendingPicks++; onb("xp", null, "", "有共識了！挑張卡加班"); }
+  maybeOpenPicker();
+}
+const picker = document.getElementById("boonPick");
+function maybeOpenPicker() {
+  if (!(G.pendingPicks > 0 && !G.paused && !G.cine && !G.seq && G.on)) return;
+  if (G.bossPickHeld && G.boss) return;
+  const wait = 6 - (G.t - (G.lastPickT ?? -99)); // 兩次選卡至少隔 6 秒
+  if (wait > 0) return; // 由每幀的 tickBoons 再檢查（跟著遊戲時間走）
+  openPicker();
+}
+function shuffled(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function boonOptions() {
+  const opts = [];
+  const duos = DUOS.filter((d) => !has(d.id) && d.req.every(has));
+  if (duos.length) opts.push(duos[Math.floor(rand() * duos.length)]);
+  const pool = BOONS.filter((b) => lv(b.id) < 3);
+  if (G.picks === 0) opts.push(boonById.hat); // 第一次一定有「拍板定案」：挑了就看到船長帽清場
+  const offline = pool.filter((b) => !boonHero(b).unlocked);
+  if (G.picks < 3 && offline.length) opts.push(offline[Math.floor(rand() * offline.length)]); // 前三次必定有還沒上線的英雄
+  for (const b of shuffled(pool)) {
+    if (opts.length >= 3) break;
+    if (opts.includes(b)) continue;
+    if (opts.some((o) => !o.req && o.hero === b.hero)) continue; // 同一輪每位英雄最多一張
+    opts.push(b);
+  }
+  return opts.slice(0, 3);
+}
+function openPicker() {
+  G.pendingPicks--; G.paused = true;
+  const opts = boonOptions();
+  if (!opts.length) { G.paused = false; return; }
+  const card = (b) => {
+    if (b.req) { // 共鳴 Duo
+      const hs = b.req.map((r) => boonHero(boonById[r]));
+      return `<button class="bp-card duo" type="button" data-id="${b.id}"><span class="bp-avs">${hs.map((h) => `<img src="${avatars[h.av || h.avs[0]]}" alt="">`).join("")}</span>
+        <span class="bp-txt"><i class="bp-tag">共鳴</i><b>${b.name}</b><em>${b.req.map((r) => boonById[r].name).join(" ＋ ")}</em><p>${b.desc}</p></span></button>`;
+    }
+    const h = boonHero(b), l = lv(b.id), fresh = !h.unlocked;
+    const half = DUOS.find((d) => !has(d.id) && d.req.includes(b.id) && d.req.some((r) => r !== b.id && has(r)) && !has(b.id));
+    return `<button class="bp-card" type="button" data-id="${b.id}" style="--c:${h.c}"><span class="bp-avs">${(h.avs || [h.av]).map((a) => `<img src="${avatars[a]}" alt="">`).join("")}</span>
+      <span class="bp-txt">${fresh ? `<i class="bp-tag new">新英雄上線</i>` : ""}${half ? `<i class="bp-tag">再拿這張 → 共鳴「${half.name}」</i>` : ""}<b>${b.name}</b><span class="bp-use">${USE[b.id].map((u) => `<i class="u-${u}">${u}</i>`).join("")}</span><em>${heroName(h)}・${l ? `Lv${l} → Lv${l + 1}` : "Lv1"}</em><p>${b.desc[l]}</p><span class="bp-dots">${[0, 1, 2].map((i) => `<s class="${i < l + 1 ? "on" : ""}"></s>`).join("")}</span></span></button>`;
+  };
+  picker.querySelector(".bp-cards").innerHTML = opts.map(card).join("");
+  picker.querySelector(".bp-title").textContent = G.picks === 0 ? "達成共識！挑一張技能" : G.boss ? "魔王來了！挑一張技能" : ["達成共識！挑一張", "終於對齊了！挑一張", "會議沒延長！挑一張"][G.picks % 3];
+  picker.classList.add("open"); document.body.classList.add("picking");
+  G.pickAuto = 8; picker.querySelector(".bp-timer i").style.transitionDuration = "0s"; picker.querySelector(".bp-timer i").style.width = "100%";
+  sound.ok?.();
+}
+picker.addEventListener("click", (e) => {
+  const c = e.target.closest("[data-id]"); if (!c || !G.paused) return;
+  pickBoon(c.dataset.id);
+});
+function pickBoon(id) {
+  const b = boonById[id];
+  if (G.tut2) G.tut2.picked = true;
+  G.boons[id] = lv(id) + 1; G.picks++; G.lastPickT = G.t;
+  if (b.cd) G.boonT[id] = 1.2;
+  if (!b.req) {
+    const h = boonHero(b);
+    const wasNew = !h.unlocked; setTimeout(() => levelUpFx(h, b, wasNew), 60);
+    if (!h.unlocked) {
+      h.unlocked = true; h.unlockT = G.t; h.timer = 0.3;
+      if (h.key === "ben") benReturn();
+      banner(`${heroName(h)} 上線！`, `${b.name}：${b.desc[0]}`, false, 2.6);
+    } else banner(`${b.name} Lv${lv(id)}`, b.desc[lv(id) - 1], false, 2.2);
+    sayB(BUB[h.bub], `${b.name}！`, 1.6);
+  } else banner(`共鳴：${b.name}`, b.desc, false, 2.8);
+  picker.classList.remove("open"); document.body.classList.remove("picking");
+  setTimeout(() => { if (!picker.classList.contains("open")) picker.querySelector(".bp-title").textContent = ""; }, 300);
+  G.paused = false;
+  checkCards();
+  setTimeout(maybeOpenPicker, 350);
+}
+function boonCd(b) { let cd = b.cd[lv(b.id) - 1]; if (b.id === "async" && has("d_relay")) cd /= 2; return cd; }
+const sayCool = {};
+function heroSay(h, text) { if ((sayCool[h.key] || 0) > elapsed) return; sayCool[h.key] = elapsed + 6; sayB(BUB[h.bub], text, 1.4); }
+function hatClear(laneId = null) {
+  const wb = heroByKey.johnny, L = lv("hat");
+  const ys = active((p) => (p.type === "y" || (p.type === "r" && (L >= 3 || has("d_record")))) && (!laneId || p.lane.id === laneId));
+  ys.forEach((p, i) => fireOrb(wb, p, p.type === "y" || has("d_record") ? 9 : 1, { kind: "hat", delay: 0.2 + i * 0.05, dur: 0.55, arc: 3 }));
+  return ys.length;
+}
+function fireBoon(b) {
+  const L = lv(b.id), h = boonHero(b);
+  if (b.id === "hat") { if (hatClear()) { heroByKey.jc.cast = 0.9; heroSay(heroByKey.jc, "拍板！"); } }
+  else if (b.id === "punch") {
+    let list = active((p) => p.type === "r" || p.type === "boss").sort((a, c) => a.u - c.u).slice(0, 3);
+    if (!list.length) list = active().sort((a, c) => a.u - c.u).slice(0, 3);
+    list.forEach((p, i) => fireOrb(h, p, 2 + L, { kind: "fist", delay: i * 0.14, dur: 0.45, arc: 0 }));
+    if (list.length) { h.cast = 0.9; heroSay(h, "一拳！"); }
+  } else if (b.id === "review") {
+    const sec = (1 + L) * (has("d_rehearse") ? 2 : 1);
+    const t = active((p) => ["richard", "ben", "ccza"].includes(p.lane.id) && p.type !== "boss");
+    t.forEach((p) => setStun(p, sec, h.c, "♪ 跳舞中"));
+    if (G.boss && G.boss.state === "walk") setStun(G.boss, 1, h.c, "♪ 跳舞中");
+    if (t.length) { h.cast = 0.9; heroSay(h, "設計評審！"); shockwave(h.obj().getWorldPosition(V3()), h.c, 7, 0.8); }
+  } else if (b.id === "async") {
+    const count = lanes.map((l) => active((p) => p.lane === l && p.type !== "boss").length);
+    if (Math.max(...count) > 0) { const Ln = lanes[count.indexOf(Math.max(...count))]; Ln.mark = 1.2; G.async = { lane: Ln, t: 1.2 }; h.cast = 0.9; heroSay(h, "（敲 Enter）"); }
+  } else if (b.id === "demo") {
+    const sec = 3 * (has("d_rehearse") ? 2 : 1);
+    active().forEach((p) => setStun(p, sec, h.c, "🎭 看戲中")); G.double = sec; G.spot = sec; h.cast = 0.9; heroSay(h, "看我這邊！");
+  } else if (b.id === "visit") {
+    const lane = LANE_IDS[Math.floor(rand() * LANE_IDS.length)];
+    G.laneBoost[lane] = 3 + L;
+    const at = laneById[lane].br.curve.getPointAt(0).clone().add(V3(0, 3, 0));
+    floatText(at, "ben 來串門子！攻速 ×2", "gold");
+    burst(at, h.c, 10, 4);
+    if (has("d_patrol")) hatClear(lane);
+  }
+}
+function tickBossFocus(dt) {
+  const b = G.boss; if (!b || !b.active || b.state !== "walk") return;
+  G.focusT = (G.focusT || 0) - dt;
+  if (G.focusT > 0) return;
+  G.focusT = 1.5;
+  BTN_HEROES.filter((h) => h.unlocked).forEach((h, i) => fireOrb(h, b, 0.18, { delay: i * 0.08, size: 0.7 }));
+}
+function heroTopLv(h) { return Math.max(0, ...BOONS.filter((b) => b.hero === h.key).map((b) => lv(b.id))); }
+// 打穿：一道光束連到後面的目標
+const beams = Array.from({ length: 6 }, () => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1, 6), new THREE.MeshBasicMaterial({ color: "#7fb3ff", transparent: true, depthWrite: false })); m.visible = false; scene.add(m); return { m, t: 1 }; });
+function pierceBeam(a, b, color) {
+  const B = beams.find((x) => x.t >= 1) || beams[0];
+  const from = a.clone().add(V3(0, 1, 0)), to = b.clone().add(V3(0, 1, 0)), mid = from.clone().lerp(to, 0.5);
+  B.m.position.copy(mid); B.m.scale.set(1, from.distanceTo(to), 1); B.m.lookAt(to); B.m.rotateX(Math.PI / 2);
+  B.m.material.color.set(color); B.t = 0; B.m.visible = true;
+}
+// 英雄腳下的光環：Lv1 一圈、Lv2 兩圈、Lv3 會轉
+const auras = {};
+function heroAura(h) {
+  if (auras[h.key]) return auras[h.key];
+  const g = new THREE.Group();
+  for (let i = 0; i < 2; i++) { const r = new THREE.Mesh(new THREE.RingGeometry(1.0 + i * 0.35, 1.12 + i * 0.35, 40), new THREE.MeshBasicMaterial({ color: h.c, transparent: true, opacity: 0.75, side: THREE.DoubleSide, depthWrite: false })); r.rotation.x = -Math.PI / 2; r.visible = false; g.add(r); }
+  scene.add(g); return (auras[h.key] = g);
+}
+function tickAuras(dt) {
+  for (const h of BTN_HEROES) {
+    const L = heroTopLv(h), a = heroAura(h);
+    a.visible = h.unlocked && L > 0 && !G.sailing;
+    if (!a.visible) continue;
+    a.position.copy(h.obj().getWorldPosition(V3())).setY(0.85);
+    a.children.forEach((r, i) => { r.visible = i < Math.min(2, L); r.material.opacity = 0.55 + Math.sin(elapsed * 4 + i) * 0.2; });
+    if (L >= 3) { a.rotation.y += dt * 2; if (rand() < dt * 10) burst(a.position.clone().add(V3(Math.cos(elapsed * 3) * 1.3, 0.4, Math.sin(elapsed * 3) * 1.3)), h.c, 1, 1.5); }
+    const sc = 1 + 0.08 * L, o = h.obj(), base = o.userData.baseScale ??= o.scale.x;
+    o.scale.setScalar(base * sc);
+  }
+  for (const B of beams) { if (B.t >= 1) continue; B.t = Math.min(1, B.t + dt / 0.25); B.m.material.opacity = 1 - B.t; if (B.t >= 1) B.m.visible = false; }
+}
+// 升級瞬間：頭頂大字＋（Lv3 或新英雄）鏡頭推近
+function levelUpFx(h, b, isNew) {
+  const L = lv(b.id), at = heroPos(h).add(V3(0, 1.2, 0));
+  if (isNew) banner(`${heroName(h)} 上線！`, b.name, false, 2); else floatText(at, `Lv${L}！${b.name}`, "gold"); // 上線大字放畫面中央，不會被切邊
+  burst(at, h.c, 18, 6); shockwave(h.obj().getWorldPosition(V3()), h.c, 4, 0.6);
+  sound.sparkle?.();
+  if (L >= 3 || isNew) { const p = h.obj().getWorldPosition(V3()); placeCamera(p.clone().add(V3(0, 1, 0)), fitDistance(9, 9), portrait() ? 40 : 32); G.camBack = 0.9; }
+  const btn = hud.btn[h.key]; if (btn) { btn.classList.remove("cast"); void btn.offsetWidth; btn.classList.add("cast"); }
+}
+const LANE_HEROES = { jc: ["johnny", "jc"], raymond: ["raymond"], richard: ["richard"], ccza: ["ccza"], ben: ["ben"] };
+function heroSit(L, sec, line) {
+  for (const k of LANE_HEROES[L.id] || []) {
+    const h = heroByKey[k]; if (!h.unlocked) continue;
+    if (!(h.sitT > 0)) { sound.sit?.(); }
+    h.sitT = Math.max(h.sitT || 0, sec);
+  }
+  const hb = heroByKey[L.id === "jc" ? "jc" : L.id];
+  if (hb && BUB[hb.bub]) sayB(BUB[hb.bub], line, 2.2);
+}
+// 島上的火與煙（每座島一組，開局先建好）
+const fireTex = (() => { const c = document.createElement("canvas"); c.width = 32; c.height = 64; const x = c.getContext("2d"); const g = x.createLinearGradient(0, 64, 0, 0); g.addColorStop(0, "rgba(255,90,20,1)"); g.addColorStop(0.5, "rgba(255,170,40,0.85)"); g.addColorStop(1, "rgba(255,230,120,0)"); x.fillStyle = g; x.beginPath(); x.ellipse(16, 40, 13, 24, 0, 0, Math.PI * 2); x.fill(); return new THREE.CanvasTexture(c); })();
+const smokeTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); const g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, "rgba(90,90,90,0.8)"); g.addColorStop(1, "rgba(90,90,90,0)"); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+const FIRES = {};
+for (const id of LANE_IDS) {
+  const c = posOf(unitById[id]), g = new THREE.Group(); g.visible = false; scene.add(g);
+  const flames = Array.from({ length: 8 }, (_, i) => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: fireTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); const a = (i / 8) * Math.PI * 2; sp.position.set(c.x + Math.cos(a) * 2.2, 1.6, c.z + Math.sin(a) * 2.2); g.add(sp); return sp; });
+  const smoke = Array.from({ length: 12 }, (_, i) => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: smokeTex, transparent: true, depthWrite: false })); sp.userData.t = i / 12; sp.userData.x = c.x + (rand() - 0.5) * 4; sp.userData.z = c.z + (rand() - 0.5) * 4; g.add(sp); return sp; });
+  const light = new THREE.PointLight("#ff7a1a", 0, 14); light.position.set(c.x, 3, c.z); g.add(light);
+  FIRES[id] = { g, flames, smoke, light };
+}
+function tickFireFx(dt) {
+  for (const L of lanes) {
+    const F = FIRES[L.id]; F.g.visible = L.fire > 0;
+    if (!F.g.visible) { F.light.intensity = 0; continue; }
+    F.flames.forEach((f, i) => { const h = 1.2 + (Math.sin(elapsed * 12 + i * 1.7) * 0.5 + 0.5) * 0.8; f.scale.set(h * 0.6, h * 1.3, 1); });
+    F.smoke.forEach((sm) => { sm.userData.t = (sm.userData.t + dt * 0.5) % 1; const k = sm.userData.t; sm.position.set(sm.userData.x, 2 + k * 4.5, sm.userData.z); sm.scale.setScalar(1 + k * 2); sm.material.opacity = 0.5 * (1 - k); });
+    F.light.intensity = 2 + Math.sin(elapsed * 18) * 1;
+  }
+}
+const bannerAt = {};
+function bannerOnce(key, main, sub, danger, sec, at) {
+  if ((bannerAt[key] ?? -99) > elapsed - 15) { if (at) floatText(at, main, "bad"); return; } // 同一事件 15 秒內只出一次大橫幅
+  bannerAt[key] = elapsed; banner(main, sub, danger, sec);
+}
+function setFire(L) {
+  L.fire = 10; L.fireAcc = 0;
+  const I = islands[L.id]; if (I?.grass) I.grass.color.set("#5a4636");
+  bannerOnce("fire", "衝突沒拍板，島燒起來了", "這鍋誰背？英雄會去滅火", true, 2.4, posOf(unitById[L.id]).setY(4));
+}
+// 坐下的英雄頭上的 💤
+const zzzTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); x.font = "48px sans-serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("💤", 32, 34); return new THREE.CanvasTexture(c); })();
+const ZZZ = {};
+function zzzOf(h) { if (ZZZ[h.key]) return ZZZ[h.key]; const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: zzzTex, transparent: true, depthTest: false })); sp.scale.setScalar(1.6); sp.renderOrder = 6; sp.visible = false; scene.add(sp); return (ZZZ[h.key] = sp); }
+// 主動技能「先拍板！」：點一座島或一隻怪，船長帽砸下去
+const slamBtn = document.getElementById("slamBtn");
+const slamCd = () => [20, 15, 12, 12][lv("hat")];
+function slamAt(pos) {
+  if (!G.on || G.paused || (G.slamT || 0) > 0) return false;
+  G.slamT = slamCd(); G.slamArmed = false; slamBtn.classList.remove("armed");
+  const r = 2 * (1 + lv("hat") * 0.25), wb = heroByKey.johnny;
+  for (const p of pets) {
+    if (!p.active || p.type === "n" || p.g.position.distanceTo(pos) > r + (p.type === "boss" ? 3 : 0)) continue;
+    if (p.type === "y") fireOrb(wb, p, 9, { kind: "hat", dur: 0.35, arc: 3 });
+    else if (p.type === "r") fireOrb(wb, p, 2, { kind: "hat", dur: 0.35, arc: 3 });
+    else if (p.type === "boss") { p.hp -= p.maxHp * 0.03; G.lastBossHp = p.hp; p.flash = 0.14; if (p.hp <= 0) bossSolved(p, wb); }
+  }
+  shockwave(pos, "#2f9fd8", r * 1.5, 0.5); burst(pos.clone().add(V3(0, 1.5, 0)), "#ffffff", 14, 5); G.shake = 0.3; navigator.vibrate?.(20);
+  floatText(pos.clone().add(V3(0, 3, 0)), "先拍板！", "big gold"); sound.pop?.();
+  return true;
+}
+slamBtn.addEventListener("click", () => { if ((G.slamT || 0) > 0 || !G.on) return; G.slamArmed = !G.slamArmed; slamBtn.classList.toggle("armed", G.slamArmed); if (G.slamArmed) floatText(V3(0, 6, 0), "點一座島或一隻怪", ""); });
+addEventListener("keydown", (e) => { if (e.code === "Space" && G.on && !G.paused) { e.preventDefault(); G.slamArmed = true; slamBtn.classList.add("armed"); } });
+renderer.domElement.addEventListener("pointerup", (e) => {
+  if (!G.on || G.paused) return;
+  const isMouse = e.pointerType === "mouse";
+  if (!G.slamArmed && !isMouse) return; // 手機：先按按鈕再點目標；桌機：冷卻好時直接點
+  ptr.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const hits = ray.intersectObjects(scene.children, true);
+  const hp = hits.find((h) => h.point.y > -0.5)?.point;
+  if (hp) slamAt(hp);
+});
+function tickSlam(dt) {
+  G.slamT = Math.max(0, (G.slamT || 0) - dt);
+  slamBtn.style.setProperty("--p", (1 - G.slamT / slamCd()).toFixed(3));
+  slamBtn.classList.toggle("ready", G.slamT <= 0);
+}
+function tickLeaks(dt) {
+  tickFireFx(dt); tickSlam(dt);
+  for (const L of lanes) {
+    // 失火：每秒扣船進度；英雄自動滅火（坐著的不算），最多 10 秒自己熄
+    if (L.fire > 0) {
+      const helpers = (LANE_HEROES[L.id] || []).filter((k) => heroByKey[k].unlocked && !(heroByKey[k].sitT > 0)).length;
+      L.fire -= dt * (1 + helpers * 1.5);
+      L.fireAcc += dt; if (L.fireAcc >= 2) { L.fireAcc = 0; addPoints(-1); }
+      const c = posOf(unitById[L.id]);
+      if (rand() < dt * 30) burst(V3(c.x + (rand() - 0.5) * 6, 1.2, c.z + (rand() - 0.5) * 6), rand() < 0.6 ? "#ff7a1a" : "#ffcf3a", 2, 2.5);
+      if (rand() < dt * 8) burst(V3(c.x + (rand() - 0.5) * 5, 3, c.z + (rand() - 0.5) * 5), "#6b6b6b", 1, 1.2);
+      if (helpers && rand() < dt * 3) burst(V3(c.x, 2.5, c.z), "#7fd6ff", 4, 3); // 噴水
+      if (L.fire <= 0) { L.fire = 0; islands[L.id]?.grass?.color.set("#ffffff"); floatText(c.clone().setY(4), "火滅了，好，繼續", "gold"); }
+    }
+    // 快漏到島上的預警：45% 島門口光圈，30% 倒數＋頭像紅閃＋手機短震
+    let worst = 1, worstP = null;
+    for (const p of pets) if (p.active && p.lane === L && p.type !== "n" && p.state === "walk" && p.u < worst) { worst = p.u; worstP = p; }
+    const show = G.on && !G.tut2 && worst < 0.45;
+    L.warnRing.material.opacity = show ? 0.45 + Math.sin(elapsed * 12) * 0.3 : 0;
+    L.warnRing.scale.setScalar(show ? 1 + (Math.sin(elapsed * 8) * 0.5 + 0.5) * 0.25 : 1);
+    if (show) L.warnRing.material.color.set(worstP.type === "y" ? "#ffd23f" : "#ff3b2f");
+    if (worstP && worst < 0.3 && G.on && !G.tut2 && worstP.type !== "boss") {
+      const left = Math.max(0, Math.ceil((worst * L.br.len) / Math.max(0.1, worstP.speed)));
+      worstP.q.textContent = String(left); worstP.q.style.transform = "scale(1.6)";
+      if (!worstP.buzzed) { worstP.buzzed = true; navigator.vibrate?.(30); }
+    }
+    const hb = hud.btn[L.id === "jc" ? "jc" : L.id];
+    if (hb) hb.classList.toggle("danger", !!(worstP && worst < 0.3 && G.on));
+  }
+  // 坐下的英雄：停火、抱頭
+  for (const h of HEROES) {
+    if (!(h.sitT > 0)) { if (h.wasSit) { h.wasSit = false; const o = h.obj(); o.rotation.x = 0; o.position.y += 0.35; if (o.userData.sitScale) o.scale.setScalar(o.userData.sitScale); zzzOf(h).visible = false; } continue; }
+    h.sitT -= dt;
+    const o = h.obj(); if (!h.wasSit) { h.wasSit = true; o.position.y -= 0.35; o.userData.sitScale = o.scale.x; o.scale.multiplyScalar(0.8); } o.rotation.x = 0.25; o.rotation.z = Math.sin(elapsed * 8) * 0.08;
+    const z = zzzOf(h); z.visible = true; z.position.copy(o.getWorldPosition(V3())).add(V3(0, 3.6 + Math.sin(elapsed * 3) * 0.25, 0));
+    if (rand() < dt * 1.5) floatText(o.getWorldPosition(V3()).add(V3(0, 3.2, 0)), "…", "");
+    if (h.sitT <= 0) { o.rotation.set(0, o.rotation.y, 0); burst(o.getWorldPosition(V3()).add(V3(0, 2, 0)), h.c, 6, 3); }
+  }
+}
+function tickBoons(dt) {
+  tickLeaks(dt);
+  tickAuras(dt);
+  tickBossHud(); tickBossLook(dt);
+  if (G.camBack > 0) { G.camBack -= dt; if (G.camBack <= 0) gameView(); }
+  tickBossFocus(dt);
+  if (G.pendingPicks > 0) maybeOpenPicker();
+  for (const b of BOONS) if (b.cd && lv(b.id)) { G.boonT[b.id] = (G.boonT[b.id] ?? 1) - dt; if (G.boonT[b.id] <= 0) { G.boonT[b.id] = boonCd(b); fireBoon(b); } }
+  for (const k in G.laneBoost) G.laneBoost[k] = Math.max(0, G.laneBoost[k] - dt);
+}
+// 成員卡：該成員任一技能升到 Lv2，或觸發含他的共鳴
+function checkCards() {
+  for (const k of CARD_ORDER) {
+    if (ownedCards[k]) continue;
+    const mine = MEMBER_BOONS[k];
+    const ok = mine.some((id) => lv(id) >= 2) || DUOS.some((d) => has(d.id) && d.req.some((r) => mine.includes(r)));
+    if (ok) { ownedCards[k] = 1; saveCards(ownedCards); G.fresh.push(k); showCardFlip(k); }
+  }
+  syncCardBadges();
+}
 function tickGame(dt) {
   tickCave(dt);
   tickDecos(dt);
   tickBricks(dt);
   tickFx(dt);
   if (G.bannerT > 0) { G.bannerT -= dt; if (G.bannerT <= 0) hud.banner.classList.remove("on"); }
+  else if (bannerQ.length && !G.cine) showBanner(...bannerQ.shift());
   if (G.preview?.h.key === "ccza") G.preview.lanes = G.preview.main = SKILL_INFO.ccza.lanes();
   lanes.forEach((l) => {
     l.el.classList.toggle("off", !(l.stall > 0 && G.on));
@@ -4440,7 +5245,6 @@ function tickGame(dt) {
     l.br.deckMat.emissive.set(l.mark > 0 ? "#8a5ac6" : l.stall > 0 && G.on ? "#ef5b3c" : "#000000");
     l.br.deckMat.emissiveIntensity = l.mark > 0 ? 0.7 : l.stall > 0 && G.on ? 0.35 + Math.sin(elapsed * 8) * 0.15 : 0;
   });
-  islands.course.el.style.opacity = G.on && portrait() ? 0.6 : "";
   if (G.seq) { tickSeq(dt); return; }
   followGoal(dt, 2);
   if (G.demo) { tickDemo(dt); tickPets(dt); return; }
@@ -4448,10 +5252,12 @@ function tickGame(dt) {
   let gdt = dt;
   if (G.hitstop > 0) { G.hitstop -= dt; gdt = dt * 0.1; } // 命中頓一下
   if (G.cine) { tickCine(dt); updateHud(); return; }
-  if (G.redTut) { tickRedTut(dt); if (G.redTut?.frozen) { calcUrge(); heroPoses(dt); updateHud(); return; } }
-  if (G.tut) { tickTutorial(dt); tickOrbs(gdt); if (!G.tutFreeze) tickPets(gdt); heroPoses(dt); updateHud(); return; }
-  tickIntro(dt);
-  calcUrge();
+  if (G.paused) { // 挑技能時全暫停；8 秒沒挑就自動選第一張
+    if (picker.classList.contains("open") && !G.tut2) { G.pickAuto -= dt; picker.querySelector(".bp-timer i").style.width = `${Math.max(0, G.pickAuto / 8) * 100}%`; if (G.pickAuto <= 0) { const c = picker.querySelector("[data-id]"); if (c) pickBoon(c.dataset.id); } }
+    updateHud(); return;
+  }
+  if (G.tut2) { tickTut2(dt); tickHeroes(gdt); tickOrbs(gdt); tickPets(gdt); tickAuras(dt); updateHud(); return; }
+  if (G.boss && G.boss.active && !G.camBack) { gameView(); camGoal.target.lerp(G.boss.g.position, 0.25); camGoal.pos.lerp(camGoal.target, 0.15); }
   G.t += gdt;
   G.rapid = Math.max(0, G.rapid - gdt); G.double = Math.max(0, G.double - gdt); G.spot = Math.max(0, G.spot - gdt);
   if (G.comboT > 0) { G.comboT -= gdt; if (G.comboT <= 0) { G.combo = 0; syncCombo(); } }
@@ -4462,6 +5268,7 @@ function tickGame(dt) {
   }
   if (G.spot > 0) { spotLight.visible = true; spotLight.position.copy(team.ben.g.position).add(V3(0, 4.2, 0)); }
   tickSpawn(gdt);
+  tickBoons(gdt);
   tickHeroes(gdt);
   tickOrbs(gdt);
   tickPets(gdt);
@@ -4478,11 +5285,10 @@ if (params.has("auto")) {
   if (params.has("noskill")) { endTutorial(true); try { localStorage.setItem(RED_KEY, "1"); } catch {} }
   let lazyAt = 0;
   window.__autoCast = () => {
+    if (G.paused && picker.classList.contains("open") && !params.has("nopick")) { const c = picker.querySelector("[data-id]"); if (c) pickBoon(c.dataset.id); return; }
     if (params.has("noskill")) return;
     if (G.redTut?.frozen) return cast(heroByKey.raymond);
-    if (params.has("lazy")) { if (G.tut || G.t - lazyAt > 7) { const h = BTN_HEROES.find((x) => G.on && x.unlocked && x.cool <= 0 && active().length >= 2); if (h) { cast(h); lazyAt = G.t; } } return; } // 偶爾按一下的玩家
-    BTN_HEROES.forEach((h) => { if (G.on && h.cool <= 0 && active().length >= 2) cast(h); });
-  };
+  }; // 新玩法沒有手動放招，測試機器人只負責選卡
 }
 
 // ── 迴圈 ──
