@@ -51,7 +51,7 @@
   .speech.tagline { background: #1c2430; color: #ffd36b; font-size: 12px; padding: 3px 9px; }
   .speech.tagline::after { border-top-color: #1c2430; }
   .speech { position: relative; max-width: 180px; white-space: normal; font-size: 12px; font-weight: 700; background: #fff; color: var(--ink); padding: 6px 10px;
-    border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: opacity .3s var(--ease), transform .4s cubic-bezier(0.34, 1.36, 0.64, 1); }
+    border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: opacity .3s var(--ease); }
   .speech::after { content: ""; position: absolute; left: 50%; bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-top-color: #fff; border-bottom: 0; }
   .speech.off { opacity: 0; transform: translateY(6px) scale(0.85); }
   .egg { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--muted); line-height: 1.6; }
@@ -135,6 +135,20 @@
   .seg { display: flex; padding: 3px; border-radius: 999px; background: var(--paper); box-shadow: 0 4px 14px rgba(40,30,20,0.14); }
   .seg button.on { background: var(--ink); color: #fff; }
   body:not(.has-played) #exploreBtn { display: none; }
+  #checkBtn { display: none !important; }
+  body:not(.playing):not(.has-played) .ctrl .seg { display: none; } /* 開場只留一顆大播放鈕 */
+  .ctrl .snd { position: fixed; top: max(12px, env(safe-area-inset-top)); right: 12px; }
+  @media (min-width: 641px) { .ctrl { right: 64px !important; } } /* 桌機：按鈕列讓開右上的音量鈕 */
+  .isl.ping span { animation: ping .6s var(--ease); }
+  @keyframes ping { 40% { transform: scale(1.18); box-shadow: 0 0 0 4px rgba(20,184,156,0.45); } }
+  .skip-link { font-size: 14px !important; min-height: 44px; }
+  @media (max-width: 640px) {
+    .caption { max-height: 34vh !important; }
+    body.interactive .caption .small { font-size: 12.5px; }
+    body.interactive .caption .big { font-size: 16px; margin-top: 4px; }
+  }
+  @media (min-width: 900px) { body.interactive .caption { left: 16px; right: auto; width: 360px; margin: 0; } }
+  body.interactive .isl.course-label { opacity: .5; }
   body.has-played .play-cta { display: none; }
   .end-btns { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
   .end-btn { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: var(--ink); font-weight: 900; font-size: 14px; text-decoration: none; }
@@ -178,6 +192,8 @@
   .prog i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #f2b51f, #ffd36b); transition: width .4s var(--ease); }
   .skip-link { margin-left: 8px; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 900; color: var(--muted); cursor: pointer; padding: 8px 4px; }
   .try { display: inline-block; margin-top: 6px; color: #c98a00; }
+  .boss-bub.in { animation: bossin .5s var(--ease) both; }
+  @keyframes bossin { from { opacity: 0; transform: translateY(10px) scale(0.85); } to { opacity: 1; transform: none; } }
   .boss-bub { display: flex; flex-direction: column; align-items: center; gap: 3px; background: #fff; border: 3px solid #ec4d2f; border-radius: 14px; padding: 6px 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.25); white-space: nowrap; }
   .boss-bub b { font-size: 13px; color: #ec4d2f; font-weight: 900; }
   .boss-bub span { font-size: 15px; font-weight: 900; color: #1c2430; }
@@ -224,7 +240,7 @@
   <h1>AllWill 團隊的一天</h1>
   <button class="play-cta" id="playCta" type="button"><i>▶</i>播放：認識 AllWill 開發團隊<em>約 2 分鐘</em></button>
 </header>
-<div class="ctrl"><div class="seg"><button id="tourBtn" type="button">▶ 播放</button><button id="exploreBtn" type="button">自己逛</button></div><button id="checkBtn" class="bot-btn" type="button">⚔ 挑戰解衝突</button><button id="soundBtn" class="snd" type="button" aria-label="聲音開關">🔊</button></div>
+<div class="ctrl"><div class="seg"><button id="tourBtn" type="button">▶ 播放</button><button id="exploreBtn" type="button">自己逛</button></div><button id="checkBtn" class="bot-btn" type="button" hidden>挑戰</button><button id="soundBtn" class="snd" type="button" aria-label="聲音開關">🔊</button></div>
 <section class="caption" id="caption" aria-live="polite"></section>
 <button class="cap-open" id="capOpen" type="button">顯示說明</button>
 
@@ -759,7 +775,7 @@ function makeIsland(u) {
   el.className = "isl" + (u.ext ? " ext" : "");
   el.innerHTML = `<span><i style="background:${u.color}"></i>${u.name}</span>`;
   const label = new CSS2DObject(el);
-  label.position.set(0, u.ext ? 4.2 : 6.4, u.ext ? 0 : -u.size * 0.95); // 島名放在島後方的高處，畫面上落在人物頭頂之上
+  label.position.set(0, u.ext ? 4.2 : 6.8, u.ext ? 0 : -u.size * 0.9); // 島名在島後緣、人物頭頂之上，不壓人物
   g.add(label);
   islands[u.id] = { group: g, unit: u, el };
 }
@@ -1180,7 +1196,7 @@ walkers.forEach((w, i) => {
   w.hit = new THREE.Mesh(new THREE.SphereGeometry(1.0, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
   w.hit.position.y = 0.6; w.g.add(w.hit);
   const el = document.createElement("div");
-  el.innerHTML = `<div class="qb${w.red ? " r" : ""}">${w.red ? "!" : "?"}</div>`;
+  el.innerHTML = `<div class="qb${w.red ? " r" : ""}">?</div>`; // 一律是 ?，急件只用紅色區分
   w.q = new CSS2DObject(el);
   w.q.position.set(0, 1.35, 0);
   w.q.visible = false;
@@ -2182,8 +2198,8 @@ const SOLVER = {
   ben: [{ who: "ben", kind: "star", text: "好戲！", c: "#2f9a62" }],
 };
 const solverObj = (who) => (who === "water" ? mascots.water : who === "me" ? mascots.me : team[who].g);
-const shots = [], castT = {};
-const fxFloats = Array.from({ length: 4 }, () => { const el = document.createElement("div"); el.className = "ftx off"; const o = new CSS2DObject(el); o.visible = false; scene.add(o); return { el, o, t: 1, y: 0 }; });
+const shots = [], castT = {}, sayCool = {};
+const fxFloats = Array.from({ length: MOBILE ? 2 : 3 }, () => { const el = document.createElement("div"); el.className = "ftx off"; const o = new CSS2DObject(el); o.visible = false; scene.add(o); return { el, o, t: 1, y: 0 }; });
 const fxRing = new THREE.Mesh(new THREE.RingGeometry(0.85, 1, 40), new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true, depthWrite: false, side: THREE.DoubleSide }));
 fxRing.rotation.x = -Math.PI / 2; fxRing.visible = false; scene.add(fxRing);
 const ringFx = { t: 1 };
@@ -2200,7 +2216,9 @@ function resolveConflict(w, force = null) {
   Object.assign(sh, { on: true, t: 0, w, S, from: S.sky ? null : src.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 3, 0)) });
   castT[S.who] = 0.9;
   const bub = { water: BUB.water, me: BUB.me, richard: BUB.richard, raymond: BUB.raymond, ccza: BUB.ccza, ben: BUB.ben }[S.who];
-  if (bub) sayB(bub, w.red ? "衝突交給我！" : "這題我來！", 1.4);
+  // 自動解掉的不講話；你親手點的、或導覽互動段才冒泡泡，同一人 6 秒內最多一次（避免一直閃）
+  const talk = w.byUser || (touring && ["agents", "play"].includes(stepKind()));
+  if (bub && talk && (sayCool[S.who] || 0) < elapsed) { sayCool[S.who] = elapsed + 6; sayB(bub, w.red ? "衝突交給我！" : "這題我來！", 1.6); }
 }
 function tickConflicts(dt) {
   for (const sh of shots) {
@@ -2217,6 +2235,7 @@ function tickConflicts(dt) {
       sparkle(to, sh.S.c, 10); sparkle(to, "#ffd36b", 6);
       fxRing.position.copy(sh.w.g.position).setY(sh.w.g.position.y + 0.15); fxRing.material.color.set(sh.S.c); ringFx.t = 0; fxRing.visible = true;
       const f = fxFloats.find((x) => x.t >= 1) || fxFloats[0];
+      if (!sh.w.byUser && interactiveStep()) { sound.pop(); continue; } // 互動段只為你解掉的冒字
       f.el.className = "ftx"; f.el.style.background = sh.S.c; f.el.textContent = `${sh.S.text} 對齊了`; f.o.position.copy(to).setY(to.y + 1.8); f.y = f.o.position.y; f.t = 0; f.o.visible = true;
       sound.pop();
       if (sh.w.byUser) rewardSolve(to);
@@ -2249,12 +2268,23 @@ const MEMBER_HIT = () => [["richard", team.richard.g], ["raymond", team.raymond.
 const MEMBER_ISLAND = { richard: "richard", raymond: "raymond", ben: "ben", ccza: "ccza", coomy: "jc", johnny: "jc" };
 const MEMBER_BUB = { richard: "richard", raymond: "raymond", ben: "ben", ccza: "ccza", coomy: "me", johnny: "water" };
 const MEMBER_SOLVER = { richard: "richard", raymond: "raymond", ben: "ben", ccza: "ccza", coomy: "me", johnny: "water" };
-function handleInteract() {
-  if (boss.on && !boss.dead && ray.intersectObject(bossM.g, true)[0]) { bossHit(); return true; }
-  // 1. 點頭上有 ? 的 Agent：負責的人放招解掉
+function handleInteract(e) {
+  if (boss.on && !boss.dead && boss.revealed) {
+    // 魔王點擊放寬：打到身體，或點在牠附近 90px 內都算
+    const v = bossM.g.position.clone().add(V(0, 2.2, 0)).project(camera);
+    const d = e ? Math.hypot((v.x * 0.5 + 0.5) * innerWidth - e.clientX, (-v.y * 0.5 + 0.5) * innerHeight - e.clientY) : 1e9;
+    if (d < 90 || ray.intersectObject(bossM.g, true)[0]) { bossHit(); return true; }
+  }
+  // 1. 點頭上有 ? 的 Agent：用螢幕距離挑最近的一隻（手機 32px、桌機 24px），3D 點擊球當備援
   const qs = walkers.filter((w) => w.q && w.q.visible && !w.aimed);
-  const hw = ray.intersectObjects(qs.map((w) => w.hit), false)[0];
-  if (hw) { const w = qs.find((x) => x.hit === hw.object); w.aimed = true; w.byUser = true; resolveConflict(w); navigator.vibrate?.(15); return true; }
+  let pick = null, near = MOBILE ? 32 : 24;
+  if (e) for (const w of qs) {
+    const v = w.g.position.clone().add(new THREE.Vector3(0, 1.8, 0)).project(camera);
+    const d = Math.hypot((v.x * 0.5 + 0.5) * innerWidth - e.clientX, (-v.y * 0.5 + 0.5) * innerHeight - e.clientY);
+    if (d < near) { near = d; pick = w; }
+  }
+  if (!pick) { const hw = ray.intersectObjects(qs.map((w) => w.hit), false)[0]; if (hw) pick = qs.find((x) => x.hit === hw.object); }
+  if (pick) { pick.aimed = true; pick.byUser = true; resolveConflict(pick); navigator.vibrate?.(15); return true; }
   // 2. 戳中間的 AllWill
   if (ray.intersectObject(cave, true)[0]) { pokeRobot(); return true; }
   // 3. 點成員：鏡頭推近、名牌和一句台詞，再對自己橋上的 ? 放招
@@ -2266,9 +2296,7 @@ function handleInteract() {
 function pokeMember(k) {
   if ((pokeCool[k] || 0) > elapsed) return;
   pokeCool[k] = elapsed + 3;
-  if (touring && !interactiveStep()) setMode(false);
-  rememberView();
-  focusIsland(unitById[MEMBER_ISLAND[k]]); manualFocus = 2.5;
+  if (!touring) { rememberView(); focusIsland(unitById[MEMBER_ISLAND[k]]); manualFocus = 2.5; } // 導覽中點成員不打斷
   showTags([k], 3.5);
   sayB(BUB[MEMBER_BUB[k]], LINES[MEMBER_BUB[k]] || "嗨！", 2.6);
   const who = MEMBER_SOLVER[k];
@@ -2354,8 +2382,8 @@ const islandCard = (u) => (u.couple ? `<div class="small" style="margin-top:2px"
 const islandTitle = (u) => u.members.map((k) => MEMBERS[k].name).join(" & ");
 const ALLWILL_LINK = `<a class="go" href="./islands/">看 AllWill 怎麼在開工前找出衝突 →</a>`;
 const GAME_LINK = `<a class="go" href="./crew-game/">🎮 換你上場：來玩 AllWill 船塢守衛戰 →</a>`;
-const GAME_BTN = `<a class="end-btn game" href="./crew-game/">🎮 換你上場</a>`;
-const MAIL_BTN = `<a class="end-btn" href="mailto:hi@specformula.ai">✉ hi@specformula.ai</a>`;
+const GAME_BTN = `<a class="end-btn game" href="./crew-game/">🎮 玩 2 分鐘解衝突小遊戲</a>`;
+const MAIL_BTN = `<a class="end-btn" href="mailto:hi@specformula.ai">✉ 寫信聊 AllWill 怎麼導入團隊</a>`;
 const CONTACT = `<a class="go" href="mailto:hi@specformula.ai">想認識我們？寫信到 hi@specformula.ai</a>`;
 
 // 船：深藍船身、白色三角帆
@@ -2466,6 +2494,7 @@ const bigParts = {};
 const YARD = new THREE.Vector3(0, 0, 21);
 islands.course.group.children.forEach((c, i) => { if (i >= 4 && !c.isCSS2DObject && c !== mascots.me && c !== mascots.water) c.visible = false; });
 islands.course.group.children.forEach((c) => { if (c.isCSS2DObject) c.position.set(0, 8.4, -2.5); });
+islands.course.el.classList.add("course-label");
 idlers.forEach((w) => { if (w.center.length() < 0.1) w.g.visible = false; });
 bricks.forEach((b) => { if (b.o.material.color?.getHexString() === "1e2a44") b.o.material.color.set("#3d64a8"); });
 big.position.set(YARD.x, 0.45, YARD.z);
@@ -2657,12 +2686,15 @@ function tickEmit(dt) {
 
 // ── 換你解衝突 → 魔王 → 船越來越華麗 ──
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
-const PLAY_GOAL = 12;
+const PLAY_GOAL = 6; // 導覽版解 6 個就夠
 let freePlay = false; // 導覽外按「解衝突」：重新開一局挑戰
 const stepKind = () => (touring ? STEPS[stepIndex].kind : freePlay ? "play" : "explore");
 const interactiveStep = () => ["agents", "play", "boss"].includes(stepKind());
+const quietStep = () => touring && ["intro", "group"].includes(stepKind()); // 開場與人物段：只留主角
+const QUIET_WALKERS = 4;
 function autoT() {
   const k = stepKind();
+  if (quietStep() || k === "finale" || k === "boss") return -1;
   if (k === "agents") return stepTime < 9 ? -1 : 0.6; // 教學：先等你點
   if (k === "play") return 0.12;                       // 換你解：留時間給你點
   if (k === "explore") return 0.3;
@@ -2754,13 +2786,23 @@ function rewardSolve(at) {
     const gen = showGen;
     setTimeout(() => {
       if (gen !== showGen || touring) return;
-      if (portrait()) placeCamera(new THREE.Vector3(0, 2, 14), fitDistance(12, 14), 30); else placeCamera(new THREE.Vector3(0, 2, 15), fitDistance(20, 12), 26);
-      manualFocus = 3; savedView = null;
+      bossView(); manualFocus = 3; savedView = null;
       document.body.classList.remove("cap-hidden");
       startBoss();
     }, 1600);
   } else if (!touring && !freePlay && !boss.seen && decoN < DECOS.length) floatAt(at.clone().setY(at.y + 1.2), `再解 ${DECOS.length - decoN} 個，魔王就要來了`, "#ef5b3c", 3.2);
-  if (stepKind() === "play") playCaption();
+  if (stepKind() === "play") { playCaption(); shipPeek(); }
+}
+const peek = { t: 0 };
+function shipPeek() {
+  if (!touring || !play.cam) return;
+  peek.t = 1.2;
+  if (portrait()) placeCamera(YARD.clone().add(new THREE.Vector3(0, 4, 0)), fitDistance(13, 13), 32); else placeCamera(YARD.clone().add(new THREE.Vector3(0, 4, 0)), fitDistance(18, 11), 28);
+}
+function tickPeek(dt) {
+  if (peek.t <= 0) return;
+  peek.t -= dt;
+  if (peek.t <= 0 && touring && stepKind() === "play" && play.cam) { camGoal.pos.copy(play.cam.pos); camGoal.target.copy(play.cam.target); }
 }
 function playCaption(quiet = true) {
   const n = play.solves || 0, next = DECOS[decoN];
@@ -2790,20 +2832,46 @@ const bossTag = (() => {
   const o = new CSS2DObject(el); o.position.set(0, 1.55, 0); o.visible = false; bossM.g.add(o);
   return { el, o };
 })();
-const BOSS_AT = V(0, 0.25, 11.5);
+const BOSS_AT = V(12, 0.25, 28); // 船的右前方海面，比船更靠近鏡頭，不會被擋
 const BOSS_LINES = ["到底要做什麼？", "上次不是說好了？", "這是誰負責的？"];
 const BOSS_ORDER = ["water", "me", "richard", "raymond", "ccza", "ben"];
+function bossView() { if (portrait()) placeCamera(V(5, 3, 24.5), fitDistance(14, 17), 34); else placeCamera(V(5, 3, 24.5), fitDistance(22, 12), 28); }
 function startBoss() {
   boss.seen = true;
   freePlay = false;
   document.body.classList.remove("play-hint");
   boss.on = true; boss.dead = false; boss.t = 0; boss.line = 0; boss.byAllWill = false;
   boss.max = 12; boss.hp = Math.max(4, 12 - (play.solves || 0));
-  bossM.g.visible = true; bossTag.o.visible = true; bossM.g.scale.setScalar(3.2); bossM.g.rotation.set(0, 0, 0);
-  bossM.g.position.copy(BOSS_AT).setY(-5);
+  bossM.g.visible = true; bossTag.o.visible = false; bossM.g.scale.setScalar(3.2); bossM.g.rotation.set(0, 0, 0);
+  bossM.g.position.copy(BOSS_AT).setY(-7);
+  boss.intro = 0; boss.revealed = false; boss.splashed = false; boss.bubbleT = 0;
   syncBossTag();
-  sound.bad?.();
-  setCaption("#ef5b3c", `<span class="chip">魔王</span>`, "迷霧魔王「對不齊」來了！", "點它！每點一下，就有一位成員放招。之前每解一個衝突，它就少一點血。", true);
+  // 預兆：AllWill 眼睛轉紅、海面冒泡
+  sayB(BUB.allwill, "海面下有東西…", 2.4);
+  robotFx.flash = 2.6;
+  setCaption("#ef5b3c", `<span class="chip">⚠</span>`, "等等…海面不太對勁。", "AllWill 好像發現了一個大問題。", true);
+}
+const BOSS_INTRO = 3.0;
+function tickBossIntro(dt) {
+  boss.intro += dt;
+  const g = bossM.g, t = boss.intro;
+  caveParts.eyeMat.color.set(Math.sin(elapsed * 14) > 0 ? "#ff5a3c" : "#ffb0a0");
+  // 0–1.4 秒：海面冒泡
+  boss.bubbleT -= dt;
+  if (boss.bubbleT <= 0) { boss.bubbleT = 0.12; sparkle(V(BOSS_AT.x + (rand() - 0.5) * 4, 0.2, BOSS_AT.z + (rand() - 0.5) * 4), rand() < 0.5 ? "#dff6ff" : "#7fd6ff", 3); }
+  // 1.4–3 秒：慢慢浮上來
+  if (t > 1.4) {
+    if (!boss.splashed) { boss.splashed = true; sound.bad?.(); fxRing.position.copy(BOSS_AT).setY(0.3); fxRing.material.color.set("#ef5b3c"); ringFx.t = 0; fxRing.visible = true; sparkle(V(BOSS_AT.x, 1, BOSS_AT.z), "#ffffff", 14); }
+    const k = Math.min(1, (t - 1.4) / 1.6), e = 1 - Math.pow(1 - k, 3);
+    g.position.y = -7 + (BOSS_AT.y + 7) * e;
+    g.rotation.y = Math.sin(elapsed * 1.5) * 0.4;
+  }
+  if (t >= BOSS_INTRO && !boss.revealed) {
+    boss.revealed = true; boss.t = 0;
+    caveParts.eyeMat.color.set("#8ff5e4");
+    bossTag.o.visible = true; bossTag.el.classList.remove("in"); void bossTag.el.offsetWidth; bossTag.el.classList.add("in");
+    setCaption("#ef5b3c", `<span class="chip">魔王</span>`, "迷霧魔王「對不齊」來了！", "點它！每點一下，就有一位成員放招。之前每解一個衝突，它就少一點血。", true);
+  }
 }
 function syncBossTag() {
   bossTag.el.innerHTML = `<b>迷霧魔王「對不齊」</b><span>${BOSS_LINES[boss.line % 3]}</span><i><em style="width:${(Math.max(0, boss.hp) / boss.max) * 100}%"></em></i>`;
@@ -2842,10 +2910,11 @@ function defeatBoss(byAllWill) {
 }
 function tickBoss(dt) {
   if (!boss.on) return;
+  if (!boss.revealed && !boss.dead) { tickBossIntro(dt); return; }
   boss.t += dt;
   const g = bossM.g;
   if (!boss.dead) {
-    g.position.y += (BOSS_AT.y - g.position.y) * Math.min(1, dt * 3); // 從海裡升起
+    g.position.y = BOSS_AT.y + Math.sin(elapsed * 1.6) * 0.12; // 浮在海面輕輕晃
     g.rotation.y = Math.sin(elapsed * 1.5) * 0.4;
     const f = (boss.flash = Math.max(0, (boss.flash || 0) - dt));
     g.scale.set(3.2 * (1 + f * 1.2), 3.2 * (1 - f * 1.5), 3.2 * (1 + f * 1.2));
@@ -2968,15 +3037,13 @@ function bringHome(key, islandId, slot = 0) {
 const miniCard = (keys) => `<div class="minis">${keys.map((k) => `<span class="mini"><img src="${avatars[MEMBERS[k].av]}" alt=""><b>${MEMBERS[k].name}</b><em>${MEMBERS[k].role}</em></span>`).join("")}</div>`;
 
 const STEPS = [
-  { kind: "intro", sec: 7, build: 0 },
-  { kind: "focus", id: "richard", sec: 8, build: 0.1 },
-  { kind: "focus", id: "raymond", sec: 8, build: 0.22 },
-  { kind: "focus", id: "jc", sec: 8, build: 0.34 },
-  { kind: "duo", sec: 8, build: 0.48 },
-  { kind: "agents", sec: 14, build: 0.7 },
-  { kind: "play", sec: 45, build: 1 },
-  { kind: "boss", sec: 30, build: 1 },
-  { kind: "finale", sec: 12, build: 1 },
+  { kind: "intro", sec: 6, build: 0 },
+  { kind: "group", ids: ["richard", "raymond"], members: ["richard", "raymond"], card: "pairA", sec: 8, build: 0.2 },
+  { kind: "group", ids: ["jc", "ben", "ccza"], members: ["johnny", "coomy", "ben", "ccza"], card: "pairB", sec: 9, build: 0.45 },
+  { kind: "agents", sec: 10, build: 0.7 },
+  { kind: "play", sec: 25, build: 1 },
+  { kind: "boss", sec: 15, build: 1 },
+  { kind: "finale", sec: 9, build: 1 },
 ];
 
 let stepIndex = 0, stepTime = 0, touring = params.has("rec"), firstPass = true, current = null;
@@ -3001,15 +3068,34 @@ function syncIslandNames() {
 }
 // 標籤不跑出畫面：超出左右邊就往內推
 function clampLabels() {
-  const W = innerWidth;
-  for (const el of Object.values(islands).map((i) => i.el)) {
+  const W = innerWidth, H = innerHeight;
+  const top = document.body.classList.contains("playing") || document.body.classList.contains("has-played") ? (portrait() ? 76 : 96) : (portrait() ? 150 : 170);
+  const headR = document.querySelector(".head").getBoundingClientRect();
+  for (const el of labelRenderer.domElement.children) {
     if (el.style.display === "none" || !el.offsetWidth) continue;
     const m = /translate\(([-\d.]+)px, ([-\d.]+)px\)$/.exec(el.style.transform);
     if (!m) continue;
     const x = +m[1], w = el.offsetWidth;
     if (x + w / 2 < 0 || x - w / 2 > W) continue; // 整個在畫面外的不硬拉回來
-    const shift = x - w / 2 < 8 ? 8 - (x - w / 2) : x + w / 2 > W - 8 ? W - 8 - (x + w / 2) : 0;
+    const y = +m[2], h = el.offsetHeight;
+    if (y + h / 2 < 0 || y - h / 2 > H) continue;
+    // 左右超出才往內推一點；上下不推，泡泡和名牌永遠跟著本人
+    const shift = x - w / 2 < 12 ? 12 - (x - w / 2) : x + w / 2 > W - 12 ? W - 12 - (x + w / 2) : 0;
     if (shift) el.style.transform += ` translateX(${shift}px)`;
+    // 壓到左上角標題才變淡
+    const cx = x + shift, overHead = cx - w / 2 < headR.right && cx + w / 2 > headR.left && y - h / 2 < headR.bottom && y + h / 2 > headR.top;
+    el.dataset.overHead = overHead ? "1" : "";
+    if (!el.classList.contains("isl")) el.style.opacity = overHead && !el.querySelector(".off") && !el.classList.contains("off") ? "0.15" : "";
+  }
+  // 島名讓位：碰到對話泡泡、? 標記、飄字就變淡
+  const busy = [...labelRenderer.domElement.querySelectorAll(".speech:not(.off), .qb, .ftx:not(.off), .hitav:not(.off), .boss-bub")]
+    .filter((x) => x.offsetWidth && x.closest("div[style*='translate']")?.style.display !== "none")
+    .map((x) => x.getBoundingClientRect());
+  for (const I of Object.values(islands)) {
+    const r = I.el.getBoundingClientRect();
+    const others = I.unit.id === "course" ? Object.values(islands).filter((o) => o !== I).map((o) => o.el.getBoundingClientRect()) : [];
+    const hit = busy.concat(others).some((b) => b.left < r.right && b.right > r.left && b.top < r.bottom && b.bottom > r.top);
+    I.el.style.opacity = hit || I.el.dataset.overHead ? "0.18" : "";
   }
 }
 function overviewView() {
@@ -3029,9 +3115,16 @@ function focusOn(list) {
   const p = portrait();
   placeCamera(c.add(new THREE.Vector3(0, 0, p ? 3.5 : 1)), fitDistance(halfW, halfD * 0.62) * (p ? 1.1 : 1.0), p ? 44 : 36);
 }
+// 一次框好幾座島：主角放在畫面上方三分之一
+function focusIslands(ids) {
+  const box = new THREE.Box3();
+  ids.forEach((id) => { const u = unitById[id], c = posOf(u); box.expandByPoint(c.clone().addScalar(u.size + 1.5)); box.expandByPoint(c.clone().addScalar(-(u.size + 1.5))); });
+  const c = box.getCenter(new THREE.Vector3()).setY(0), size = box.getSize(new THREE.Vector3()), p = portrait();
+  placeCamera(c.add(new THREE.Vector3(0, 0, p ? 6 : 4)), fitDistance(size.x / 2 + 1, size.z / 2 + 1) * (p ? 1.05 : 1), p ? 50 : 42);
+}
 function focusIsland(u) {
   const p = portrait();
-  placeCamera(posOf(u).add(new THREE.Vector3(0, 0, p ? 7 : 5)), fitDistance(u.size + 4, u.size + 3) * (p ? 1.15 : 1.1), p ? 46 : 40);
+  placeCamera(posOf(u).add(new THREE.Vector3(0, 0, p ? 9 : 6)), fitDistance(u.size + 4, u.size + 3) * (p ? 1.15 : 1.1), p ? 46 : 40);
 }
 
 const chip = (u, attr = "") => `<span class="chip"${attr}><i style="background:${u.color}"></i>${u.name}</span>`;
@@ -3061,12 +3154,10 @@ function highlight(activeIds, units, stagger = 0) {
 
 const CARD = {
   intro: ["六個人，五座島。", "AllWill 開發團隊。平常大家各自在島上做事。"],
-  richard: ["Richard 刷個和弦，Spec 就飛出去。", "幫 Nike、Google 做過設計，也讓一家醫美診所兩個月轉虧為盈。"],
-  raymond: ["再難，也只是步驟多了點。", "他是 CTO，做過 Appier，也是 SurveyCake 初期的核心開發。跑步路過的是 ben。"],
-  jc: ["一個掌舵，一個抓節拍。", "水球潘是水球軟體學院創辦人；Coomy 是團隊的節拍器。"],
-  duo: ["一個在客戶那邊，一個在海邊。", "ben 在客戶那邊帶導入；ccza 在海邊遠端，把 Spec 做出來。"],
+  pairA: ["刷個和弦、跑一圈，Spec 就出發。", "Richard 幫 Nike、Google 做過設計；Raymond 是 CTO，做過 Appier。再難，也只是步驟多了點。"],
+  pairB: ["有人掌舵，有人在海邊寫 code。", "水球潘創辦水球軟體學院、Coomy 是團隊的節拍器；ben 在客戶那邊帶導入，ccza 在海邊遠端把 Spec 做出來。"],
   agents: ["Spec 對不上？AllWill 丟出來。", "頭上有 ? 的 Agent 帶著矛盾去找負責的人，解掉就對齊了。"],
-  finale: ["AllWill 號，在船塢等著。", "我們做過 SpecFormula，9 月開始做 AllWill。換你守船塢，或寫信給我們。"],
+  finale: ["AllWill 號，在船塢等著。", "我們做過 SpecFormula，9 月開始做 AllWill。"],
 };
 function applyStep() {
   const s = STEPS[stepIndex];
@@ -3077,13 +3168,20 @@ function applyStep() {
   if (stepIndex === 0) resetBuild();
   actsPaused = ["gather", "done", "voyage"].includes(s.kind);
   if (stepIndex === 0) { endNight(); resetShow(); }
-  showTags(s.kind === "focus" ? unitById[s.id].members.concat(s.id === "raymond" ? ["ben"] : []) : s.kind === "duo" ? ["ben", "ccza"] : []);
+  showTags(s.kind === "group" ? s.members : []);
+  document.body.classList.toggle("interactive", ["agents", "play", "boss"].includes(s.kind));
   if (!actsPaused) Object.values(ACT).forEach((r) => r && (r.placed = false));
   document.body.classList.toggle("focus", s.kind !== "intro");
   document.body.classList.toggle("sailing", s.kind === "voyage");
   const say = (k, extra = "") => setCaption(TEAL_C, extra, CARD[k][0], CARD[k][1]);
   if (s.kind === "intro") {
     overviewView(); highlight(null, null); say("intro");
+  } else if (s.kind === "group") {
+    s.members.forEach((k) => { const key = MEMBERS[k].av, isl = MEMBERS[k].island; bringHome(key, isl, k === "coomy" ? 1 : 0); });
+    if (s.ids.includes("jc")) love.cool = 0.5;
+    focusIslands(s.ids);
+    highlight(null, null);
+    setCaption(unitById[s.ids[0]].color, miniCard(s.members), CARD[s.card][0], CARD[s.card][1]);
   } else if (s.kind === "focus") {
     const u = unitById[s.id];
     u.members.forEach((k, i) => bringHome(MEMBERS[k].av, s.id, i));
@@ -3101,16 +3199,17 @@ function applyStep() {
     document.body.classList.add("play-hint");
     if (portrait()) placeCamera(new THREE.Vector3(0, 0, 1), fitDistance(17, 15), 40); else placeCamera(new THREE.Vector3(0, 0, 1), fitDistance(24, 13), 34);
     highlight(DEALS.filter((d) => d.id.startsWith("s-")).map((d) => d.id), null, 0.3);
-    setCaption(TEAL_C, `<span class="chip">Agent</span>`, CARD.agents[0], `${CARD.agents[1]}<br><b class="try">👆 點一下頭上有 ? 的 Agent 試試看</b>`);
+    setCaption(TEAL_C, `<span class="chip">Agent</span>`, CARD.agents[0], `${CARD.agents[1]}<br><b class="try">👆 點一下頭上有 ? 的 Agent 試試看（紅色是急件）</b>`);
   } else if (s.kind === "play") {
     play.solves = 0;
-    if (portrait()) placeCamera(new THREE.Vector3(0, 0, 3), fitDistance(20, 24), 62); else placeCamera(new THREE.Vector3(0, 0, 4), fitDistance(30, 22), 50);
+    if (portrait()) placeCamera(new THREE.Vector3(0, 0, 5), fitDistance(18, 20), 58); else placeCamera(new THREE.Vector3(0, 0, 5), fitDistance(30, 22), 50);
+    play.cam = { pos: camGoal.pos.clone(), target: camGoal.target.clone() };
     highlight(DEALS.filter((d) => d.id.startsWith("s-")).map((d) => d.id), null);
     document.body.classList.add("play-hint");
     playCaption(false);
   } else if (s.kind === "boss") {
     document.body.classList.remove("play-hint");
-    if (portrait()) placeCamera(new THREE.Vector3(0, 2, 14), fitDistance(12, 14), 30); else placeCamera(new THREE.Vector3(0, 2, 15), fitDistance(20, 12), 26);
+    bossView();
     highlight(null, null);
     startBoss();
   } else if (s.kind === "finale") {
@@ -3181,10 +3280,7 @@ function startTour() {
   endHandoff();
   check.on = false; robot.visible = false; stepIndex = 0; stepTime = 0; firstPass = true;
   document.body.classList.remove("cap-hidden");
-  // 從小人近景拉遠開場
-  const m = bridges[0].curve.getPointAt(0.45);
-  controls.target.copy(m);
-  camera.position.copy(m).add(new THREE.Vector3(2.5, 3.2, 6.5));
+  // 開場就是全景
   applyStep();
   syncButtons();
 }
@@ -3223,7 +3319,13 @@ checkBtn.addEventListener("click", () => {
   document.body.classList.remove("cap-hidden");
   playCaption(false);
 });
-controls.addEventListener("start", () => { if (touring && !interactiveStep()) setMode(false); });
+let dragFrom = null;
+renderer.domElement.addEventListener("pointerdown", (e) => { dragFrom = { x: e.clientX, y: e.clientY, t: performance.now() }; });
+renderer.domElement.addEventListener("pointermove", (e) => {
+  if (!dragFrom || !touring || interactiveStep()) return;
+  if (Math.hypot(e.clientX - dragFrom.x, e.clientY - dragFrom.y) > 30 || performance.now() - dragFrom.t > 600) { dragFrom = null; setMode(false); }
+});
+addEventListener("pointerup", () => (dragFrom = null));
 
 // 點島、點橋、點成員前先記住視角；關掉說明卡就回到原本的視角
 let savedView = null;
@@ -3317,8 +3419,10 @@ renderer.domElement.addEventListener("pointerup", (e) => {
   if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return;
   ptr.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   ray.setFromCamera(ptr, camera);
-  if (handleInteract()) return;
-  if (touring && interactiveStep()) return; // 互動段點到別的地方不打斷
+  if (handleInteract(e)) return;
+  if (touring) { pingIsland(e); return; } // 導覽中點到島或橋不打斷，只閃一下名牌
+  const byLabel = islandAtLabel(e);
+  if (byLabel) return showIsland(byLabel.unit);
   const targets = [...bridges.map((b) => b.group), ...Object.values(islands).map((i) => i.group)];
   const hit = ray.intersectObjects(targets, true)[0];
   if (!hit) return;
@@ -3331,6 +3435,18 @@ renderer.domElement.addEventListener("pointerup", (e) => {
   const isl = Object.values(islands).find((i) => i.group === o);
   if (isl) showIsland(isl.unit);
 });
+function islandAtLabel(e) {
+  for (const I of Object.values(islands)) {
+    if (!I.el.offsetWidth || I.el.style.display === "none") continue;
+    const r = I.el.getBoundingClientRect();
+    if (e.clientX >= r.left - 6 && e.clientX <= r.right + 6 && e.clientY >= r.top - 6 && e.clientY <= r.bottom + 6) return I;
+  }
+  return null;
+}
+function pingIsland(e) {
+  const I = islandAtLabel(e); if (!I) return;
+  I.el.classList.remove("ping"); void I.el.offsetWidth; I.el.classList.add("ping");
+}
 function followGoal(dt, rate) {
   const k = 1 - Math.exp(-dt * rate);
   camera.position.lerp(camGoal.pos, k);
@@ -3360,6 +3476,7 @@ if (!params.has("rec")) {
   const m = bridges[0].curve.getPointAt(0.45);
   controls.target.copy(m);
   camera.position.copy(m).add(new THREE.Vector3(2.5, 3.2, 6.5));
+  syncButtons();
 }
 
 const clock = new THREE.Clock();
@@ -3396,6 +3513,7 @@ function tick(dt) {
   tickLove(dt);
   tickActs(dt);
   tickConflicts(dt);
+  tickPeek(dt);
   tickBoss(dt);
   tickDecos(dt);
   if (touring) tickHandoff(dt);
@@ -3409,13 +3527,16 @@ function tick(dt) {
     b.glow += (b.glowTo - b.glow) * (1 - Math.exp(-dt * 6));
     b.railMat.emissiveIntensity = b.glow * 0.9;
   }
+  const quiet = quietStep();
+  walkers.forEach((w, i) => { w.g.visible = !quiet || i < QUIET_WALKERS; }); // 開場與人物段，橋上 Agent 最多 4 隻
+  Object.values(tagB).forEach((b) => (b.el.style.visibility = quiet ? "hidden" : ""));
   for (const w of walkers) {
     w.t += (w.dir * w.speed * dt) / w.br.len;
     if (w.t >= 1) { w.t = 1; w.dir = -1; if (w.br.deal.to === "course" && !touring) buildGoal = Math.min(1, buildGoal + 0.008); if (w.q) { robotFx.jaw = 0.45; w.solved = false; w.aimed = false; w.byUser = false; } }
     if (w.t <= 0) { w.t = 0; w.dir = 1; }
     if (w.q) {
       if (w.dir === -1 && !w.aimed && w.t < autoT() && !actsPaused && voy.mode === "home") { w.aimed = true; resolveConflict(w); }
-      w.q.visible = w.dir === -1 && !w.solved && w.g.visible && (w.always || stepKind() === "play");
+      w.q.visible = w.dir === -1 && !w.solved && w.g.visible && (w.always || stepKind() === "play") && ["agents", "play", "explore"].includes(stepKind());
     }
     w.box.visible = w.dir === 1 || !!w.solved; // 去程搬箱子；解掉衝突的回程背著金色 Spec
     if (w.box.material === GOLD_SPEC && w.dir === 1 && w.t > 0.98) w.box.material = w.boxMat;
