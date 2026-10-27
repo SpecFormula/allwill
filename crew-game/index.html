@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AllWill 船塢守衛戰</title>
 <meta name="description" content="AllWill 會把大家 Spec 裡衝突、矛盾的地方丟出來。派開發團隊的六位英雄把它們解掉，蓋好 AllWill 號一起出海。">
-<meta property="og:title" content="AllWill 船塢守衛戰：派英雄解掉 Spec 的衝突，蓋好船一起出海">
-<meta property="og:description" content="一局約 2 分半。用水球潘、Coomy、Richard、Raymond、ccza、ben 的大招，認識 AllWill 的開發團隊。">
+<meta property="og:title" content="AI 讓每個人一小時寫 100 份 Spec，沒有一份一樣｜AllWill 船塢守衛戰">
+<meta property="og:description" content="你有 2 分半，在老闆問「到底要做什麼？」之前，讓大家講好同一件事。你能撐幾秒？">
 <meta property="og:image" content="https://specformula.github.io/allwill/crew-game/og.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -212,6 +212,8 @@
     background: var(--sc, #e08a3c); padding: 6px 11px 6px 17px; border-radius: 0 999px 999px 0; box-shadow: 0 3px 8px rgba(0,0,0,0.22); }
   .qb { position: relative; z-index: 1; }
   .stun-tag.off { display: none; }
+  /* 打架的兩句話：放在圓圈正上方，最多兩行，不會被畫面邊緣切掉 */
+  .stun-tag.quip { left: 50%; top: auto; bottom: calc(100% + 6px); transform: translateX(-50%); padding: 5px 10px; border-radius: 10px; white-space: normal; width: max-content; max-width: 150px; text-align: center; line-height: 1.3; }
   .hitav { display: flex; align-items: center; gap: 4px; padding: 2px 9px 2px 2px; border-radius: 999px; background: var(--c); color: #fff; font-size: 14px; font-weight: 900; white-space: nowrap;
     box-shadow: 0 4px 12px rgba(0,0,0,0.25); transition: opacity .3s var(--ease-smooth-out); }
   .hitav img { width: 30px; height: 30px; border-radius: 50%; background: #fff; }
@@ -297,6 +299,22 @@
   .skill-tip .tip-x { position: absolute; top: 6px; right: 8px; border: 0; background: none; color: #fff; font-size: 16px; cursor: pointer; padding: 4px 8px; }
   .skill-tip .boon-list div { grid-template-columns: auto auto !important; }
   .skill-tip .boon-list span { display: none; }
+  .roles { margin: 12px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .roles small { font-size: 12px; font-weight: 800; color: #6b7480; margin-right: 2px; }
+  .roles button { font: inherit; font-size: 13px; font-weight: 900; padding: 6px 12px; border-radius: 999px; border: 2px solid rgba(28,36,48,0.15); background: #fff; color: #1c2430; cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-smooth-out), color var(--duration-fast) var(--ease-smooth-out), transform var(--duration-fast) var(--ease-bounce); }
+  .roles button[aria-checked="true"] { background: #1c2430; color: #fff; border-color: #1c2430; transform: scale(1.04); }
+  .vs { margin-top: 10px !important; padding: 8px 12px; border-radius: 12px; background: #fff3d6; font-weight: 800; color: #6b4a00 !important; }
+  .decide { position: fixed; left: 50%; top: 54%; z-index: 25; transform: translate(-50%, 16px); width: min(92vw, 420px); padding: 12px; border-radius: 18px;
+    background: #1c2430; color: #fff; box-shadow: 0 12px 30px rgba(0,0,0,0.35); opacity: 0; pointer-events: none; transition: opacity var(--duration-fast) var(--ease-smooth-out), transform var(--duration-slow) var(--ease-smooth-out); }
+  .decide.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .decide small { display: block; font-size: 13px; font-weight: 900; margin-bottom: 8px; text-align: center; }
+  .decide div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .decide button { font: inherit; font-size: 14px; font-weight: 900; padding: 12px 8px; border-radius: 12px; border: 0; background: #ffd36b; color: #1c2430; cursor: pointer; }
+  .decide button + button { background: #b48cff; }
+  .decide i { display: block; height: 4px; margin-top: 10px; border-radius: 999px; background: rgba(255,255,255,0.2); overflow: hidden; }
+  .decide i b { display: block; height: 100%; width: 100%; background: #ff5a8a; transform-origin: left; }
+  @media (prefers-reduced-motion: reduce) { .decide { transition: none; } }
   .legend3 { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .legend3 li { display: flex; flex-direction: column; align-items: center; gap: 2px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 4px; }
   .legend3 .qb { animation: none; }
@@ -397,8 +415,30 @@
   .combo-set { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
   .combo-set b, .combo-set summary { width: 100%; font-size: 12px; font-weight: 900; color: var(--muted); cursor: pointer; list-style: none; }
   .combo-set summary::-webkit-details-marker { display: none; }
+  #endPanel:has(.end-grid) { width: min(100%, 460px); }
+  .end-grid { display: grid; grid-template-columns: 1fr; gap: 0; }
+  .end-side { display: grid; gap: 10px; margin-top: 14px; }
+  .end-side .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .end-side .btn { margin: 0; width: 100%; text-align: center; justify-content: center; }
+  @media (min-width: 1100px) {
+    #endPanel:has(.end-grid) { width: min(96vw, 900px); }
+    .end-grid { grid-template-columns: minmax(0, 1fr) 360px; grid-template-areas: "top side" "more side"; column-gap: 24px; }
+    .end-top { grid-area: top; } .end-more { grid-area: more; }
+    .end-side { grid-area: side; align-self: start; position: sticky; top: 0; margin-top: 0; }
+  }
+  .receipt { background: #fff; border: 2px dashed rgba(28,36,48,0.25); border-radius: 14px; padding: 12px 14px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; color: #1c2430; }
+  .receipt > b { display: block; font-family: inherit; font-size: 14px; margin-bottom: 6px; }
+  .receipt p { display: flex; justify-content: space-between; gap: 8px; margin: 3px 0; font-size: 13px; color: #1c2430; }
+  .receipt p i { font-style: normal; font-weight: 900; white-space: nowrap; }
+  .receipt hr { border: 0; border-top: 1px dashed rgba(28,36,48,0.3); margin: 8px 0; }
+  .receipt small { display: block; color: #6b7480; font-size: 11px; }
+  .receipt q { display: block; margin-top: 2px; font-weight: 800; font-family: "Noto Sans TC", sans-serif; }
+  .pitch { font-size: 13px !important; }
+  .dare small { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 800; color: #6b7480; }
+  .title-card em { font-style: normal; opacity: .75; font-size: 12px; }
   .bignum { margin: 12px 0 2px; text-align: center; }
   .bignum b { display: block; font-family: "Noto Serif TC", serif; font-size: 44px; font-weight: 900; color: #5b2a86; line-height: 1.1; }
+  .bignum .vsr { display: block; margin-top: 4px; font-style: normal; font-size: 13px; font-weight: 900; color: #d0731a; }
   .bignum span { font-size: 13px; font-weight: 700; color: var(--muted); }
   .title-card.perfect { background: #2a1840 !important; color: #fff; }
   .crew .chat { display: inline-block; margin-top: 2px; font-size: 12px; font-weight: 900; color: #14b89c; text-decoration: none; }
@@ -655,7 +695,7 @@
     <div class="timer" id="hTime">09:00</div>
     <div class="shipbar" id="hShip"><span aria-label="AllWill 號">⛵</span><div class="bar"><i id="hBar"></i><s title="魔王出現"></s><u style="left:25%"></u><u style="left:50%"></u><u style="left:75%"></u></div><b id="hPct">0%</b><em class="ship-toast" id="shipToast"></em></div>
   </div>
-  <div class="bossbar" id="bossBar"><b>BOSS　迷霧魔王・對不齊</b><div class="hp"><i></i></div><div class="dist"><span>離船塢</span><div><i></i></div></div></div>
+  <div class="bossbar" id="bossBar"><b>BOSS　魔王「到底要做什麼？」</b><div class="hp"><i></i></div><div class="dist"><span>離船塢</span><div><i></i></div></div></div>
   <div class="xpbar" id="hXp"><span>共識</span><div class="bar"><i></i></div><b>0</b></div>
   <div class="combo" id="hCombo">釐清 ×0</div>
   <div class="banner" id="hBanner"></div>
@@ -666,17 +706,19 @@
 </div>
 <div class="screen open" id="startScreen">
   <div class="panel t-stagger">
-    <span class="tag">#你的第一天</span> <span class="tag">#全公司 AI native</span>
-    <h2>AllWill 船塢守衛戰</h2>
-    <p>早上 9:00，老闆在 #general 發了公告：<b>「從今天起，全公司 AI native。」</b></p>
-    <p>每個人都配了一個 Agent，Spec 一小時吐一百份。<br>你的工作：讓大家寫的東西對得起來，<b>下班前把船蓋好</b>。</p>
-    <ul class="legend3"><li><span class="lg-pic"><img id="lgY" alt=""><span class="qb">?</span></span><b>矛盾</b><em>說法不一樣</em></li><li><span class="lg-pic"><img id="lgR" alt=""><span class="qb r">!</span></span><b>衝突</b><em>兩個 Agent 吵起來</em></li><li><span class="lg-pic boss"><img id="lgB" alt=""></span><b>魔王</b><em>下午登場</em></li></ul>
+    <span class="tag">#AllWill 船塢守衛戰</span> <span class="tag">#全公司 AI native 第一天</span>
+    <h2>AI 讓每個人一小時寫 100 份 Spec。<br>沒有一份一樣。</h2>
+    <p>你有 2 分半，在老闆問<b>「到底要做什麼？」</b>之前，讓大家講好同一件事。</p>
+    <ul class="legend3"><li><span class="lg-pic"><img id="lgY" alt=""><span class="qb">?</span></span><b>矛盾</b><em>說法不一樣</em></li><li><span class="lg-pic"><img id="lgR" alt=""><span class="qb r">!</span></span><b>衝突</b><em>兩個 AI 吵起來</em></li><li><span class="lg-pic boss"><img id="lgB" alt=""></span><b>魔王</b><em>「到底要做什麼？」</em></li></ul>
+    <p class="vs" id="vsLine" hidden></p>
+    <div class="roles" id="roles" role="radiogroup" aria-label="你的職位"><small>今天你是</small><button type="button" data-r="pm">PM</button><button type="button" data-r="eng">工程</button><button type="button" data-r="boss">老闆</button><button type="button" data-r="mkt">行銷</button><button type="button" data-r="sales">業務</button></div>
     <button class="btn" id="startBtn" type="button"><i>▶</i>打卡上班<em>一天＝2 分半</em></button>
 
     <button class="alt link" id="replayTut" type="button" hidden>重看教學</button>
     <a class="alt" href="../">只想認識團隊？看 AllWill 團隊的一天 →</a>
   </div>
 </div>
+<div class="decide" id="decide" role="dialog" aria-label="以哪版為準"><small>兩個版本，以哪版為準？</small><div><button type="button" data-k="0"></button><button type="button" data-k="1"></button></div><i><b></b></i></div>
 <div class="screen" id="endScreen"><div class="panel" id="endPanel"></div></div>
 
 <script type="module">
@@ -3675,7 +3717,7 @@ function paintPet(p) {
 function spawn(type, lane, at = null) {
   const p = type === "boss" ? bossPet : pets.find((x) => !x.active && !x.boss);
   if (!p || p.active) return null;
-  Object.assign(p, { active: true, type, lane, gold: false, stun: 0, incoming: 0, flash: 0, warned: false, side: (rand() - 0.5) * 0.8 });
+  Object.assign(p, { quip: null, quipOn: false, stUntil: 0, active: true, type, lane, gold: false, stun: 0, incoming: 0, flash: 0, warned: false, side: (rand() - 0.5) * 0.8 });
   p.gen++;
   p.hp = p.maxHp = type === "boss" ? 125 : type === "r" ? 3 : type === "y" ? 1 : 0;
   if (type === "boss" && G.bossHp != null) p.hp = G.bossHp; // 魔王傷害累積，漏掉不回滿
@@ -3693,8 +3735,26 @@ function spawn(type, lane, at = null) {
   if (G.on && type === "r") onb("r", p, "衝突 ×3", "兩份 Spec 打起來了");
   return p;
 }
+const QUIPS = {
+  y: ["要簡約 ↔ 首頁放滿功能", "老闆說 A ↔ PM 說 B", "要快 ↔ 要穩", "週五上 ↔ 下週一上", "免費 ↔ 要收費", "給大客戶 ↔ 給一般人", "上次說好 ↔ 這次又改", "Figma 寫的 ↔ Spec 寫的"],
+  r: ["行銷：3 月上 ↔ 工程：6 月", "兩邊都說「做好了 ✅」", "設計稿 ≠ 做出來的", "報價寫的 ≠ 合約寫的", "兩個 AI 各改一版", "PM：已確認 ↔ 客戶：沒說過"],
+};
+let quipT = 0;
+function tickQuips(dt) {
+  quipT -= dt; if (quipT > 0) return; quipT = 0.3;
+  const k = portrait() ? 2 : 3;
+  const show = new Set(pets.filter((p) => p.active && (p.type === "y" || p.type === "r") && p.state === "walk" && p.u < 0.75).sort((a, b) => a.u - b.u).slice(0, k));
+  for (const p of pets) {
+    if (!p.active || p.stun > 0 || (p.stUntil || 0) > elapsed || G.tut2) { if (p.quipOn && !(p.stun > 0) && !((p.stUntil || 0) > elapsed)) { p.st.classList.add("off"); p.st.classList.remove("quip"); p.quipOn = false; } continue; }
+    if (show.has(p)) {
+      if (!p.quip || p.quipType !== p.type) { const L = QUIPS[p.type]; p.quip = L[Math.floor(rand() * L.length)]; p.quipType = p.type; }
+      if (!p.quipOn || p.st.textContent !== p.quip) { p.st.textContent = p.quip; p.st.style.setProperty("--sc", p.type === "r" ? "#ec4d2f" : "#d9a400"); p.st.classList.remove("off"); p.st.classList.add("quip"); p.quipOn = true; }
+    } else if (p.quipOn) { p.st.classList.add("off"); p.st.classList.remove("quip"); p.quipOn = false; }
+  }
+}
 function statusTag(p, label, color) {
   if (p.stun > 0 || p.type === "boss") return;
+  p.stUntil = elapsed + 1.5; p.quipOn = false; p.st.classList.remove("quip");
   p.st.textContent = label; p.st.style.setProperty("--sc", color); p.st.classList.remove("off");
   clearTimeout(p._stT); p._stT = setTimeout(() => { if (!(p.stun > 0)) p.st.classList.add("off"); }, 1500);
 }
@@ -3702,14 +3762,14 @@ const RAGE_LINES = ["我只改一點點", "下週一一定要上！"];
 const BOSS_LINES = ["到底要做什麼？", "AI 弄一下很快吧？", "這個很簡單吧？", "下週一能上嗎？", "跟上次講的不一樣", "這個不是改一行就好？"];
 setInterval(() => { const b = G.boss; if (b && b.active && b.type === "boss") { const L = b.rage ? RAGE_LINES : BOSS_LINES; G.bossLine = ((G.bossLine ?? 0) + 1) % L.length; b.q.textContent = L[G.bossLine]; } }, 2600);
 function setStun(p, sec, color, label) {
-  p.stun = sec; p.stunC = color;
+  p.stun = sec; p.stunC = color; p.quipOn = false; p.st.classList.remove("quip");
   p.q.classList.add("dance");
   p.st.textContent = label; p.st.style.setProperty("--sc", color); p.st.classList.remove("off");
   shockwave(p.g.position, color, 1.6, 0.4);
 }
 function retire(p) {
   if (p.state === "jam") { const L = p.lane; const i = L.jam.indexOf(p); if (i >= 0) L.jam.splice(i, 1); p.state = "gone"; }
-  p.st.classList.add("off");
+  p.st.classList.add("off"); p.st.classList.remove("quip"); p.quipOn = false;
   p.active = false; p.g.visible = false; p.bub.visible = false; p.q.classList.add("off"); p.gen++;
   if (p === G.boss) G.boss = null;
 }
@@ -3801,6 +3861,61 @@ function shipToast(text, ms) {
   if (dot) { dot.classList.remove("on"); void dot.offsetWidth; dot.classList.add("on"); }
 }
 function bumpShip() { hud.ship.classList.remove("bump"); void hud.ship.offsetWidth; hud.ship.classList.add("bump"); }
+// 身分：影響插播事件、稱號前綴與挑戰對象
+const ROLES = {
+  pm: { label: "PM", dare: "你家老闆", ev: [["client", "LINE", "上次會議結論是什麼？有人有紀錄嗎？"], ["boss", "DM", "這個需求為什麼沒有早點講？"]] },
+  eng: { label: "工程", dare: "你家 PM", ev: [["pm", "#dev", "這個應該很簡單吧？改一行就好？"], ["sales", "#sales", "客戶說昨天那版比較好，可以還原嗎？"]] },
+  boss: { label: "老闆", dare: "你家工程師", ev: [["fin", "#general", "這季 AI 的帳單是上季的三倍。"], ["mate", "DM", "老闆，你上週說的跟這週不一樣。"]] },
+  mkt: { label: "行銷", dare: "你家 PM", ev: [["boss", "#marketing", "官網寫的功能，產品有嗎？"], ["pm", "#product", "那篇 launch 文可以先不要發嗎？"]] },
+  sales: { label: "業務", dare: "你家 PM", ev: [["client", "LINE", "我以為這包含在報價裡。"], ["mate", "#dev", "這個客戶要的，我們沒有做喔。"]] },
+};
+const ROLE_KEY = "allwill-crew-role";
+let role = (() => { try { return ROLES[localStorage.getItem(ROLE_KEY)] ? localStorage.getItem(ROLE_KEY) : "pm"; } catch { return "pm"; } })();
+const rolesEl = document.getElementById("roles");
+const paintRoles = () => rolesEl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.r === role)));
+rolesEl.addEventListener("click", (e) => { const r = e.target.closest("button")?.dataset.r; if (!r) return; role = r; try { localStorage.setItem(ROLE_KEY, r); } catch {} paintRoles(); });
+paintRoles();
+// 朋友的挑戰連結 ?vs=38
+const VS = Number(params.get("vs")) || null;
+if (VS) { const v = document.getElementById("vsLine"); v.hidden = false; v.textContent = `朋友 ${VS} 秒就讓魔王閉嘴。你能更快嗎？`; }
+// 插播事件：沒有大波的空檔，丟一些上班日常（同時多送一小波黃色）
+const GENERIC_EV = [["boss", "DM", "我昨天在 Threads 看到一個功能，我們也加。"], ["boss", "DM", "跟我想的不一樣，但我說不出哪裡不一樣。"], ["pm", "#product", "需求_v3_final_最終版_真的最終.docx"]];
+const FILLERS = [{ at: 20, k: "g0" }, { at: 58, k: "r0" }, { at: 76, k: "g1" }, { at: 92, k: "r1" }, { at: 118, k: "g2" }];
+function tickFillers() {
+  for (const F of FILLERS) if (!G.fillDone[F.at] && G.t >= F.at) {
+    G.fillDone[F.at] = true;
+    const ev = F.k[0] === "r" ? ROLES[role].ev[+F.k[1]] : GENERIC_EV[+F.k[1]];
+    const lane = LANE_IDS[Math.floor(rand() * LANE_IDS.length)];
+    notify(...ev, { lanes: [lane], force: true, sec: 3 });
+    if (!G.boss) [0, 1].forEach((i) => G.waveQ.push({ at: G.t + 1.2 + i * 0.25, type: "y", lane }));
+  }
+}
+// 魔王在場：兩個版本，玩家親手拍板
+const DECIDE = [["簡約版首頁", "功能全塞版首頁"], ["週五上線", "下週一上線"], ["照 Figma 做", "照 Spec 做"], ["先給大客戶", "先給一般用戶"]];
+const decideEl = document.getElementById("decide");
+function openDecide() {
+  const d = DECIDE[Math.floor(rand() * DECIDE.length)];
+  decideEl.querySelectorAll("button").forEach((b, i) => (b.textContent = `以「${d[i]}」為準`));
+  decideEl.classList.add("on"); G.decideT = 6; G.decideN++;
+  if (params.has("auto")) setTimeout(() => G.decideT > 0 && decide(0), 1200);
+}
+function decide(k) {
+  if (!(G.decideT > 0)) return;
+  G.decideT = 0; decideEl.classList.remove("on"); G.decided++;
+  const b = G.boss; if (!b?.active) return;
+  hit(b, 8, null); setStun(b, 1.6, "#ffd36b", "🔨"); G.shake = 0.35; G.hitstop = 0.08;
+  shockwave(b.g.position, "#ffd36b", 5, 0.5); burst(b.g.position.clone().add(V3(0, 3, 0)), "#ffd36b", 16, 6);
+  floatText(b.g.position.clone().add(V3(0, 6.5, 0)), "拍板！", "gold big");
+}
+decideEl.addEventListener("click", (e) => { const k = e.target.closest("button")?.dataset.k; if (k != null) decide(+k); });
+function tickDecide(dt) {
+  if (G.decideT > 0) {
+    G.decideT -= dt; decideEl.querySelector("i b").style.transform = `scaleX(${Math.max(0, G.decideT / 6)})`;
+    if (G.decideT <= 0 || !G.boss) { decideEl.classList.remove("on"); if (G.boss?.active) { const b = G.boss; b.hp = Math.min(b.maxHp, b.hp + 6); G.bossHp = G.lastBossHp = b.hp; floatText(b.g.position.clone().add(V3(0, 6, 0)), "沒人拍板 +6", "bad"); } G.decideT = 0; }
+    return;
+  }
+  if (G.boss?.active && !G.cine && !G.paused && G.bossFirstT != null && G.decideN < 2 && G.t - G.bossFirstT > (G.decideN ? 20 : 7)) openDecide();
+}
 // 事件：同事、老闆、客戶傳來的訊息（一次一則，至少隔 10 秒）
 const EV_WHO = { boss: ["👔", "老闆"], pm: ["📋", "PM"], mkt: ["📣", "行銷"], sales: ["💼", "業務"], fin: ["💰", "財務"], client: ["🧑‍💼", "客戶"], mate: ["🙋", "同事"], allwill: ["🤖", "AllWill"] };
 const notifEl = document.getElementById("notif");
@@ -3815,18 +3930,20 @@ function showNotif(e) {
   notifEl.querySelector("small").textContent = `${e.ch}・${name}`;
   notifEl.querySelector("b").textContent = e.text;
   notifEl.classList.remove("on"); void notifEl.offsetWidth; notifEl.classList.add("on");
+  if (e.who !== "allwill" && !/AI native|×10/.test(e.text)) G.lastEv = `${(EV_WHO[e.who] || EV_WHO.mate)[1]}：「${e.text}」`;
   G.notifT = e.sec; G.notifGap = e.force ? e.sec + 0.2 : 5; if (!e.force) G.notifN++;
   e.lanes.forEach((id) => { const L = laneById[id]; if (L) L.evT = 1.6; });
   sound.pop?.();
 }
 function tickNotif(dt) {
+  if (G.boss && G.boss.active && !G.paused) { G.askT = (G.askT || 0) + dt; G.askN = 1 + Math.floor(G.askT / 2.6); } // 魔王每 2.6 秒問一次
   if (G.bossAcc > 0 && elapsed - (G.bossAccT || 0) > 0.45) { if (G.boss) floatText(G.boss.g.position.clone().add(V3((rand() - 0.5) * 2, 5.5, 0)), `-${Math.max(1, Math.round(G.bossAcc))}`, G.bossAcc >= 5 ? "bad big" : "bad"); G.bossAcc = 0; G.bossAccT = elapsed; }
   if (G.notifT > 0) { G.notifT -= dt; if (G.notifT <= 0) notifEl.classList.remove("on"); }
   G.notifGap -= dt;
-  if (G.notifQ.length && G.notifGap <= 0 && !G.paused && !G.cine) { const e = G.notifQ.shift(); if (e.force || G.notifN < 9) showNotif(e); }
+  if (G.notifQ.length && G.notifGap <= 0 && !G.paused && !G.cine) { const e = G.notifQ.shift(); if (e.force || G.notifN < 12) showNotif(e); }
 }
 function planOpening() {
-  notify("boss", "#general", "即日起全公司 AI native，每人一個 Agent，產能 ×10。", { force: true, sec: 2 });
+  notify("boss", "#general", "即日起全公司 AI native，每人配一個 AI，產能 ×10。", { force: true, sec: 2 });
   G.notifQ.push({ who: "pm", ch: "#general", text: "所以 Spec 也 ×10……誰來對？", lanes: [], sec: 1.9, force: true });
   G.notifQ.push({ who: "allwill", ch: "#general", text: "我來對。你幫我盯著。", lanes: [], sec: 1.9, force: true });
   G.notifGap = 0.6;
@@ -3881,7 +3998,7 @@ Object.entries({ johnny: 2.0, jc: 1.7, raymond: 1.7, richard: 1.8, ccza: 2.0, be
 const INTRO = {
   jc: { at: 16, who: "水球潘・CEO ＆ Coomy・Frontend Lead", bg: "水球潘創辦水球軟體學院，社群一年長到 6,000 人以上；Coomy 是團隊的節拍器。", how: "船長帽清掉全場黃色，Coomy 接著連打", tag: ["一呼百應！", "抓節拍！"] },
   raymond: { at: 26, who: "Raymond・CTO", bg: "Appier 出身、SurveyCake 初期核心開發，負責 agentic AI 研發。", how: "紅色衝突，一拳解掉", tag: ["只是步驟多了點"] },
-  richard: { at: 36, who: "Richard・COO & Designer", bg: "在 SlideArt 經手 Nike、Google、BMW 的設計案；當過讓公司一個月止血的 COO。", how: "附近三座島的 Agent 停下來跳舞", tag: ["一個月止血"] },
+  richard: { at: 36, who: "Richard・COO & Designer", bg: "在 SlideArt 經手 Nike、Google、BMW 的設計案；當過讓公司一個月止血的 COO。", how: "附近三座島的 AI 停下來跳舞", tag: ["一個月止血"] },
   ccza: { at: 44, who: "ccza・主力工程師", bg: "AllWill 背後的主力工程師。大 I 人，喜歡在海邊遠端工作。", how: "問題最多的那條橋，整條一起解掉", tag: ["Async 一次回完"] },
   ben: { at: 53, who: "ben・導入", bg: "在客戶端帶導入的人，也是話劇社的。剛串門子回來。", how: "全場停下來看戲，英雄傷害加倍", tag: ["導入現場 Demo"] },
 };
@@ -4076,6 +4193,7 @@ function hit(p, dmg, h, kind = null) {
 }
 function credit(h, n = 1) { if (h) { const k = h.credit || h.key; G.uses[k] = (G.uses[k] || 0) + n; } }
 function solve(p, h, kind = null) {
+  if (p.type === "y") G.solvedY++; else if (p.type === "r") G.solvedR++;
   addXP(p.type === "r" ? 3 : 1);
   if (G.on && !G.demo) thumbFly(p.g.position.clone().add(V3(0, 1.6, 0)));
   if (has("ssot") && rand() < [0, 0.3, 0.45, 0.6][lv("ssot")]) { // 單一事實來源：連鎖打下一個
@@ -4460,7 +4578,7 @@ function tickCine(dt) {
   const boss = G.boss;
   caveParts.head.position.x = t < 0.8 ? Math.sin(elapsed * 60) * 0.12 : 0; // AllWill 抖一下
   if (t < 0.8) { G.jaw = 0.45; caveParts.eyeMat.color.set(Math.sin(elapsed * 40) > 0 ? "#ff3b2f" : "#ffffff"); }
-  if (t > 1.6 && !C.said.card) { C.said.card = true; showTitleCard("BOSS", "迷霧魔王「對不齊」", "需求還沒定，牠先到了"); sound.roar?.(); if (boss) { G.shake = 0.4; burst(boss.g.position.clone().add(V3(0, 3, 0)), "#ff3b2f", 24, 6); } }
+  if (t > 1.6 && !C.said.card) { C.said.card = true; showTitleCard("BOSS", "魔王「到底要做什麼？」", "需求還沒定，牠先到了"); sound.roar?.(); if (boss) { G.shake = 0.4; burst(boss.g.position.clone().add(V3(0, 3, 0)), "#ff3b2f", 24, 6); } }
   if (t > 0.8) {
     const bp = boss ? boss.g.position : C.lane.br.curve.getPointAt(0.9);
     if (portrait()) placeCamera(bp.clone().add(V3(0, 4, 0)), fitDistance(5, 8), 18); else placeCamera(bp.clone().add(V3(0, 3.5, 0)), fitDistance(6, 5), 12);
@@ -4610,9 +4728,9 @@ const EFFECT = {
 const SKILL_INFO = {
   jc: { effect: "水球潘丟船長帽，全場黃色一次解掉；Coomy 接著連打 4.5 秒。", range: "全場黃色；連打範圍是自己、Raymond、ccza 三座島的橋", lanes: () => ["jc", "raymond", "ccza", "richard", "ben"], main: ["jc", "raymond", "ccza"] },
   raymond: { effect: "一拳打掉最靠近島的 3 個紅色衝突（魔王也打得到）。", range: "全場最危險的 3 個紅色", lanes: () => LANE_IDS, main: () => active((p) => p.type === "r" || p.type === "boss").map((p) => p.lane.id) },
-  richard: { effect: "吉他 Solo：附近三座島的 Agent 停下來跳舞 3 秒，自己島上的黃色直接解掉。", range: "Richard、ben、ccza 三座島的橋", lanes: () => ["richard", "ben", "ccza"], main: ["richard"] },
+  richard: { effect: "吉他 Solo：附近三座島的 AI 停下來跳舞 3 秒，自己島上的黃色直接解掉。", range: "Richard、ben、ccza 三座島的橋", lanes: () => ["richard", "ben", "ccza"], main: ["richard"] },
   ccza: { effect: "Async 回覆：標記矛盾最多的那條橋，1.2 秒後整條一起解掉（紅色也行）。", range: "現在矛盾最多的那一條橋", lanes: () => { const c = lanes.map((l) => active((p) => p.lane === l).length); return [lanes[c.indexOf(Math.max(...c))].id]; } },
-  ben: { effect: "舞台演出：全場 Agent 停下來看戲 3.5 秒，這段時間英雄傷害加倍。", range: "全場", lanes: () => LANE_IDS },
+  ben: { effect: "舞台演出：全場 AI 停下來看戲 3.5 秒，這段時間英雄傷害加倍。", range: "全場", lanes: () => LANE_IDS },
 };
 const AUTO_INFO = "平時：只會自動回答自己橋上、靠近島的<b>黃色</b>；紅色要靠大招";
 const tip = document.createElement("div");
@@ -4780,13 +4898,14 @@ function placeCrewHome() {
   roamers.forEach((r) => r.g.rotation.set(0, r.g.rotation.y, 0));
 }
 function resetGame() {
+  decideEl.classList.remove("on");
   pets.forEach(retire);
   orbs.forEach((o) => { o.active = false; o.m.visible = false; });
   bricks.forEach((b) => { b.shown = false; b.drop = null; b.t = 1; b.o.visible = false; b.o.position.copy(b.home); b.o.rotation.x = b.rx; b.o.scale.setScalar(1); });
   Object.assign(G, { t: 0, points: 0, shown: 0, inflight: 0, combo: 0, comboT: 0, maxCombo: 0, solved: 0, split: 0, missed: 0, spawnT: 1.2, warn: null, boss: null,
     bossSpawned: false, bossDown: false, bossAt: 0, rapid: 0, double: 0, spot: 0, async: null, hitstop: 0, uses: {}, phase: -1, milestone: 0, seq: null, sailing: false,
     onb: {}, onbOn: !onbDone(), firstRed: false, bossHp: null, lastBossHp: null, bossLeaks: 0, bossFirstT: null, bossKillT: null, cannon: 0, focusT: 0, lastPickT: null,
-    explainY: false, explainR: false, notifQ: [], notifT: 0, notifGap: 0, notifN: 0, evSaid: {}, wavesWarn: {}, rumble: 0, waveN: 0, bossAcc: 0, dusk: 0, fled: false, slamT: 0, slamArmed: false, cannonT: null, bossPickHeld: false, pickAuto: 8, tut2: null, xp: 0, xpIdx: 0, pendingPicks: 0, picks: 0, boons: {}, boonT: {}, laneBoost: {}, stopUsed: 0, retroUsed: 0, fbCount: 0, bossHalf: false, paused: false,
+    explainY: false, explainR: false, notifQ: [], notifT: 0, notifGap: 0, notifN: 0, evSaid: {}, wavesWarn: {}, rumble: 0, waveN: 0, solvedY: 0, solvedR: 0, askN: 0, lastEv: "", fillDone: {}, decideT: 0, decideN: 0, decided: 0, bossAcc: 0, dusk: 0, fled: false, slamT: 0, slamArmed: false, cannonT: null, bossPickHeld: false, pickAuto: 8, tut2: null, xp: 0, xpIdx: 0, pendingPicks: 0, picks: 0, boons: {}, boonT: {}, laneBoost: {}, stopUsed: 0, retroUsed: 0, fbCount: 0, bossHalf: false, paused: false,
     preview: null, task: {}, fresh: [], rapidSolves: 0, stageSolves: 0, casts: {}, waveQ: [], wavesDone: {}, firstLeak: false, redTut: null, cine: null, bossCineDone: false, slow: 0, intro: null, introQ: [], bloomMiss: 0, redsDone: 0, asyncMax: 0, stageCombo: 0, tut: null, tutFreeze: false });
   document.body.classList.remove("tutorial", "cine", "voyage");
   hideIntro();
@@ -4923,7 +5042,7 @@ function tickTut2(dt) {
   } else if (T.step === 4) {
     // 等選卡後的「上線」橫幅收掉再講，兩個不疊在一起
     if (hud.banner.classList.contains("on") && !T.said.boss) { T.t = 0; }
-    else if (once("boss")) { T.t = 0; sayB(BUB.allwill, "共識滿了就開會，挑一張。下午魔王「對不齊」會來。", 2.8); }
+    else if (once("boss")) { T.t = 0; sayB(BUB.allwill, "共識滿了就開會，挑一張。下午魔王「到底要做什麼？」會來。", 2.8); }
     if (T.said.boss && T.t > 2.8) endTut2();
   }
 }
@@ -5047,6 +5166,7 @@ function starsOf(won) {
   return 1;
 }
 function showEnd(won) {
+  decideEl.classList.remove("on");
   const pct = Math.floor((G.points / G.goal) * 100);
   // 稱號看哪位英雄的技能等級加總最高
   let h = null, bestRate = 0;
@@ -5060,7 +5180,13 @@ function showEnd(won) {
   const TITLES = { johnny: "拍板船長 水球潘", coomy: "人形節拍器 Coomy", raymond: "「最難的事只是步驟多了點」Raymond", richard: "止血吉他手 Richard", ccza: "海邊狙擊手 ccza", ben: "最佳串門男主角 ben" };
   if (h.key === "jc") { const jo = ["hat", "retro"].reduce((a, k) => a + lv(k), 0), co = ["beat", "ssot"].reduce((a, k) => a + lv(k), 0); h = { ...h, key: co > jo ? "coomy" : "johnny", avs: [co > jo ? "coomy" : "water"], title: TITLES[co > jo ? "coomy" : "johnny"] }; }
   else if (TITLES[h.key]) h = { ...h, title: TITLES[h.key] };
-  if (starsOf(won) === 3) h = { ...h, key: "perfect", title: `零失誤船長・${h.title}` };
+  const partner = h.key === "rookie" ? null : h;
+  const PT = { johnny: "一句話拍板的人", coomy: "Sprint 節拍器本人", raymond: "Root Cause 獵人", richard: "會議止血王", ccza: "已讀晚點回大師", ben: "客戶現場救火隊", rookie: "第一天上班的新人" };
+  const PL = { johnny: "大家吵完，你一句「就這樣」。", coomy: "Sprint 還沒開始，你已經排好了。", raymond: "不只修好，還追到是誰先改的。", richard: "會議開到一半，你讓大家先停下來。", ccza: "不開會，訊息一次回完。", ben: "客戶在看，你演得比 POC 還穩。", rookie: "先把座位找到，明天再來。" };
+  let me = { key: h.key, title: PT[h.key] || PT.rookie, line: PL[h.key] || PL.rookie };
+  if (!won) me = { key: "ot", title: "今晚加班仔", line: `船還差 ${100 - pct}%。明天站會見。` };
+  else if (starsOf(won) === 3) me = { key: "perfect", title: "準時下班之神", line: "魔王 25 秒內閉嘴、漏怪不超過 2 個。今天沒有人背鍋。" };
+  else if (G.missed >= 8) me = { key: "blame", title: "背鍋俠", line: `漏了 ${G.missed} 個，每一個明天都會回來找你。` };
   const hobbyOf = (k) => MEMBERS[k].lines[0].replace(/<span[^>]*>.*?<\/span>/, "");
   const order = ["johnny", "coomy", "richard", "raymond", "ccza", "ben"];
   const stars = starsOf(won);
@@ -5070,28 +5196,55 @@ function showEnd(won) {
   const bt = bossTime();
   const gapT = bt != null ? Math.max(0, Math.ceil(bt - 25)) : null, gapM = Math.max(0, G.missed - 2);
   const starLine = won ? ["", `下一顆星：魔王 40 秒內倒（這局 ${bt != null ? Math.round(bt) : "—"} 秒），或漏怪 ≤4`, `差一點 3 星：${gapT ? `再快 ${gapT} 秒` : ""}${gapT && gapM ? "、" : ""}${gapM ? `少漏 ${gapM} 個` : ""}`, "零失誤船長！魔王 25 秒內倒、漏怪 ≤2"][stars] : G.bossFirstT != null ? "魔王沒打倒。挑「打魔王」的卡，傷害會累積" : "時間到，船還沒蓋完";
-  const share = encodeURIComponent(`${bt != null ? `魔王問了我一整局「到底要做什麼？」，我 ${Math.round(bt)} 秒讓它閉嘴${stars ? " " + "★".repeat(stars) : ""}` : "魔王問了我一整局「到底要做什麼？」，這次沒讓它閉嘴"}\n漏 ${G.missed} 個｜總時間 ${fmt(G.t)}\n解掉 ${G.solved} 個矛盾${ownedDuos.length ? `，靠「${ownedDuos[0].name}」` : ""}${won ? `把船開出港${stars ? ` ${"★".repeat(stars)}` : ""}` : "還是沒出海"}。我是「${h.title}」，集到 ${got}/6 張 AllWill 成員卡。你的需求也每天在改嗎？來挑戰 👉 ${location.origin}${location.pathname}`);
-  G.endInfo = { won, stars, h, got, bt, missed: G.missed };
-  endPanel.innerHTML = `<div class="t-stagger">
+  const url = `${location.origin}${location.pathname}`;
+  const ask = Math.max(G.askN, bt != null ? 1 : 0);
+  const R0 = ROLES[role];
+  const url2 = bt != null ? `${url}?vs=${Math.round(bt)}` : url;
+  const shareTxt = `身為${R0.label}，今天我被問了 ${ask} 次「到底要做什麼？」，${bt != null ? `撐 ${Math.round(bt)} 秒讓魔王閉嘴` : "還是沒讓魔王閉嘴"}${stars ? " " + "★".repeat(stars) + "☆".repeat(3 - stars) : ""}，我是【${me.title}】。\n${R0.dare}能撐幾秒？👉 ${url2}`;
+  const share = encodeURIComponent(shareTxt);
+  const dare = `@____ 身為${R0.label}，今天我被問了 ${ask} 次「到底要做什麼？」${bt != null ? `，撐 ${Math.round(bt)} 秒讓它閉嘴` : ""}。換你 👉 ${url2}`;
+  const vsLine = VS && bt != null ? (Math.round(bt) <= VS ? `朋友 ${VS} 秒・你快了 ${VS - Math.round(bt)} 秒，贏了！` : `朋友 ${VS} 秒・還差 ${Math.round(bt) - VS} 秒`) : "";
+  const off = clockOf(G.t);
+  G.endInfo = { won, stars, h, me, got, bt, missed: G.missed, ask, off, role: R0 };
+  endPanel.innerHTML = `<div class="end-grid t-stagger"><div class="end-top">
     <span class="tag">#AllWill 船塢守衛戰</span>
     <h2>${won ? "準時下班！AllWill 號出航" : `還差 ${100 - pct}%，今晚加班`}</h2>
-    <div class="title-card${h.key === "perfect" ? " perfect" : ""}"><span class="avs">${(h.avs || [h.av]).map((a) => `<img src="${avatars[a]}" alt="">`).join("")}</span><div><small>你的稱號</small><b>${h.title}</b><span>${TITLE_LINE[h.key]}</span></div></div>
-    <div class="bignum"><b>${bt != null ? `${Math.round(bt)} 秒` : "魔王沒倒"}</b><span>${bt != null ? "讓魔王閉嘴" : "下次挑「打魔王」的卡"}</span></div>
+    <div class="title-card${me.key === "perfect" ? " perfect" : ""}"><span class="avs">${partner ? (h.avs || [h.av]).map((a) => `<img src="${avatars[a]}" alt="">`).join("") : ""}</span><div><small>你的稱號・${ROLES[role].label}</small><b>${me.title}</b><span>${me.line}${partner ? `<br><em>你的搭檔：${h.title}</em>` : ""}</span></div></div>
+    <div class="bignum"><b>${bt != null ? `${Math.round(bt)} 秒` : "魔王沒倒"}</b><span>${bt != null ? "讓魔王閉嘴" : "下次挑「打魔王」的卡"}</span>${vsLine ? `<em class="vsr">${vsLine}</em>` : ""}</div>
     <div class="stars" aria-label="${stars} 顆星">${"★".repeat(stars)}<s>${"★".repeat(3 - stars)}</s><small>${starLine}</small></div>
     <div class="stats"><div><b>${G.solved}</b><span>解掉的矛盾</span></div><div><b>${G.missed}</b><span>漏掉的怪</span></div><div><b>${fmt(G.t)}</b><span>總時間</span></div></div>
+    </div>
+    <aside class="end-side">
+      <div class="receipt"><b>AllWill 號｜今日工作收據</b>
+        <p><span>職位</span><i>${ROLES[role].label}</i></p>
+        <p><span>打卡</span><i>09:00</i></p><p><span>${won ? "下班" : "現在"}</span><i>${won ? off : `${off}（加班中）`}</i></p><hr>
+        <p><span>被問「到底要做什麼？」</span><i>× ${ask}</i></p>
+        <p><span>同一件事兩種說法</span><i>× ${G.solvedY}</i></p>
+        <p><span>兩邊都說「做好了」</span><i>× ${G.solvedR}</i></p>
+        <p><span>臨時被拉去開會</span><i>× ${G.picks} 場</i></p>
+        <p><span>親手拍板</span><i>× ${G.decided}</i></p>
+        <p><span>沒接住、變返工</span><i>× ${G.missed}</i></p>
+        ${G.lastEv ? `<hr><small>今天最痛的一句</small><q>${G.lastEv}</q>` : ""}
+      </div>
+      <p class="pitch">AI 讓每個人都寫得很快，卻沒人確定大家要的是同一件事。<br><b>AllWill：改動前，先檢查約定能不能同時成立；有矛盾，找對的人釐清。</b></p>
+      <a class="btn" href="mailto:hi@specformula.ai?subject=${encodeURIComponent("[船塢守衛戰] 我們也常被問「到底要做什麼？」")}">把我們團隊的 Spec 丟給 AllWill 對一次 →</a>
+      <div class="dare"><small>這局獻給那個每天改需求的人</small><button class="btn ghost" id="dareBtn" type="button">複製挑戰文 @ ${ROLES[role].dare}</button></div>
+      <div class="row2"><button class="btn" id="imgBtn" type="button">存成分享圖</button><a class="btn ghost" id="shareBtn" href="https://www.threads.net/intent/post?text=${share}" target="_blank" rel="noopener">分享到 Threads</a></div>
+      <button class="btn ghost" id="againBtn" type="button">再玩一次</button>
+    </aside>
+    <div class="end-more">
     <div class="collect"><b>成員卡 ${got} / 6</b><span>${fresh.length ? `這局新收集：${fresh.map((k) => MEMBERS[k].name).join("、")}` : got === 6 ? `全部集滿！你認識整個 AllWill 了 → <a href="mailto:hi@specformula.ai">hi@specformula.ai</a>` : "這局沒有新卡，看看下面還差哪些任務"}</span></div>
     <div class="crew">${CARD_ORDER.map((k) => `<div class="${cards[k] ? "" : "off"}"><img src="${avatars[MEMBERS[k].av]}" alt=""><div><b>${MEMBERS[k].name}${fresh.includes(k) ? "<em>新</em>" : ""}</b><span>${cards[k] ? CARD_RULES[k].bg : "還沒收集"}</span>${cards[k] ? `<a class="chat" href="mailto:hi@specformula.ai?subject=${encodeURIComponent(`[船塢守衛戰] 我拿到「${h.title}」，想跟 ${MEMBERS[k].name} 聊聊`)}">跟 ${MEMBERS[k].name} 聊聊 →</a>` : ""}</div></div>`).join("")}</div>
     ${nextK ? `<div class="next">下一張：${MEMBERS[nextK].name}・${CARD_RULES[nextK].cond}</div>` : ""}
     <details class="combo-set"><summary>本局共識組合 ▾</summary>${owned.map((b) => `<span>${b.name} Lv${lv(b.id)}</span>`).join("")}${ownedDuos.map((d) => `<span class="duo">共鳴・${d.name}</span>`).join("")}</details>
-    <div class="end-actions"><div class="row2"><button class="btn" id="imgBtn" type="button">存成分享圖</button><a class="btn ghost" id="shareBtn" href="https://www.threads.net/intent/post?text=${share}" target="_blank" rel="noopener">分享到 Threads</a></div>
-    <button class="btn ghost" id="againBtn" type="button">再玩一次</button></div>
     <a class="btn ghost" href="../">認識 AllWill 團隊 →</a>
-    <a class="alt" href="mailto:hi@specformula.ai">或寫信到 hi@specformula.ai</a>
+    </div>
   </div>`;
   endScreen.classList.add("open");
   document.body.classList.remove("playing-game");
   document.getElementById("againBtn").addEventListener("click", startGame);
   document.getElementById("imgBtn").addEventListener("click", saveShareImage);
+  document.getElementById("dareBtn").addEventListener("click", (e) => { navigator.clipboard?.writeText(dare).then(() => { e.target.textContent = "已複製，貼給你家 PM 吧"; }).catch(() => {}); });
 }
 // 分享圖：星等、稱號、成員卡收集（沒收集的是灰色剪影）、網址
 async function saveShareImage() {
@@ -5104,11 +5257,11 @@ async function saveShareImage() {
   const load = (src) => new Promise((r) => { const im = new Image(); im.onload = () => r(im); im.onerror = () => r(null); im.src = src; });
   x.textAlign = "center";
   x.fillStyle = "#1f8f87"; x.font = font(900, 40); x.fillText("#AllWill 船塢守衛戰", W / 2, 110);
-  x.fillStyle = "#1c2430"; x.font = font(900, 76); x.fillText(won ? "AllWill 號出航！" : "差一點就出海了", W / 2, 210);
-  x.font = font(900, 90); x.fillStyle = "#f0a33a"; x.fillText("★".repeat(stars) + "☆".repeat(3 - stars), W / 2, 320);
+  x.fillStyle = "#1c2430"; x.font = font(900, 60); x.fillText(`身為${G.endInfo.role.label}，今天我被問了 ${G.endInfo.ask} 次`, W / 2, 200); x.font = font(900, 64); x.fillText("「到底要做什麼？」", W / 2, 280);
+  x.font = font(900, 70); x.fillStyle = "#f0a33a"; x.fillText("★".repeat(stars) + "☆".repeat(3 - stars), W / 2, 355);
   x.fillStyle = "rgba(28,36,48,0.92)"; x.beginPath(); x.roundRect(90, 370, W - 180, 190, 36); x.fill();
   x.fillStyle = "rgba(255,255,255,0.7)"; x.font = font(700, 32); x.fillText("我的稱號", W / 2, 432);
-  x.fillStyle = "#fff"; x.font = font(900, 56); x.fillText(h.title, W / 2, 510);
+  x.fillStyle = "#fff"; x.font = font(900, 64); x.fillText(`【${G.endInfo.me.title}】`, W / 2, 515);
   x.fillStyle = "#5b2a86"; x.font = font(900, 46); x.fillText(bt != null ? `魔王 ${Math.round(bt)} 秒閉嘴｜漏 ${missed} 個` : `魔王沒倒｜漏 ${missed} 個`, W / 2, 635);
   const imgs = await Promise.all(CARD_ORDER.map((k) => load(avatars[MEMBERS[k].av])));
   CARD_ORDER.forEach((k, i) => {
@@ -5120,12 +5273,12 @@ async function saveShareImage() {
     x.restore();
     x.fillStyle = own ? "#1c2430" : "rgba(28,36,48,0.55)"; x.font = font(900, 34); x.fillText(own ? MEMBERS[k].name : "？？？", cx, cy + 100);
   });
-  x.fillStyle = "#fff"; x.font = font(900, 32); x.fillText(`集到 ${got} / 6 張 AllWill 成員卡`, W / 2, 1180);
-  x.font = font(900, 38); x.fillText(bt != null ? `你能比 ${Math.round(bt)} 秒快嗎？👉` : "你能讓魔王閉嘴嗎？👉", W / 2, 1245);
+  x.fillStyle = "#fff"; x.font = font(700, 30); x.fillText(`我的搭檔・集到 ${got} / 6 張 AllWill 成員卡`, W / 2, 1180);
+  x.font = font(900, 40); x.fillText(bt != null ? `${G.endInfo.role.dare}能比 ${Math.round(bt)} 秒快嗎？👉` : `${G.endInfo.role.dare}能讓魔王閉嘴嗎？👉`, W / 2, 1245);
   x.font = font(700, 30); x.fillText(`${location.host}${location.pathname}`, W / 2, 1300);
   c.toBlob(async (blob) => {
     const file = new File([blob], "allwill-crew-card.png", { type: "image/png" });
-    try { if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], text: `我集到 ${got}/6 張 AllWill 成員卡！` }); return; } } catch {}
+    try { if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], text: `今天我被問了 ${G.endInfo.ask} 次「到底要做什麼？」，我是【${G.endInfo.me.title}】` }); return; } } catch {}
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = file.name; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   }, "image/png");
@@ -5514,7 +5667,7 @@ function tickLeaks(dt) {
   }
 }
 function tickBoons(dt) {
-  tickLeaks(dt); tickPetLooks(dt); tickNotif(dt);
+  tickLeaks(dt); tickPetLooks(dt); tickNotif(dt); tickQuips(dt); tickDecide(dt);
   tickAuras(dt);
   tickBossHud(); tickBossLook(dt);
   if (G.camBack > 0) { G.camBack -= dt; if (G.camBack <= 0) gameView(); }
@@ -5588,7 +5741,7 @@ function tickGame(dt) {
     if (G.t >= 94 && !G.fled && !G.boss) { G.fled = true; pets.forEach((q) => { if (q.active && q.type === "n") q.speed *= 1.8; }); }
   }
   if (G.spot > 0) { spotLight.visible = true; spotLight.position.copy(team.ben.g.position).add(V3(0, 4.2, 0)); }
-  tickSpawn(gdt);
+  tickSpawn(gdt); tickFillers();
   tickBoons(gdt);
   tickHeroes(gdt);
   tickOrbs(gdt);
