@@ -162,6 +162,8 @@
   .isl span i { width: 9px; height: 9px; border-radius: 50%; }
   .isl.ext span { font-size: 12px; font-weight: 700; color: var(--muted); padding: 3px 9px 3px 8px; }
   .isl.dim { opacity: .3; }
+  .isl.mini span { font-size: 0; gap: 0; padding: 5px; } /* 手機開打後島名縮成小點，出事時才展開 */
+  .isl.mini span i { width: 10px; height: 10px; }
   .brl { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 8px; background: rgba(255,252,246,0.96); white-space: nowrap;
     border-left: 4px solid; box-shadow: 0 3px 10px rgba(40,30,20,0.16); transition: opacity .4s var(--ease); }
   .brl.off { opacity: 0; }
@@ -205,8 +207,10 @@
   .skill-tip .boon-list div.on { opacity: 1; }
   .skill-tip .boon-list i { font-style: normal; font-weight: 900; color: #ffd36b; }
   .skill-tip small b { color: #ffd36b; }
-  .stun-tag { position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%); white-space: nowrap; font-size: 11px; font-weight: 900; color: #fff;
-    background: var(--sc, #e08a3c); padding: 2px 8px; border-radius: 999px; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
+  /* 標籤從圓形 ? / ! 右側長出來，和圓圈連成一顆膠囊 */
+  .stun-tag { position: absolute; left: calc(100% - 12px); top: 50%; transform: translateY(-50%); white-space: nowrap; font-size: 12px; font-weight: 900; color: #fff; line-height: 1;
+    background: var(--sc, #e08a3c); padding: 6px 11px 6px 17px; border-radius: 0 999px 999px 0; box-shadow: 0 3px 8px rgba(0,0,0,0.22); }
+  .qb { position: relative; z-index: 1; }
   .stun-tag.off { display: none; }
   .hitav { display: flex; align-items: center; gap: 4px; padding: 2px 9px 2px 2px; border-radius: 999px; background: var(--c); color: #fff; font-size: 14px; font-weight: 900; white-space: nowrap;
     box-shadow: 0 4px 12px rgba(0,0,0,0.25); transition: opacity .3s var(--ease-smooth-out); }
@@ -298,20 +302,22 @@
   .legend3 .qb { animation: none; }
   [hidden] { display: none !important; }
   .legend3 .lg-pic { position: relative; width: 64px; height: 64px; border-radius: 16px; background: radial-gradient(circle at 50% 60%, #fff6dc, #f3e6c8); }
-  .legend3 .lg-pic.boss { background: radial-gradient(circle at 50% 60%, #ffd9d0, #f0b6a8); }
+  .legend3 .lg-pic { background: radial-gradient(circle at 50% 60%, #fffbe9, #fff3c4) !important; }
+  .legend3 li:nth-child(2) .lg-pic { background: radial-gradient(circle at 50% 60%, #fff0eb, #ffd9d0) !important; }
+  .legend3 .lg-pic.boss { background: radial-gradient(circle at 50% 60%, #f3eaff, #e6d4ff) !important; }
   .legend3 .lg-pic img { width: 100%; height: 100%; display: block; }
   .legend3 .lg-pic .qb { position: absolute; right: -6px; top: -6px; width: 24px; height: 24px; font-size: 14px; }
   .legend3 b { font-size: 13px; font-weight: 900; } .legend3 em { font-style: normal; font-size: 11px; color: var(--muted); font-weight: 700; }
   .hero.danger .ring { animation: dangerHero .4s steps(2) infinite; }
   @keyframes dangerHero { 50% { box-shadow: 0 0 0 4px #ff3b2f; } }
-  .bossbar { position: absolute; left: 50%; top: calc(max(12px, env(safe-area-inset-top)) + 44px); background: #1c0a0a !important; z-index: 2; transform: translateX(-50%); width: min(92vw, 420px); padding: 7px 12px 8px; border-radius: 14px;
+  .bossbar { position: absolute; left: 50%; top: calc(max(12px, env(safe-area-inset-top)) + 44px); background: #2a1840 !important; z-index: 2; transform: translateX(-50%); width: min(92vw, 420px); padding: 7px 12px 8px; border-radius: 14px;
     background: rgba(28,10,10,0.82); color: #fff; display: none; box-shadow: 0 6px 18px rgba(0,0,0,0.35); }
   body.boss-on .bossbar { display: block; }
-  .bossbar b { display: block; font-size: 12.5px; font-weight: 900; letter-spacing: .04em; color: #ffb3a6; }
+  .bossbar b { display: block; font-size: 14px; font-weight: 900; letter-spacing: .04em; color: #e6d4ff; }
   body.boss-on .xpbar { visibility: hidden; }
-  .bossbar .hp { margin-top: 4px; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.15); overflow: hidden;
+  .bossbar .hp { margin-top: 4px; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.15); overflow: hidden;
     background-image: repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), rgba(0,0,0,0.5) calc(25% - 1px) 25%); }
-  .bossbar .hp i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #ff3b2f, #ff8a3d); transition: width .25s var(--ease-smooth-out); }
+  .bossbar .hp i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #b48cff, #ff5a8a); transition: width .25s var(--ease-smooth-out); }
   .bossbar .dist { margin-top: 5px; display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 900; opacity: .9; }
   .bossbar .dist div { flex: 1; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.15); overflow: hidden; }
   .bossbar .dist i { display: block; height: 100%; width: 0; background: #ffd36b; }
@@ -358,7 +364,7 @@
   .bp-title { color: #fff; font-size: 20px; font-weight: 900; text-shadow: 0 2px 10px rgba(0,0,0,0.4); }
   .bp-cards { display: flex; flex-direction: column; gap: 8px; width: min(100%, 440px); }
   .bp-card { display: flex; gap: 10px; align-items: center; text-align: left; border: 0; border-radius: 16px; padding: 10px 12px; background: #fffaf2; color: var(--ink); font: inherit; cursor: pointer;
-    box-shadow: 0 0 0 3px var(--c, #14b89c), 0 10px 26px rgba(0,0,0,0.3); transform: translateY(20px); opacity: 0; min-height: 76px; }
+    box-shadow: inset 6px 0 0 var(--c, #14b89c), 0 10px 26px rgba(0,0,0,0.3); transform: translateY(20px); opacity: 0; min-height: 76px; }
   .boon-pick.open .bp-card { animation: bpin var(--duration-slow) var(--ease-smooth-out) forwards; }
   .boon-pick.open .bp-card:nth-child(2) { animation-delay: 70ms; } .boon-pick.open .bp-card:nth-child(3) { animation-delay: 140ms; }
   @keyframes bpin { to { transform: none; opacity: 1; } }
@@ -372,7 +378,10 @@
   .bp-txt em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--muted); }
   .bp-txt p { margin: 2px 0 0; font-size: 13.5px; line-height: 1.45; }
   .bp-tag { align-self: flex-start; font-style: normal; font-size: 10.5px; font-weight: 900; color: #fff; background: #f0a33a; border-radius: 999px; padding: 1px 8px; margin-bottom: 2px; }
-  .bp-tag.new { background: #14b89c; }
+  .bp-tag.new { background: #ffd36b; color: #1c2430; }
+  @media (max-width: 759px) { .bp-txt p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } }
+  .boon-pick .bp-card.chosen { animation: none; opacity: 1; transform: scale(1.06); transition: transform var(--duration-quick) var(--ease-smooth-out); }
+  .boon-pick .bp-card.fade { animation: none; opacity: 0; transform: translateY(12px); transition: opacity var(--duration-quick) var(--ease-smooth-out), transform var(--duration-quick) var(--ease-smooth-out); }
   .bp-dots { display: flex; gap: 4px; margin-top: 4px; }
   .bp-dots s { width: 9px; height: 9px; border-radius: 50%; background: rgba(34,42,54,0.15); text-decoration: none; }
   .bp-dots s.on { background: var(--c, #14b89c); }
@@ -386,7 +395,13 @@
   }
   @media (prefers-reduced-motion: reduce) { .boon-pick.open .bp-card { animation: none; transform: none; opacity: 1; } }
   .combo-set { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
-  .combo-set b { width: 100%; font-size: 12px; font-weight: 900; color: var(--muted); }
+  .combo-set b, .combo-set summary { width: 100%; font-size: 12px; font-weight: 900; color: var(--muted); cursor: pointer; list-style: none; }
+  .combo-set summary::-webkit-details-marker { display: none; }
+  .bignum { margin: 12px 0 2px; text-align: center; }
+  .bignum b { display: block; font-family: "Noto Serif TC", serif; font-size: 44px; font-weight: 900; color: #5b2a86; line-height: 1.1; }
+  .bignum span { font-size: 13px; font-weight: 700; color: var(--muted); }
+  .title-card.perfect { background: #2a1840 !important; color: #fff; }
+  .crew .chat { display: inline-block; margin-top: 2px; font-size: 12px; font-weight: 900; color: #14b89c; text-decoration: none; }
   .combo-set span { font-size: 12px; font-weight: 900; padding: 3px 9px; border-radius: 999px; background: #fff; border: 1px solid var(--line); }
   .combo-set span.duo { background: #fff3d1; border-color: #f0a33a; }
   .red-flash { position: fixed; inset: 0; pointer-events: none; z-index: 4; opacity: 0; box-shadow: inset 0 0 120px 30px rgba(236,77,47,0.75); }
@@ -409,6 +424,15 @@
   .shipbar .bar { flex: 1; height: 10px; border-radius: 999px; background: rgba(34,42,54,0.1); overflow: hidden; position: relative; }
   .shipbar .bar i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 999px; background: linear-gradient(90deg, #14b89c, #3fe0cc);
     transition: width var(--duration-slow) var(--ease-smooth-out); }
+  .shipbar { position: relative; }
+  .shipbar .bar u { position: absolute; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: rgba(34,42,54,0.28); }
+  .shipbar .bar u.on { background: #ffd36b; box-shadow: 0 0 0 2px #fff; animation: msdot .5s var(--ease-bounce); }
+  @keyframes msdot { 40% { transform: scale(1.9); } }
+  .ship-toast { position: absolute; top: calc(100% + 6px); right: 10px; font-style: normal; font-size: 12px; font-weight: 900; color: #1c2430; background: #ffd36b; padding: 3px 10px; border-radius: 999px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.18); opacity: 0; transform: translateY(-4px) scale(0.9); pointer-events: none; transition: opacity var(--duration-fast) var(--ease-smooth-out), transform var(--duration-fast) var(--ease-bounce); }
+  .ship-toast.on { opacity: 1; transform: none; }
+  .shipbar.bump { animation: shipbump .45s var(--ease-bounce); }
+  @keyframes shipbump { 40% { transform: scale(1.06); box-shadow: 0 0 0 4px rgba(255,211,107,0.7), 0 4px 14px rgba(40,30,20,0.14); } }
   .shipbar .bar s { position: absolute; top: -2px; bottom: -2px; left: 90%; width: 2px; background: #1c2430; opacity: .5; }
   .shipbar b { min-width: 36px; text-align: right; font-variant-numeric: tabular-nums; }
   .shipbar.flash { animation: barflash .6s var(--ease-smooth-out); }
@@ -418,10 +442,30 @@
   .combo.on { opacity: 1; transform: none; }
   .combo.pop { animation: numpop var(--duration-fast) var(--ease-bounce); }
   @keyframes numpop { from { transform: scale(1.35); filter: blur(2px); } to { transform: none; filter: none; } }
-  .banner { position: absolute; left: 50%; top: 22%; transform: translate(-50%, 0); width: max-content; max-width: min(94vw, 560px); word-break: keep-all; overflow-wrap: anywhere; text-align: center; font-weight: 900;
+  .banner { position: absolute; left: 50%; top: calc(max(12px, env(safe-area-inset-top)) + 90px); transform: translate(-50%, 0); width: max-content; max-width: min(94vw, 560px); word-break: keep-all; overflow-wrap: anywhere; text-align: center; font-weight: 900;
     font-size: clamp(18px, 5vw, 26px); line-height: 1.35; color: #fff; background: rgba(28,36,48,0.86); padding: 10px 18px; border-radius: 16px;
     opacity: 0; filter: blur(var(--blur-medium)); transition: opacity var(--duration-slow) var(--ease-smooth-out), filter var(--duration-slow) var(--ease-smooth-out), transform var(--duration-slow) var(--ease-smooth-out); }
+  .notif { position: absolute; right: max(12px, env(safe-area-inset-right)); top: calc(max(12px, env(safe-area-inset-top)) + 84px); z-index: 3; display: flex; align-items: center; gap: 9px;
+    max-width: min(80vw, 340px); padding: 8px 12px 8px 8px; border-radius: 16px; background: rgba(255,252,246,0.97); color: var(--ink); box-shadow: 0 8px 22px rgba(20,24,32,0.22);
+    opacity: 0; transform: translateX(24px); pointer-events: none; transition: opacity var(--duration-fast) var(--ease-smooth-out), transform var(--duration-slow) var(--ease-smooth-out); }
+  .notif.on { opacity: 1; transform: none; }
+  .stage-dim { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(circle at 50% 45%, rgba(10,12,20,0) 25%, rgba(10,12,20,0.42) 75%); opacity: 0; transition: opacity var(--duration-slow) var(--ease-smooth-out); }
+  .stage-dim.on { opacity: 1; }
+  .boss-dusk { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 40%, rgba(90,30,110,0.12) 20%, rgba(70,10,40,0.5) 90%); }
+  .notif i { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 19px; background: #eef1f4; }
+  .notif small { display: block; font-size: 11px; font-weight: 800; color: #6b7480; }
+  .notif b { display: block; font-size: 14px; font-weight: 900; line-height: 1.35; }
+  body.boss-on .notif { top: calc(max(12px, env(safe-area-inset-top)) + 124px); }
+  body.picking .notif, body.cine .notif { opacity: 0 !important; }
+  @media (max-width: 640px) { .notif b { font-size: 13px; } }
+  @media (prefers-reduced-motion: reduce) { .notif { transition: none; } }
+  .thumb { position: fixed; left: 0; top: 0; z-index: 4; font-size: 18px; pointer-events: none; transition: transform .55s var(--ease-smooth-out), opacity .55s ease-in; }
+  .xpbar.gain { animation: xpgain .35s var(--ease-bounce); }
+  @keyframes xpgain { 40% { transform: scale(1.08); } }
+  body.playing-game .me-tag { opacity: .45; transform: scale(.85); }
   .banner small { display: block; font-size: 13px; font-weight: 700; opacity: .85; margin-top: 2px; }
+  body.boss-on .banner { top: calc(max(12px, env(safe-area-inset-top)) + 128px); }
+  @media (max-width: 640px) { .banner { white-space: nowrap; } .banner small { overflow: hidden; text-overflow: ellipsis; max-width: 88vw; } }
   .banner.on { opacity: 1; filter: none; transform: translate(-50%, -6px); }
   .banner.danger { background: rgba(200,50,30,0.9); }
 
@@ -491,8 +535,10 @@
   .ftx.gold { background: #f0a33a; }
   .ftx.bad { background: var(--q-red); }
   .ftx.big { font-size: 22px; padding: 6px 14px; }
+  @media (max-width: 640px) { .ftx { font-size: 13px; padding: 2px 8px; } .ftx.big { font-size: 16px; padding: 4px 10px; } }
   .ftx.off { opacity: 0; transform: translateY(10px) scale(0.6); }
-  .stall { font-size: 13px; font-weight: 900; color: #fff; background: var(--q-red); padding: 3px 10px; border-radius: 999px; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  .stall { width: 32px; height: 32px; display: grid; place-items: center; font-size: 14px; font-weight: 900; color: #fff; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    background: radial-gradient(circle, var(--q-red) 58%, transparent 60%), conic-gradient(#fff calc(var(--sp, 1) * 360deg), rgba(255,255,255,0.25) 0);
     transition: opacity var(--duration-fast) var(--ease-smooth-out), transform var(--duration-fast) var(--ease-bounce); }
   .stall.off { opacity: 0; transform: scale(0.6); }
 
@@ -512,7 +558,7 @@
   body.tutorial .skip-tut { display: block; }
   .skip-tut { padding: 11px 14px !important; }
   body.voyage .hud, body.voyage .ctrl, body.voyage .isl, body.voyage .stall { opacity: 0 !important; pointer-events: none; }
-  .end-actions { position: sticky; bottom: -18px; margin: 10px -20px -18px; padding: 14px 20px 18px; background: linear-gradient(rgba(255,252,246,0), rgba(255,252,246,0.98) 28%); }
+  .end-actions { position: relative; bottom: auto; margin: 10px -20px -18px; padding: 14px 20px 18px; background: linear-gradient(rgba(255,252,246,0), rgba(255,252,246,0.98) 28%); }
   .end-actions .row2 .btn, .end-actions > .btn { margin-top: 6px; }
   .hero .ring { position: relative; }
   .rotate { position: fixed; inset: 0; z-index: 30; display: none; place-items: center; text-align: center; background: rgba(28,36,48,0.92); color: #fff; font-size: 18px; font-weight: 900; padding: 24px; }
@@ -520,7 +566,7 @@
   @media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) { .rotate { display: grid; } }
   @media (pointer: coarse) { .hero kbd { display: none; } }
   @media (max-height: 700px) and (orientation: portrait) {
-    .banner { top: calc(max(12px, env(safe-area-inset-top)) + 56px); font-size: 17px; padding: 8px 14px; }
+    .banner { font-size: 17px; padding: 8px 14px; }
     .narr { font-size: 14px; } .narr::before { width: 30px; height: 30px; }
     .hero .ring { width: 40px; height: 40px; } .hero.duo .ring { width: 62px; }
     .hero em { display: none; } .hero.locked .away { display: block; }
@@ -599,29 +645,33 @@
 <div class="title-card-fx" id="titleFx"><small></small><b></b><span></span></div>
 <button class="slam-btn" id="slamBtn" type="button" aria-label="先拍板"><span>🎩</span><b>先拍板！</b><i></i></button>
 <div class="red-flash" id="redFlash"></div>
+<div class="stage-dim" id="stageDim"></div>
+<div class="boss-dusk" id="bossDusk"></div>
 <div class="card-flip" id="cardFlip" aria-live="polite"></div>
 <div class="cine-bars" aria-hidden="true"><i></i><i></i></div>
 <button class="cine-skip" id="cineSkip" type="button" aria-label="跳過特寫"></button>
 <div class="hud" id="hud">
   <div class="hud-top">
-    <div class="timer" id="hTime">3:00</div>
-    <div class="shipbar" id="hShip"><span>AllWill 號</span><div class="bar"><i id="hBar"></i><s title="魔王出現"></s></div><b id="hPct">0%</b></div>
+    <div class="timer" id="hTime">09:00</div>
+    <div class="shipbar" id="hShip"><span aria-label="AllWill 號">⛵</span><div class="bar"><i id="hBar"></i><s title="魔王出現"></s><u style="left:25%"></u><u style="left:50%"></u><u style="left:75%"></u></div><b id="hPct">0%</b><em class="ship-toast" id="shipToast"></em></div>
   </div>
   <div class="bossbar" id="bossBar"><b>BOSS　迷霧魔王・對不齊</b><div class="hp"><i></i></div><div class="dist"><span>離船塢</span><div><i></i></div></div></div>
   <div class="xpbar" id="hXp"><span>共識</span><div class="bar"><i></i></div><b>0</b></div>
   <div class="combo" id="hCombo">釐清 ×0</div>
   <div class="banner" id="hBanner"></div>
+  <div class="notif" id="notif" role="status"><i></i><div><small></small><b></b></div></div>
   <div class="intro" id="hIntro" role="status"></div>
   <button class="skip-tut" id="skipTut" type="button">略過教學 ›</button>
   <div class="heroes" id="heroBar"></div>
 </div>
 <div class="screen open" id="startScreen">
   <div class="panel t-stagger">
-    <span class="tag">#AllWill 開發團隊</span> <span class="tag">#AI-native cowork</span>
+    <span class="tag">#你的第一天</span> <span class="tag">#全公司 AI native</span>
     <h2>AllWill 船塢守衛戰</h2>
-    <p>黃 ? 是小矛盾，紅 ! 是互相打架的衝突，100 秒後魔王「對不齊」登場。<br>英雄會<b>自動</b>打；共識條滿了，就從三張技能卡<b>挑一張</b>。</p>
-    <ul class="legend3"><li><span class="lg-pic"><img id="lgY" alt=""><span class="qb">?</span></span><b>矛盾</b><em>打 1 下</em></li><li><span class="lg-pic"><img id="lgR" alt=""><span class="qb r">!</span></span><b>衝突</b><em>打 3 下</em></li><li><span class="lg-pic boss"><img id="lgB" alt=""></span><b>魔王</b><em>100 秒後</em></li></ul>
-    <button class="btn" id="startBtn" type="button"><i>▶</i>開始守衛<em>一局約 2 分半</em></button>
+    <p>早上 9:00，老闆在 #general 發了公告：<b>「從今天起，全公司 AI native。」</b></p>
+    <p>每個人都配了一個 Agent，Spec 一小時吐一百份。<br>你的工作：讓大家寫的東西對得起來，<b>下班前把船蓋好</b>。</p>
+    <ul class="legend3"><li><span class="lg-pic"><img id="lgY" alt=""><span class="qb">?</span></span><b>矛盾</b><em>說法不一樣</em></li><li><span class="lg-pic"><img id="lgR" alt=""><span class="qb r">!</span></span><b>衝突</b><em>兩個 Agent 吵起來</em></li><li><span class="lg-pic boss"><img id="lgB" alt=""></span><b>魔王</b><em>下午登場</em></li></ul>
+    <button class="btn" id="startBtn" type="button"><i>▶</i>打卡上班<em>一天＝2 分半</em></button>
 
     <button class="alt link" id="replayTut" type="button" hidden>重看教學</button>
     <a class="alt" href="../">只想認識團隊？看 AllWill 團隊的一天 →</a>
@@ -859,6 +909,7 @@ const shadowed = (m) => { m.castShadow = true; m.receiveShadow = true; return m;
 const seaGeo = new THREE.PlaneGeometry(700, 700, MOBILE ? 48 : 90, MOBILE ? 48 : 90);
 seaGeo.rotateX(-Math.PI / 2);
 const seaBase = seaGeo.attributes.position.array.slice();
+const SEA_LIFT = new THREE.Color("#5cc0dc");
 const sea = new THREE.Mesh(seaGeo, mat("#3e9fc8", { roughness: 0.3, metalness: 0.05, flatShading: true }));
 sea.receiveShadow = true;
 scene.add(sea);
@@ -900,7 +951,7 @@ function applyDaylight() {
   sky.material.uniforms.top.value.copy(col(a.top, b.top));
   sky.material.uniforms.horizon.value.copy(hz);
   scene.fog.color.copy(hz);
-  sea.material.color.copy(col(a.sea, b.sea));
+  sea.material.color.copy(col(a.sea, b.sea)).lerp(SEA_LIFT, 0.32 * (1 - num(a.night, b.night)));
   sun.color.copy(col(a.sun, b.sun));
   sun.intensity = num(a.sunI, b.sunI);
   hemi.intensity = num(a.hemiI, b.hemiI);
@@ -1180,6 +1231,7 @@ function makeIsland(u) {
   label.position.set(0, u.ext ? 4.2 : 6.8, u.ext ? 0 : -u.size * 0.9); // 島名在島後緣、人物頭頂之上，不壓人物
   g.add(label);
   islands[u.id] = { group: g, unit: u, el, grass: top.material };
+  if (!u.ext) { const sh = new THREE.Mesh(new THREE.RingGeometry(u.size * 1.02, u.size * 1.45, 48), new THREE.MeshBasicMaterial({ color: "#bfe6e0", transparent: true, opacity: 0.45, depthWrite: false })); sh.rotation.x = -Math.PI / 2; sh.position.y = 0.12; g.add(sh); } // 島外淺水環
 }
 
 function addExternal(g, u) {
@@ -2358,7 +2410,14 @@ function makeBubble(g, y) {
   g.add(o);
   return { el, until: 0 };
 }
-const sayB = (b, text, sec = 3) => { b.el.textContent = text; b.until = elapsed + sec; };
+const sayB = (b, text, sec = 3) => {
+  if (portrait() && typeof BUB !== "undefined") { // 手機同時只留一個對話泡泡；AllWill 的旁白優先
+    const busy = Object.values(BUB).find((x) => x !== b && x.until > elapsed);
+    if (busy) { if (busy === BUB.allwill && b !== BUB.allwill) return; busy.until = 0; }
+  }
+  if (typeof BUB !== "undefined" && b === BUB.allwill) document.getElementById("hBanner")?.classList.remove("on"); // 旁白和橫幅在同一個位置，不疊
+  b.el.textContent = text; b.until = elapsed + sec;
+};
 const findActor = (pred) => roamers.find(pred);
 const ACT = { me: findActor((r) => r.me), richard: findActor((r) => r.name === "Richard"), raymond: findActor((r) => r.name === "Raymond"), ben: findActor((r) => r.name === "ben"), ccza: findActor((r) => r.name === "ccza") };
 const BUB = { me: makeBubble(mascots.me, 2.35), water: makeBubble(mascots.water, 2.4), richard: makeBubble(team.richard.g, 2.75), raymond: makeBubble(team.raymond.g, 2.75), ben: makeBubble(team.ben.g, 2.95), ccza: makeBubble(team.ccza.g, 2.75) };
@@ -3284,13 +3343,27 @@ const decoByName = (n) => DECOS.find((D) => D.name === n);
 const MS_DECOS = { 1: ["救生圈", "舵輪", "煙囪"], 2: ["左燈籠", "右燈籠", "瞭望台"], 3: ["旗串", "燈串", "船首寶石"] };
 const decoQ = [];
 let decoQT = 0;
-function popDeco(D) { if (!D || D.g.visible) return; D.g.visible = true; D.t = 0; burst(D.g.getWorldPosition(V3()).add(V3(0, 0.6, 0)), "#ffd36b", 6, 3); }
+function popDeco(D) {
+  if (!D || D.g.visible) return;
+  if (!D.c) { D.g.position.set(0, 0, 0); D.c = big.worldToLocal(new THREE.Box3().setFromObject(D.g).getCenter(V3())); }
+  const r = hud.ship.querySelector(".bar").getBoundingClientRect();
+  const ndc = V3(((r.left + r.width * 0.5) / innerWidth) * 2 - 1, -((r.bottom) / innerHeight) * 2 + 1, 0.5).unproject(camera);
+  const from = camera.position.clone().add(ndc.sub(camera.position).normalize().multiplyScalar(camera.position.distanceTo(big.localToWorld(D.c.clone())) * 0.55));
+  D.off = big.worldToLocal(from).sub(D.c); D.f = 0;
+  D.g.position.copy(D.off); D.g.visible = true; D.t = 0;
+}
 function tickDecos(dt) {
   if (decoFx.fin?.length) { decoFx.finT += dt; while (decoFx.fin.length && decoFx.finT >= decoFx.fin[0].at) decoFx.fin.shift().fn(); }
   // 排隊的裝飾：魔王在場或命中頓格時先等
   decoQT -= dt;
   if (decoQ.length && decoQT <= 0 && !G.boss && G.hitstop <= 0) { popDeco(decoQ.shift()); decoQT = 0.15; }
-  for (const D of DECOS) { if (D.t >= 1) continue; D.t = Math.min(1, D.t + dt / 0.4); const k = D.t, sc = k < 0.7 ? (k / 0.7) * 1.15 : 1.15 - ((k - 0.7) / 0.3) * 0.15; D.g.scale.setScalar(Math.max(0.01, sc)); }
+  for (const D of DECOS) {
+    if (D.f == null || D.f >= 1) continue;
+    D.f = Math.min(1, D.f + dt / 0.6); const e = 1 - (1 - D.f) ** 3;
+    D.g.position.copy(D.off).multiplyScalar(1 - e); D.g.position.y += Math.sin(D.f * Math.PI) * 2.2;
+    if (D.f >= 1) { D.g.position.set(0, 0, 0); burst(big.localToWorld(D.c.clone()), "#ffd36b", 8, 3); sound.sparkle?.(); bumpShip(); }
+  }
+  for (const D of DECOS) { if (D.t >= 1) continue; D.t = Math.min(1, D.t + dt / 0.6); const k = D.t, sc = k < 0.7 ? (k / 0.7) * 1.15 : 1.15 - ((k - 0.7) / 0.3) * 0.15; D.g.scale.setScalar(Math.max(0.01, sc)); }
   if (decoFx.gem) { decoFx.gem.rotation.y += dt * 1.2; decoFx.gemRing.position.y = Math.sin(elapsed * 2) * 0.15; }
   if (decoFx.star) decoFx.star.rotation.y += dt * 2;
   if (decoFx.flags) decoFx.flags.children.forEach((f, i) => (f.rotation.x = Math.sin(elapsed * 4 + i) * 0.35));
@@ -3310,8 +3383,9 @@ function tickDecos(dt) {
   if (G.winStars === 3 && G.sailing) { decoFx.fw = (decoFx.fw || 0) - dt; if (decoFx.fw <= 0) { decoFx.fw = 0.55; burst(big.localToWorld(V3((rand() - 0.5) * 10, 15, (rand() - 0.5) * 3)), ["#ffd36b", "#ff4f86", "#3fe0cc", "#9fb6ff"][Math.floor(rand() * 4)], 18, 7); } }
 }
 function resetDecos() {
-  DECOS.forEach((D) => { D.g.visible = false; D.t = 1; });
+  DECOS.forEach((D) => { D.g.visible = false; D.t = 1; D.f = null; D.g.position.set(0, 0, 0); });
   decoQ.length = 0; decoFx.fin = [];
+  hud.ship.querySelectorAll(".bar u").forEach((u) => u.classList.remove("on"));
   hullBricks.forEach((b) => (b.o.material = b.baseMat));
   neon.on = false; neon.parts.forEach((p) => { p.core.visible = p.glow.visible = false; });
   G.winStars = 0;
@@ -3341,19 +3415,13 @@ function finishShip(stars) {
   yard.position.copy(YARD);
   scene.add(yard);
   yardSign.position.set(0, 0.76, 3.9); // AllWill 字樣放在機器人腳邊
-  const el = document.createElement("div");
-  el.className = "isl";
-  el.innerHTML = `<span><i style="background:#1e2a44"></i>AllWill 號船塢</span>`;
-  const o = new CSS2DObject(el);
-  o.position.set(-12.6, 3.6, 0);
-  yard.add(o);
 }
 
 // 機器人山洞：大機器人頭蹲在岩石堆裡，嘴巴就是洞口
 const cave = new THREE.Group();
 const caveParts = {};
 {
-  const rockA = mat("#8f8a7e", { flatShading: true, roughness: 1 }), rockB = mat("#a8a090", { flatShading: true, roughness: 1 });
+  const rockA = mat("#d9cbb4", { flatShading: true, roughness: 1 }), rockB = mat("#b8a68c", { flatShading: true, roughness: 1 });
   for (let i = 0; i < 12; i++) {
     const a = (i / 12) * Math.PI * 2;
     if (Math.abs(Math.atan2(Math.sin(a - Math.PI / 2), Math.cos(a - Math.PI / 2))) < 0.8) continue; // 嘴巴前面留空
@@ -3401,13 +3469,73 @@ const caveParts = {};
 const MOUTH = () => cave.localToWorld(V3(0, 1.05, 2.5));
 
 // Agent：從山洞吐出來的機器寵物（物件池）
-const QCOL = { n: "#eef3f6", y: "#f5c43a", r: "#ef5b3c", boss: "#ef5b3c" };
+const QCOL = { n: "#eef3f6", y: "#ffcf3f", r: "#f05a3c", boss: "#6a35a0" };
+const LOOK = { // 每種怪的臉色、條紋色
+  n: { face: "#1c2a33", acc: "#14b89c" },
+  y: { face: "#fff4d6", acc: "#fff3c4" },
+  r: { face: "#ffe0d6", acc: "#8c1d12" },
+  boss: { face: "#1c0a0a", acc: "#b48cff" },
+};
 const GOLD = mat("#ffd36b", { emissive: "#ffb000", emissiveIntensity: 1.4, roughness: 0.3 });
 const pets = [];
+// 黃怪「矛盾」：眼睛一大一小、耳朵一邊歪、腮紅；紅怪「衝突」：怒眉、耳朵往後壓、頭頂冒煙
+function petFace(p) {
+  const kids = p.g.children;
+  p.acc = kids[1].material = kids[1].material.clone();
+  p.face = kids[3]; p.face.material = p.face.material.clone();
+  p.ears = []; p.eyes0 = [];
+  p.g.traverse((o) => { if (!o.isMesh) return; if (o.geometry.type === "ConeGeometry") { o.material = p.acc; p.ears.push(o); } if (o.material.isMeshBasicMaterial) p.eyes0.push(o); });
+  p.ears.forEach((e) => (e.userData.r0 = e.rotation.clone()));
+  const K = new THREE.MeshBasicMaterial({ color: "#1a1410" }), W = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+  const look = new THREE.Group(); p.g.add(look); p.look = look;
+  const eye = (x) => { const e = new THREE.Group(); const b = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 10), K); b.scale.set(1, 1.3, 0.5); const gl = new THREE.Mesh(new THREE.SphereGeometry(0.014, 6, 5), W); gl.position.set(0.014, 0.022, 0.022); e.add(b, gl); e.position.set(x, 0.74, 0.54); look.add(e); return e; };
+  p.eyeL = eye(-0.075); p.eyeR = eye(0.075);
+  const browM = new THREE.MeshBasicMaterial({ color: "#5a1208" });
+  p.brows = [-1, 1].map((sd) => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.022, 0.02), browM); b.position.set(sd * 0.075, 0.815, 0.54); b.rotation.z = sd * 0.45; look.add(b); return b; });
+  const cheekM = new THREE.MeshBasicMaterial({ color: "#ff9bb0", transparent: true, opacity: 0.85 });
+  p.cheeks = [-1, 1].map((sd) => { const c = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), cheekM); c.scale.set(1.3, 0.7, 0.3); c.position.set(sd * 0.13, 0.69, 0.5); look.add(c); return c; });
+  p.steam = [0, 1].map((i) => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 6), new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true })); m.position.set((i - 0.5) * 0.12, 0.98, 0.25); look.add(m); return m; });
+}
+function applyLook(p, type) {
+  const L = LOOK[type] || LOOK.n, fancy = type === "y" || type === "r";
+  p.face.material.color.set(L.face); p.acc.color.set(L.acc);
+  p.shell.emissive.set(type === "n" ? "#000000" : QCOL[type]); p.shell.emissiveIntensity = type === "n" ? 0 : 0.22;
+  p.eyes0.forEach((e) => (e.visible = type === "n"));
+  p.look.visible = fancy;
+  if (fancy) {
+    const y = type === "y";
+    p.eyeL.scale.setScalar(y ? 1.2 : 1); p.eyeR.scale.setScalar(y ? 0.82 : 1);
+    p.brows.forEach((b) => (b.visible = !y)); p.cheeks.forEach((c) => (c.visible = y)); p.steam.forEach((m) => (m.visible = !y));
+  }
+  p.ears.forEach((e, i) => {
+    e.rotation.copy(e.userData.r0);
+    if (type === "y") e.rotation.z += i ? -0.9 : 0.5;    // 兩邊都對，耳朵各歪一邊
+    else if (type === "r") e.rotation.x = -0.9;          // 吵架，耳朵往後壓
+  });
+}
+function tickBossDeath() {
+  const D = G.bossDeath; if (!D) return;
+  const t = elapsed - D.t0;
+  if (t < 0.25) return;
+  if (t < 0.6) { const on = Math.floor((t - 0.25) / 0.06) % 2 === 0; bossPet.shell.emissive.set(on ? "#ffffff" : "#6a35a0"); bossPet.shell.emissiveIntensity = on ? 1 : 0.22; return; }
+  const k = Math.min(1, (t - 0.6) / 0.6);
+  const sc = k < 0.25 ? 1 + 0.15 * (k / 0.25) : 1.15 * (1 - (k - 0.25) / 0.75);
+  D.g.scale.setScalar(D.base * Math.max(0.001, sc)); D.g.rotation.z = k * 1.4;
+  if (k >= 1 && !D.popped) { D.popped = true; ["#b48cff", "#ffd36b", "#ffffff"].forEach((c) => burst(D.at, c, 20, 8)); shockwave(D.at.clone().setY(0.5), "#b48cff", 8, 0.8); scene.remove(D.g); G.bossDeath = null; }
+}
+function tickPetLooks(dt) {
+  tickBossDeath();
+  for (const p of pets) {
+    if (!p.active) continue;
+    if (p.type === "r" && p.steam) p.steam.forEach((m, i) => { const k = (elapsed * 0.9 + i * 0.5) % 1; m.position.y = 0.98 + k * 0.28; m.scale.setScalar(0.6 + k); m.material.opacity = 0.9 * (1 - k); });
+    if (p.squash > 0) { p.squash -= dt; const b = p.baseS || 1, k = Math.max(0, p.squash / 0.12); p.g.scale.set(b * (1 + 0.25 * k), b * (1 - 0.2 * k), b * (1 + 0.25 * k)); }
+  }
+}
 function makeGamePet(boss = false) {
   const p = makePet("#14b89c", "#ffb347");
   p.g.traverse((o) => { if (o.isMesh) o.castShadow = false; });
   p.shell = p.g.children[0].material;
+  petFace(p);
   p.specMat = p.box.material;
   // CSS2D 用 transform 定位，泡泡的抖動動畫放在內層，才不會蓋掉位置
   const el = document.createElement("div");
@@ -3428,10 +3556,19 @@ for (let i = 0; i < 18; i++) makeGamePet();
 const bossPet = makeGamePet(true);
 const BOSS_SCALE = 6.0;
 {
-  const g = bossPet.g, horn = mat("#7a1414", { flatShading: true });
-  for (const x of [-0.13, 0.13]) { const h = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.26, 6), horn); h.position.set(x, 0.98, 0.26); h.rotation.z = -x * 2.4; g.add(h); }
-  bossPet.eyes = [-0.07, 0.07].map((x) => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), new THREE.MeshBasicMaterial({ color: "#ffe04a" })); e.position.set(x, 0.75, 0.53); g.add(e); return e; });
-  const fogTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(255,80,60,0.9)"); gr.addColorStop(1, "rgba(255,80,60,0)"); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+  const g = bossPet.g, horn = mat("#2a1840", { flatShading: true });
+  // 錯位：頭往右偏、條紋歪、角一高一低
+  g.children[2].position.x += 0.04; g.children[3].position.x += 0.04; g.children[1].rotation.y = 0.26;
+  [[-0.1, 0.34, 1.0], [0.18, 0.18, 0.93]].forEach(([x, hgt, y]) => { const h = new THREE.Mesh(new THREE.ConeGeometry(0.06, hgt, 6), horn); h.position.set(x, y, 0.26); h.rotation.z = -x * 2.4; g.add(h); });
+  const gold = mat("#ffd36b", { metalness: 0.6, roughness: 0.3, emissive: "#b8860b", emissiveIntensity: 0.4 });
+  const crown = new THREE.Group(); crown.position.set(0.05, 0.97, 0.3); crown.rotation.z = 0.28;
+  const band = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.05, 10, 1, true), gold); crown.add(band);
+  [0, 1, 3, 4].forEach((i) => { const a = (i / 5) * Math.PI * 2, c = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.08, 5), gold); c.position.set(Math.cos(a) * 0.1, 0.06, Math.sin(a) * 0.1); crown.add(c); }); // 少一角：破皇冠
+  g.add(crown);
+  const eyeW = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 10), new THREE.MeshBasicMaterial({ color: "#ffe04a" })); eyeW.scale.set(1, 1.1, 0.5); eyeW.position.set(0.07, 0.75, 0.54); g.add(eyeW);
+  const slit = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.11, 0.02), new THREE.MeshBasicMaterial({ color: "#1c0a0a" })); slit.position.set(0.07, 0.75, 0.585); g.add(slit);
+  bossPet.eyes = [eyeW];
+  const fogTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(180,140,255,0.9)"); gr.addColorStop(1, "rgba(180,140,255,0)"); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
   bossPet.fog = Array.from({ length: 7 }, (_, i) => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: fogTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.5 })); sp.scale.setScalar(0.5); sp.userData.t = i / 7; g.add(sp); return sp; });
   const ring = new THREE.Mesh(new THREE.RingGeometry(0.32, 0.42, 32), new THREE.MeshBasicMaterial({ color: "#7a1414", transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false }));
   ring.rotation.x = -Math.PI / 2; ring.position.y = 0.02; g.add(ring); bossPet.shadowRing = ring;
@@ -3449,12 +3586,12 @@ function tickBossHud() {
   sound.setMode?.(on ? (b.rage ? "rage" : "boss") : "normal");
   if (!on) return;
   bossBarEl.querySelector(".hp i").style.width = `${(Math.max(0, b.hp) / b.maxHp) * 100}%`;
-  const d = b.state === "walk" ? 1 - b.u : 0;
+  const d = b.state === "walk" || b.state === "roam" ? 1 - b.u : 0;
   bossBarEl.querySelector(".dist i").style.width = `${d * 100}%`;
   bossBarEl.classList.toggle("near", d > 0.7);
   document.documentElement.style.setProperty("--vig-s", `${1.6 - d * 1.2}s`);
   document.documentElement.style.setProperty("--vig-o", `${0.2 + d * 0.5}`);
-  if (d > 0.7 && !b.nearSaid) { b.nearSaid = true; banner("再 3 步就上岸！", "全員集火！", true, 2); sound.alarm(); }
+  if (d > 0.7 && !b.nearSaid) { b.nearSaid = true; sound.alarm(); }
   if (d < 0.5) b.nearSaid = false;
 }
 // 開始畫面的小怪大頭照：直接拍遊戲裡的 3D 模型
@@ -3468,15 +3605,15 @@ function tickBossHud() {
   const shot = (obj, y, dist, id) => {
     const c = obj.clone(true);
     const drop = []; c.traverse((o) => { if (o.isCSS2DObject || o.isSprite) drop.push(o); }); drop.forEach((o) => o.removeFromParent());
-    c.position.set(0, 0, 0); c.rotation.set(0, -0.5, 0); c.scale.setScalar(1); c.visible = true;
-    as.add(c); cam.position.set(0.9, y + 0.25, dist); cam.lookAt(0, y, 0); ar.render(as, cam); as.remove(c);
+    c.position.set(0, 0, 0); c.rotation.set(0, 0.45, 0); c.scale.setScalar(1); c.visible = true;
+    as.add(c); cam.position.set(0.25, y + 0.2, dist); cam.lookAt(0, y, 0); ar.render(as, cam); as.remove(c);
     const img = document.getElementById(id); if (img) img.src = ar.domElement.toDataURL("image/png");
   };
-  const tint = (pet, color) => { const g = pet.g.clone(true); g.traverse((o) => { if (o.isMesh && o.material === pet.shell) { o.material = pet.shell.clone(); o.material.color.set(color); } }); return g; };
+  const dress = (pet, type) => { pet.shell.color.set(QCOL[type]); applyLook(pet, type); pet.box.visible = false; return pet.g; };
   const y = makeGamePet(), r = makeGamePet();
-  shot(tint(y, QCOL.y), 0.55, 2.3, "lgY");
-  shot(tint(r, QCOL.r), 0.55, 2.3, "lgR");
-  const b = tint(bossPet, "#ef5b3c"); shot(b, 0.6, 2.4, "lgB");
+  shot(dress(y, "y"), 0.62, 2.0, "lgY");
+  shot(dress(r, "r"), 0.62, 2.0, "lgR");
+  shot(dress(bossPet, "boss"), 0.7, 2.3, "lgB");
   [y, r].forEach((p) => { pets.splice(pets.indexOf(p), 1); scene.remove(p.g); });
   ar.dispose();
 }
@@ -3484,12 +3621,13 @@ function tickBossLook(dt) {
   const b = bossPet; if (!b.active) return;
   const rage = b.rage, t = elapsed;
   b.eyes.forEach((e) => (e.material.color.setHSL(rage ? (Math.sin(t * 20) > 0 ? 0 : 0.15) : 0.14, 1, 0.55 + Math.sin(t * 6) * 0.1)));
-  b.fog.forEach((f) => { f.userData.t = (f.userData.t + dt * (rage ? 0.7 : 0.35)) % 1; const k = f.userData.t; f.position.set(Math.sin(k * 9 + f.id) * 0.25, 0.4 + k * 0.9, -0.15); f.scale.setScalar((rage ? 0.8 : 0.5) * (0.6 + k)); f.material.opacity = (rage ? 0.75 : 0.45) * (1 - k); });
+  b.eyes[0].scale.y = 1.1 * (Math.sin(t * 0.9) > 0.97 ? 0.15 : 1); // 偶爾眨眼
+  b.fog.forEach((f) => { f.material.color.set(rage ? "#ff6a6a" : "#ffffff"); f.userData.t = (f.userData.t + dt * (rage ? 0.7 : 0.35)) % 1; const k = f.userData.t; f.position.set(Math.sin(k * 9 + f.id) * 0.25, 0.4 + k * 0.9, -0.15); f.scale.setScalar((rage ? 0.8 : 0.5) * (0.6 + k)); f.material.opacity = (rage ? 0.75 : 0.45) * (1 - k); });
   if (rage) b.shell.emissive.set(Math.sin(t * 16) > 0 ? "#ff2a2a" : "#ffffff"), (b.shell.emissiveIntensity = 0.35);
   // 台詞間歇閃現
   b.q.classList.toggle("off", (t % 2.6) > 1.2);
   // 腳步震動
-  if (b.state === "walk") { b.stepT = (b.stepT || 0) - dt; if (b.stepT <= 0) { b.stepT = rage ? 0.5 : 0.8; G.shake = Math.min(0.25, G.shake + 0.12); sound.thump?.(); shockwave(b.g.position, "#7a1414", 2.4, 0.4); b.shadowRing.scale.setScalar(1.3); } b.shadowRing.scale.lerp(V3(1, 1, 1), 0.15); }
+  if (b.state === "walk" || (b.state === "roam" && b.t > 0)) { b.stepT = (b.stepT || 0) - dt; if (b.stepT <= 0) { b.stepT = rage ? 0.5 : 0.8; G.shake = Math.min(0.25, G.shake + 0.12); sound.thump?.(); shockwave(b.g.position, "#7a1414", 2.4, 0.4); b.shadowRing.scale.setScalar(1.3); } b.shadowRing.scale.lerp(V3(1, 1, 1), 0.15); }
 }
 
 const LANE_IDS = ["jc", "richard", "raymond", "ccza", "ben"];
@@ -3497,7 +3635,7 @@ const lanes = LANE_IDS.map((id) => {
   const br = bridgeById["s-" + id];
   const el = document.createElement("div");
   el.className = "stall off";
-  el.textContent = "停工・等回覆";
+  el.textContent = "⏸";
   const o = new CSS2DObject(el);
   o.position.copy(br.curve.getPointAt(0)).add(V3(0, 3.4, 0));
   scene.add(o);
@@ -3511,17 +3649,28 @@ const lanes = LANE_IDS.map((id) => {
   return { id, br, stall: 0, el, o, mark: 0, band, jam: [], fire: 0, warnRing };
 });
 const laneById = Object.fromEntries(lanes.map((l) => [l.id, l]));
+const HUB = lanes.reduce((a, l) => a.add(l.br.curve.getPointAt(1)), V3()).multiplyScalar(1 / lanes.length);
+const LANE_RING = [...lanes].sort((a, b) => { const A = a.br.curve.getPointAt(0), B = b.br.curve.getPointAt(0); return Math.atan2(A.z - HUB.z, A.x - HUB.x) - Math.atan2(B.z - HUB.z, B.x - HUB.x); });
+const ROAM_U = 0.55; // 走到隔壁島的橋中段再往島上衝
+function bossRoam(p, L) {
+  const next = LANE_RING[(LANE_RING.indexOf(L) + 1) % LANE_RING.length];
+  p.state = "roam"; p.t = -0.35; p.next = next; p.u = ROAM_U; p.warned = false; p.q.classList.remove("near");
+  p.from = L.br.curve.getPointAt(0).clone(); p.to = next.br.curve.getPointAt(ROAM_U).clone();
+  p.dur = Math.max(2.2, p.from.distanceTo(p.to) / 7);
+}
 
 function paintPet(p) {
   const q = p.type !== "n";
   p.shell.color.set(QCOL[p.type]);
+  applyLook(p, p.type);
   p.box.visible = !q;
   p.box.material = p.gold ? GOLD : p.specMat;
   p.bub.visible = q;
   p.q.className = "qb" + (p.type === "r" ? " r" : "") + (p.type === "boss" ? " boss" : "") + (q ? "" : " off");
   p.q.innerHTML = p.type === "boss" ? `${BOSS_LINES[G.bossLine = ((G.bossLine ?? -1) + 1) % BOSS_LINES.length]}` : p.type === "r" ? "!" : "?";
   if (p.type === "boss") p.el.style.setProperty("--hp", `${(Math.max(0, p.hp) / p.maxHp) * 100}%`);
-  p.g.scale.setScalar(p.type === "boss" ? BOSS_SCALE : p.type === "r" ? 1.95 : p.type === "y" ? 1.7 : 1.35);
+  p.baseS = p.type === "boss" ? BOSS_SCALE : p.type === "r" ? 1.95 : p.type === "y" ? 1.7 : 1.35;
+  p.g.scale.setScalar(p.baseS);
 }
 function spawn(type, lane, at = null) {
   const p = type === "boss" ? bossPet : pets.find((x) => !x.active && !x.boss);
@@ -3550,7 +3699,7 @@ function statusTag(p, label, color) {
   clearTimeout(p._stT); p._stT = setTimeout(() => { if (!(p.stun > 0)) p.st.classList.add("off"); }, 1500);
 }
 const RAGE_LINES = ["我只改一點點", "下週一一定要上！"];
-const BOSS_LINES = ["到底要做什麼？", "AI 弄一下很快吧？", "這個很簡單吧？", "下週一能上嗎？", "跟上次講的不一樣", "我只改一點點"];
+const BOSS_LINES = ["到底要做什麼？", "AI 弄一下很快吧？", "這個很簡單吧？", "下週一能上嗎？", "跟上次講的不一樣", "這個不是改一行就好？"];
 setInterval(() => { const b = G.boss; if (b && b.active && b.type === "boss") { const L = b.rage ? RAGE_LINES : BOSS_LINES; G.bossLine = ((G.bossLine ?? 0) + 1) % L.length; b.q.textContent = L[G.bossLine]; } }, 2600);
 function setStun(p, sec, color, label) {
   p.stun = sec; p.stunC = color;
@@ -3597,7 +3746,7 @@ function shockwave(pos, color, r = 4, dur = 0.6) {
   const w = rings.find((x) => x.t >= 1) || rings[0];
   w.t = 0; w.r = r; w.dur = dur; w.m.visible = true; w.m.material.color.set(color); w.m.position.copy(pos).setY(pos.y + 0.15);
 }
-const floats = Array.from({ length: MOBILE ? 4 : 10 }, () => {
+const floats = Array.from({ length: MOBILE ? 3 : 8 }, () => {
   const el = document.createElement("div");
   el.className = "ftx off";
   const o = new CSS2DObject(el);
@@ -3606,7 +3755,10 @@ const floats = Array.from({ length: MOBILE ? 4 : 10 }, () => {
   return { el, o, t: 1, y: 0 };
 });
 function floatText(pos, text, cls = "") {
+  const same = !text.startsWith("-") && floats.find((x) => x.t < 0.7 && x.base === text);
+  if (same) { same.n++; same.el.textContent = `${text} ×${same.n}`; same.t = Math.min(same.t, 0.2); same.el.classList.remove("off"); return; }
   const f = floats.find((x) => x.t >= 1) || floats.reduce((a, b) => (a.t > b.t ? a : b));
+  f.base = text; f.n = 1;
   f.el.className = `ftx ${cls}`;
   f.el.textContent = text;
   f.o.position.copy(pos); f.y = pos.y; f.t = 0; f.o.visible = true;
@@ -3627,7 +3779,7 @@ function addPoints(n) {
   if (n > 0 && !G.bossDown && G.points + n > cap) {
     G.cannon = (G.cannon || 0) + (G.points + n - cap);
     if (!G.boss) { if (G.cannon > 9) { addXP(Math.floor((G.cannon - 9) / 3)); G.cannon = 9; } } // 魔王來之前最多存 3 發，多的換成共識
-    if (G.boss && G.cannon >= 3 && G.t - (G.cannonT ?? -9) >= 1) { G.cannon -= 3; G.cannonT = G.t; const shots = 1; for (let i = 0; i < shots; i++) setTimeout(() => G.boss && hit(G.boss, 1, null), i * 120); emitSpec(YARD.clone().add(V3(0, 5, 0)), G.boss.g.position.clone().add(V3(0, 2, 0)), 0.6); floatText(YARD.clone().add(V3(0, 7, 0)), "船砲：這版先 freeze！", "gold"); }
+    if (G.boss && G.cannon >= 3 && G.t - (G.cannonT ?? -9) >= 1) { G.cannon -= 3; G.cannonT = G.t; const shots = 1; for (let i = 0; i < shots; i++) setTimeout(() => G.boss && hit(G.boss, 1, null), i * 120); emitSpec(YARD.clone().add(V3(0, 5, 0)), G.boss.g.position.clone().add(V3(0, 2, 0)), 0.6); burst(YARD.clone().add(V3(0, 5, 0)), "#ffb347", 10, 4); G.shake = Math.max(G.shake, 0.12); if (!G.cannonSaid) { G.cannonSaid = true; floatText(YARD.clone().add(V3(0, 7, 0)), "船砲！", "gold"); } }
   }
   G.points = THREE.MathUtils.clamp(G.points + n, 0, cap);
   syncBricks();
@@ -3636,10 +3788,60 @@ function addPoints(n) {
   if (n > 0 && ms > G.milestone && ms < 4) {
     G.milestone = ms; G.happy = 1.4; sound.sparkle();
     MS_DECOS[ms].forEach((n) => decoQ.push(decoByName(n)));
-    banner(`AllWill 號完成 ${ms * 25}%・＋${MS_DECOS[ms].join("・")}`, ["Coomy 把三個月的東西，一個月到一個半月交付", "Richard 讓只剩一個月 Runway 的公司，兩個月轉虧為盈", "水球潘的社群，一年長到 6,000 人以上"][ms - 1], false, 3.4);
-    hud.ship.classList.remove("flash"); void hud.ship.offsetWidth; hud.ship.classList.add("flash");
+    shipToast(`${ms * 25}%`, ms);
   }
   return G.points - before;
+}
+// 里程碑只在進度條下方亮一顆小膠囊，不擋戰場
+const shipToastEl = document.getElementById("shipToast");
+let shipToastT = 0;
+function shipToast(text, ms) {
+  shipToastEl.textContent = text; shipToastEl.classList.add("on"); shipToastT = 1.2;
+  const dot = hud.ship.querySelectorAll(".bar u")[ms - 1];
+  if (dot) { dot.classList.remove("on"); void dot.offsetWidth; dot.classList.add("on"); }
+}
+function bumpShip() { hud.ship.classList.remove("bump"); void hud.ship.offsetWidth; hud.ship.classList.add("bump"); }
+// 事件：同事、老闆、客戶傳來的訊息（一次一則，至少隔 10 秒）
+const EV_WHO = { boss: ["👔", "老闆"], pm: ["📋", "PM"], mkt: ["📣", "行銷"], sales: ["💼", "業務"], fin: ["💰", "財務"], client: ["🧑‍💼", "客戶"], mate: ["🙋", "同事"], allwill: ["🤖", "AllWill"] };
+const notifEl = document.getElementById("notif");
+function notify(who, ch, text, opt = {}) {
+  if (!G.on || G.demo) return;
+  const e = { who, ch, text, lanes: opt.lanes || [], sec: opt.sec || 3, force: !!opt.force };
+  if (e.force) G.notifQ.unshift(e); else G.notifQ = [e];
+}
+function showNotif(e) {
+  const [ic, name] = EV_WHO[e.who] || EV_WHO.mate;
+  notifEl.querySelector("i").textContent = ic;
+  notifEl.querySelector("small").textContent = `${e.ch}・${name}`;
+  notifEl.querySelector("b").textContent = e.text;
+  notifEl.classList.remove("on"); void notifEl.offsetWidth; notifEl.classList.add("on");
+  G.notifT = e.sec; G.notifGap = e.force ? e.sec + 0.2 : 5; if (!e.force) G.notifN++;
+  e.lanes.forEach((id) => { const L = laneById[id]; if (L) L.evT = 1.6; });
+  sound.pop?.();
+}
+function tickNotif(dt) {
+  if (G.bossAcc > 0 && elapsed - (G.bossAccT || 0) > 0.45) { if (G.boss) floatText(G.boss.g.position.clone().add(V3((rand() - 0.5) * 2, 5.5, 0)), `-${Math.max(1, Math.round(G.bossAcc))}`, G.bossAcc >= 5 ? "bad big" : "bad"); G.bossAcc = 0; G.bossAccT = elapsed; }
+  if (G.notifT > 0) { G.notifT -= dt; if (G.notifT <= 0) notifEl.classList.remove("on"); }
+  G.notifGap -= dt;
+  if (G.notifQ.length && G.notifGap <= 0 && !G.paused && !G.cine) { const e = G.notifQ.shift(); if (e.force || G.notifN < 9) showNotif(e); }
+}
+function planOpening() {
+  notify("boss", "#general", "即日起全公司 AI native，每人一個 Agent，產能 ×10。", { force: true, sec: 2 });
+  G.notifQ.push({ who: "pm", ch: "#general", text: "所以 Spec 也 ×10……誰來對？", lanes: [], sec: 1.9, force: true });
+  G.notifQ.push({ who: "allwill", ch: "#general", text: "我來對。你幫我盯著。", lanes: [], sec: 1.9, force: true });
+  G.notifGap = 0.6;
+}
+// 解掉一隻：👍 飛進共識條
+const thumbs = Array.from({ length: MOBILE ? 4 : 8 }, () => { const el = document.createElement("span"); el.className = "thumb"; el.textContent = "👍"; el.style.opacity = "0"; document.body.appendChild(el); return { el, busy: 0 }; });
+function thumbFly(pos) {
+  const t = thumbs.find((x) => x.busy < elapsed); if (!t) return;
+  const v = pos.clone().project(camera); if (v.z > 1) return;
+  const x0 = (v.x * 0.5 + 0.5) * innerWidth, y0 = (-v.y * 0.5 + 0.5) * innerHeight;
+  const r = document.querySelector("#hXp .bar").getBoundingClientRect();
+  const el = t.el; t.busy = elapsed + 0.7;
+  el.style.transition = "none"; el.style.opacity = "1"; el.style.transform = `translate(${x0 - 9}px, ${y0 - 12}px) scale(1.2)`; void el.offsetWidth;
+  el.style.transition = ""; el.style.transform = `translate(${r.left + r.width * Math.min(0.95, (G.xp - (G.xpIdx ? XP_TH[G.xpIdx - 1] : 0)) / ((XP_TH[G.xpIdx] ?? 1) - (G.xpIdx ? XP_TH[G.xpIdx - 1] : 0))) - 9}px, ${r.top - 8}px) scale(0.7)`;
+  setTimeout(() => { el.style.opacity = "0"; const b = document.getElementById("hXp"); b.classList.remove("gain"); void b.offsetWidth; b.classList.add("gain"); }, 520);
 }
 function syncBricks() {
   const want = Math.floor((G.points / G.goal) * bricks.length);
@@ -3683,7 +3885,16 @@ const INTRO = {
   ccza: { at: 44, who: "ccza・主力工程師", bg: "AllWill 背後的主力工程師。大 I 人，喜歡在海邊遠端工作。", how: "問題最多的那條橋，整條一起解掉", tag: ["Async 一次回完"] },
   ben: { at: 53, who: "ben・導入", bg: "在客戶端帶導入的人，也是話劇社的。剛串門子回來。", how: "全場停下來看戲，英雄傷害加倍", tag: ["導入現場 Demo"] },
 };
-const heroPos = (h) => h.obj().getWorldPosition(V3()).add(V3(0, h.hy, 0));
+const HERO_K = () => (document.body.classList.contains("playing-game") ? (portrait() ? 1.6 : 1.4) : 1);
+const heroPos = (h) => h.obj().getWorldPosition(V3()).add(V3(0, h.hy * HERO_K(), 0));
+// 出手曲線：0–0.1 秒蓄力壓扁、0.1–0.16 往前伸、之後彈回
+function kickShape(t) {
+  if (t == null || t >= 0.4) return [1, 1];
+  if (t < 0) return [1.08, 0.86]; // 蓄力中
+  if (t < 0.1) { const k = t / 0.1; return [1 + 0.07 * k, 1 - 0.13 * k]; }
+  if (t < 0.16) return [0.93, 1.15];
+  const k = (t - 0.16) / 0.24, e = 1 - (1 - k) ** 3; return [0.93 + 0.07 * e, 1.15 - 0.15 * e];
+}
 const active = (f) => pets.filter((p) => p.active && p.type !== "n" && p.state === "walk" && (!f || f(p)));
 
 const orbs = [];
@@ -3714,6 +3925,21 @@ function kindTex(kind) {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
   return (KIND_TEX[kind] = t);
 }
+// 一般攻擊的彈頭：水滴、拳風、音符、程式碼光點、星星
+const AUTO_TEX = {};
+function autoTex(key, c) {
+  if (AUTO_TEX[key]) return AUTO_TEX[key];
+  const cv = document.createElement("canvas"); cv.width = cv.height = 96;
+  const x = cv.getContext("2d");
+  const g = x.createRadialGradient(48, 48, 4, 48, 48, 46); g.addColorStop(0, "#ffffff"); g.addColorStop(0.35, c); g.addColorStop(1, "rgba(255,255,255,0)");
+  x.fillStyle = g; x.beginPath(); x.arc(48, 48, 46, 0, Math.PI * 2); x.fill();
+  x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = "#ffffff"; x.strokeStyle = c; x.lineWidth = 6;
+  const ch = { jc: "💧", raymond: "", richard: "♪", ccza: "", ben: "★" }[key];
+  if (ch) { x.font = key === "jc" ? "42px sans-serif" : "900 46px sans-serif"; x.strokeText(ch, 48, 52); x.fillText(ch, 48, 52); }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+  return (AUTO_TEX[key] = t);
+}
+const TRAIL_N = MOBILE ? 3 : 5;
 function fireOrb(h, p, dmg, opt = {}) {
   let o = orbs.find((x) => !x.active);
   if (!o) {
@@ -3721,8 +3947,15 @@ function fireOrb(h, p, dmg, opt = {}) {
     const m = new THREE.Mesh(ORB_GEO, new THREE.MeshBasicMaterial({ color: "#ffffff" }));
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false }));
     m.visible = false; sp.visible = false; sp.renderOrder = 5; scene.add(m, sp);
-    o = { m, sp, active: false };
+    const tr = Array.from({ length: TRAIL_N }, () => { const t = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); t.visible = false; t.renderOrder = 4; scene.add(t); return t; });
+    o = { m, sp, tr, hist: [], active: false };
     orbs.push(o);
+  }
+  o.auto = !!opt.auto && !opt.kind; o.hist.length = 0; o.tr.forEach((t) => (t.visible = false));
+  if (o.auto) {
+    const tex = autoTex(h.key, h.c), sz = (opt.size || 0.8) * (portrait() ? 1.9 : 1.5) * (h.key === "raymond" ? 1.25 : 1);
+    o.tr.forEach((t, i) => { t.material.map = tex; t.material.needsUpdate = true; t.material.opacity = 0.5 * (1 - i / TRAIL_N); t.scale.setScalar(sz * (1 - (i + 1) / (TRAIL_N + 2))); });
+    o.autoSz = sz; o.autoTex = tex;
   }
   const kind = opt.kind || null;
   Object.assign(o, { active: true, t: 0, dur: opt.dur || 0.4, p, gen: p.gen, dmg, h, kind, delay: opt.delay || 0, arc: opt.arc ?? 1.8, sky: !!opt.sky });
@@ -3731,27 +3964,42 @@ function fireOrb(h, p, dmg, opt = {}) {
   o.m.material.color.set(h.c);
   o.m.scale.setScalar(kind ? opt.size || 1 : 0.7);
   if (kind) { o.sp.material.map = kindTex(kind); o.sp.material.needsUpdate = true; o.sp.scale.setScalar((kind === "heart" ? 0.9 : 1.6) * (portrait() ? (kind === "heart" ? 1.6 : 1.6) : 1)); }
-  o.m.visible = !kind && o.delay <= 0; // 自動攻擊：英雄色的小球
-  o.sp.visible = !!kind && o.delay <= 0;
+  else if (o.auto) { o.sp.material.map = o.autoTex; o.sp.material.needsUpdate = true; o.sp.scale.setScalar(o.autoSz); }
+  o.m.visible = !kind && !o.auto && o.delay <= 0;
+  o.sp.visible = (!!kind || o.auto) && o.delay <= 0;
   p.incoming += dmg;
 }
 function tickOrbs(dt) {
   for (const o of orbs) {
     if (!o.active) continue;
-    if (o.delay > 0) { o.delay -= dt; if (o.delay > 0) continue; o.m.visible = !o.kind; o.sp.visible = !!o.kind; if (!o.fromFixed) o.from = o.sky ? o.p.g.position.clone().add(V3(0, 10, 0)) : heroPos(o.h); }
+    if (o.delay > 0) {
+      o.delay -= dt; if (o.delay > 0) continue;
+      o.m.visible = !o.kind && !o.auto; o.sp.visible = !!o.kind || o.auto;
+      if (!o.fromFixed) o.from = o.sky ? o.p.g.position.clone().add(V3(0, 10, 0)) : heroPos(o.h);
+      if (o.auto) { burst(o.from, o.h.c, MOBILE ? 3 : 5, 2.5); if (o.h.key === "ccza") pierceBeam(o.from.clone().add(V3(0, -1, 0)), o.p.g.position.clone(), o.h.c, 2.2); } // 槍口閃光；ccza 直接一道光束
+    }
     o.t += dt / o.dur;
     const k = Math.min(o.t, 1);
     const to = o.p.g.position.clone().add(V3(0, 0.9, 0));
-    const obj = o.kind ? o.sp : o.m;
-    obj.position.lerpVectors(o.from, to, o.sky ? k * k : k).add(V3(0, o.sky ? 0 : Math.sin(k * Math.PI) * o.arc, 0));
+    const obj = o.kind || o.auto ? o.sp : o.m;
+    obj.position.lerpVectors(o.from, to, o.sky ? k * k : k).add(V3(0, o.sky ? 0 : Math.sin(k * Math.PI) * (o.auto ? (o.h.key === "raymond" || o.h.key === "ccza" ? 0.3 : 1.2) : o.arc), 0));
+    if (o.auto && o.h.key === "richard") { const d = to.clone().sub(o.from); obj.position.add(V3(-d.z, 0, d.x).normalize().multiplyScalar(Math.sin(k * Math.PI * 3) * 0.7 * (1 - k))); } // 音符走波浪
+    if (o.auto) {
+      o.hist.unshift(obj.position.clone()); if (o.hist.length > TRAIL_N * 2) o.hist.length = TRAIL_N * 2;
+      o.tr.forEach((t, i) => { const hp = o.hist[(i + 1) * 2 - 1]; t.visible = !!hp; if (hp) t.position.copy(hp); });
+    }
     if (o.kind === "hat") o.sp.material.rotation += dt * 14;
     if (o.kind && !G.lowFx && rand() < (MOBILE ? 0.4 : 0.8)) burst(obj.position, o.h.c, 1, 0.8); // 大招拖尾
     if (o.t >= 1) {
-      o.active = false; o.m.visible = false; o.sp.visible = false;
+      o.active = false; o.m.visible = false; o.sp.visible = false; o.tr.forEach((t) => (t.visible = false));
+      if (o.auto && o.p.gen === o.gen) { shockwave(o.p.g.position, o.h.c, 1.5, 0.28); burst(to, o.h.c, MOBILE ? 4 : 7, 3.5); } // 命中：英雄色的衝擊圈
       if (o.p.gen !== o.gen) continue;
       o.p.incoming = Math.max(0, o.p.incoming - o.dmg);
       if (o.p.active && o.p.type !== "n") {
         hit(o.p, o.dmg, o.h, o.kind);
+        if (o.kind === "fist") { shockwave(o.p.g.position, o.h.c, 3.4, 0.4); burst(to, "#ffffff", 12, 6); G.shake = Math.max(G.shake, 0.18); }
+        else if (o.kind === "hat") { shockwave(o.p.g.position, "#ffffff", 2.6, 0.35); burst(o.p.g.position.clone().setY(0.6), "#e8d1a0", 8, 3.5); }
+        else if (o.kind === "code") { pierceBeam(o.p.g.position.clone().add(V3(0, 9, 0)), o.p.g.position.clone().add(V3(0, -1, 0)), o.h.c, 3); shockwave(o.p.g.position, o.h.c, 2.4, 0.35); }
         if (o.h.key === "raymond" && !o.kind && has("pierce")) {
           const near = active((q) => q !== o.p && q.lane === o.p.lane).sort((a, c) => Math.abs(a.u - o.p.u) - Math.abs(c.u - o.p.u)).slice(0, [0, 2, 4, 99][lv("pierce")]);
           near.forEach((q) => pierceBeam(o.p.g.position, q.g.position, o.h.c));
@@ -3787,7 +4035,7 @@ function bossMult(h) {
   return m;
 }
 function hit(p, dmg, h, kind = null) {
-  if (p.type === "boss") { dmg *= bossMult(h); dmg = Math.min(dmg, p.maxHp * 0.06); } // 單次最多扣 6%
+  if (p.type === "boss") { dmg *= bossMult(h); dmg = Math.min(dmg, p.maxHp * 0.06); G.bossAcc = (G.bossAcc || 0) + dmg; } // 單次最多扣 6%
   else if (p.type === "r" && h?.key === "raymond") dmg *= 2;
   if (G.double > 0) dmg *= 2;
   if (p.stun > 0 && has("d_rehearse")) dmg *= 2;
@@ -3795,6 +4043,7 @@ function hit(p, dmg, h, kind = null) {
   if (h?.key === "richard" && has("lang")) { p.markT = 4; statusTag(p, "🎯 翻成人話", "#e08a3c"); }
   if (has("lock")) { p.slowT = 3; if (!(p.markT > 0)) statusTag(p, "❄ Code Freeze", "#8a5ac6"); }
   p.hp -= dmg; p.flash = 0.14;
+  if (p.type !== "boss" || dmg >= 1) p.squash = 0.12; // 被打到壓扁回彈
   const at = p.g.position.clone().add(V3(0, 1, 0));
   burst(at, p.type === "y" ? "#f5c43a" : "#ef5b3c", 5, 3);
   if (kind) { popAvatar(at.clone().setY(at.y + 2), kind, h); burst(at, h.c, 10, 5); shockwave(p.g.position, h.c, 2.6, 0.45); }
@@ -3803,9 +4052,9 @@ function hit(p, dmg, h, kind = null) {
     G.lastBossHp = Math.max(0, p.hp);
     if ((p.hp <= p.maxHp / 3 || G.t - (G.bossFirstT ?? G.t) >= 20) && !p.rage) { p.rage = true; p.speed *= 1.3; G.hitstop = 0.3; G.shake = 0.5; showTitleCard("RAGE", "狂暴！", "牠開始說「我只改一點點」"); flashRed(); sound.roar?.(); }
     p.el.style.setProperty("--hp", `${(Math.max(0, p.hp) / p.maxHp) * 100}%`);
-    G.shake = Math.max(G.shake, 0.12);
+    if (dmg >= 1) G.shake = Math.max(G.shake, 0.08); // 只有大傷害才震
     if (!G.bossHalf && p.hp <= p.maxHp / 2 && p.hp > 0) { // 魔王半血：吐出 4 個衝突
-      G.bossHalf = true; banner("魔王吐出 4 個衝突！", "需求拆不清了", true, 2.4);
+      G.bossHalf = true; notify("client", "LINE", "那可以順便加一個小功能嗎？", { force: true, sec: 2.4 });
       G.bossPickHeld = false; G.pendingPicks = Math.max(1, G.pendingPicks); setTimeout(maybeOpenPicker, 900); // 魔王半血：合併挑一次
       for (let i = 0; i < 4; i++) G.waveQ.push({ at: G.t + i * 0.3, type: "r", lane: LANE_IDS[Math.floor(rand() * LANE_IDS.length)] });
     }
@@ -3817,31 +4066,32 @@ function hit(p, dmg, h, kind = null) {
   if (p.type === "r" && has("split")) {
     // 只是步驟多了點：大問題拆成兩個小問題
     G.split++;
-    if (lv("split") >= 3) { floatText(at.clone().setY(at.y + 1.6), "步驟拆完了！", "gold"); p.st.classList.add("off"); G.solved += 2; addXP(2); return solve(p, h, kind); }
+    if (lv("split") >= 3) { p.st.classList.add("off"); G.solved += 2; addXP(2); return solve(p, h, kind); }
     p.type = "y"; p.hp = 1; paintPet(p);
     const q = spawn("y", p.lane, Math.min(1, p.u + 0.06));
     if (q) { q.side = -p.side; if (lv("split") >= 2) q.speed *= 0.7; }
     if (lv("split") >= 2) p.speed *= 0.7;
-    floatText(at.clone().setY(at.y + 1.6), "拆成兩個小矛盾");
     sound.pop();
   }
 }
 function credit(h, n = 1) { if (h) { const k = h.credit || h.key; G.uses[k] = (G.uses[k] || 0) + n; } }
 function solve(p, h, kind = null) {
   addXP(p.type === "r" ? 3 : 1);
+  if (G.on && !G.demo) thumbFly(p.g.position.clone().add(V3(0, 1.6, 0)));
   if (has("ssot") && rand() < [0, 0.3, 0.45, 0.6][lv("ssot")]) { // 單一事實來源：連鎖打下一個
     const next = active((q) => q !== p).sort((a, c) => a.g.position.distanceTo(p.g.position) - c.g.position.distanceTo(p.g.position))[0];
     if (next) fireOrb(heroByKey.jc, next, 1, { kind: "heart", from: p.g.position.clone().add(V3(0, 1.4, 0)), dur: 0.35, arc: 1.2 });
   }
-  if (has("feedback") && ++G.fbCount >= [0, 10, 8, 6][lv("feedback")]) { G.fbCount = 0; addPoints(1); floatText(p.g.position.clone().add(V3(0, 3, 0)), "客戶回饋 +1 磚", "gold"); if (G.boss) hit(G.boss, 1, null); }
+  if (has("feedback") && ++G.fbCount >= [0, 10, 8, 6][lv("feedback")]) { G.fbCount = 0; addPoints(1); floatText(p.g.position.clone().add(V3(0, 3, 0)), "🧱 +1", "gold"); if (G.boss) hit(G.boss, 1, null); }
   G.solved++; G.combo++; G.comboT = 3.2; G.maxCombo = Math.max(G.maxCombo, G.combo); syncCombo(true);
+  if (G.combo % 5 === 0) { G.hitstop = Math.max(G.hitstop || 0, 0.08); shockwave(p.g.position, "#ffd36b", 3.5, 0.5); burst(p.g.position.clone().add(V3(0, 1.2, 0)), "#ffd36b", 10, 5); } // 連擊 5 的倍數加料
   if (G.combo % 5 === 0) addGoldShown(3); // 連擊每 5，船殼多 3 塊金磚
   if (G.double > 0) G.stageCombo = Math.max(G.stageCombo, G.combo);
-  G.hitstop = 0.06; G.shake = Math.max(G.shake, 0.1);
+  if ((p.type === "r" || kind) && elapsed - (G.hsT || -9) > 0.5) { G.hsT = elapsed; G.hitstop = Math.max(G.hitstop || 0, 0.05); G.shake = Math.max(G.shake, 0.12); }
   const at = p.g.position.clone().add(V3(0, 1.6, 0));
   burst(at, "#ffffff", 10, 5); burst(at, "#ffd36b", 6, 4);
   shockwave(p.g.position, "#ffd36b", 2.2, 0.45);
-  if (!kind) floatText(at.clone().setY(at.y + 1), G.combo >= 3 ? `對齊了！×${G.combo}` : "對齊了！", "gold");
+  if (G.combo === 10 && !G.evSaid.combo) { G.evSaid.combo = true; notify("client", "LINE", "這版可以 👍"); }
   if (p.state === "jam") { const L = p.lane, i = L.jam.indexOf(p); if (i >= 0) L.jam.splice(i, 1); retire(p); credit(h); if (elapsed - G.lastSfx > 0.09) { sound.answer(); G.lastSfx = elapsed; } return; }
   p.type = "n"; p.gold = true; p.speed = 1.6; p.stun = 0; paintPet(p);
   credit(h);
@@ -3855,10 +4105,13 @@ function bossSolved(p, h) {
   shockwave(p.g.position, "#ffd36b", 7, 0.9);
   G.shake = 0.6; G.hitstop = 0.25;
   floatText(at.clone().setY(at.y + 1.5), "對齊了。這次真的就這樣。", "gold big");
+  // 倒下演出：頓格 → 閃白三次 → 翻倒縮小 → 爆開
+  const corpse = p.g.clone(true); const drop = []; corpse.traverse((o) => { if (o.isCSS2DObject) drop.push(o); }); drop.forEach((o) => o.removeFromParent());
+  scene.add(corpse); G.bossDeath = { g: corpse, t0: elapsed, base: corpse.scale.x, at: at.clone(), popped: false };
   retire(p);
   G.bossDown = true;
   sound.sparkle();
-  banner("魔王解掉了！", "全員把最後幾塊磚丟上去");
+  setTimeout(() => notify("boss", "#general", "就這樣，上線。", { force: true, sec: 2.6 }), 1100);
   // 六位英雄一起把 Spec 丟進船塢
   HEROES.forEach((hh, i) => emitSpec(heroPos(hh), nextBrickPos().add(V3((i - 2.5) * 0.8, 1, 0)), 1.4 + i * 0.08));
   G.winAt = G.t + 1.7;
@@ -3875,50 +4128,52 @@ function arrive(p) {
     p.q.textContent = "???"; p.q.classList.remove("near");
     sound.thump?.();
     G.missed++; G.combo = 0; syncCombo(); onb("miss", null, "", "沒人拍板，島就停工"); flashRed();
-    if (!G.explainY) { G.explainY = true; banner("漏 1 隻矛盾 → 堵在島門口", "英雄坐下 4 秒，Spec 送不出去；疊到 4 隻就停工", true, 3.2, true); }
+
     heroSit(L, 4, ["到底誰要回？", "這題上次不是講過？"][L.jam.length % 2]);
-    floatText(at.clone().setY(at.y + 2.6 + L.jam.length * 0.9), `矛盾塞車中 ×${L.jam.length}`, "bad");
+
     if (L.jam.length >= 4) { // 疊滿：開會釐清，停工 8 秒
-      L.jam.forEach((q) => retire(q)); L.jam.length = 0; L.stall = Math.max(L.stall, 8); addPoints(-4);
-      G.shake = 0.4; bannerOnce("jam", "開會釐清中…", "矛盾疊太高，這座島停工 8 秒", true, 2.4, at.clone().setY(at.y + 3));
+      L.jam.forEach((q, i) => { q.state = "fall"; q.ft = 0; q.vel = V3((rand() - 0.5) * 4, 3 + i * 0.6, (rand() - 0.5) * 4); }); L.jam.length = 0; L.stall = Math.max(L.stall, 8); addPoints(-4);
+      G.shake = 0.4; if (!G.evSaid.jam) { G.evSaid.jam = true; notify("mate", "#dev", "要不要開個會討論一下？", { lanes: [L.id] }); }
     }
     return;
   }
-  retire(p);
+  if (!(type === "boss" && G.on && !G.demo && !G.tut && !G.tut2)) retire(p);
   if (G.demo || !G.on) return;
   if (type === "n") {
-    if (L.stall > 0 || L.jam.length) { floatText(at.clone().setY(at.y + 2.4), L.jam.length ? "門口塞住了，Spec 送不出去" : "停工中，Spec 送不出去", "bad"); return; }
+    if (L.stall > 0 || L.jam.length) { burst(at.clone().setY(at.y + 1.6), "#8a8f98", 5, 2.5); return; }
     const pts = gold ? 2 : 1;
     G.inflight++;
     emitSpec(at.clone().setY(at.y + 1.8), nextBrickPos(), 1.25, () => { G.inflight = Math.max(0, G.inflight - 1); if (G.on) addPoints(pts); });
-    if (gold) floatText(at.clone().setY(at.y + 2.6), "金色 Spec ×2", "gold");
+    if (gold) burst(at.clone().setY(at.y + 1.8), "#ffd36b", 8, 3);
     return;
   }
   if (G.tut || G.tut2) return;
   if (type !== "boss" && G.stopUsed < [0, 2, 3, 4][lv("stop")] && (G.t >= 100 || G.stopUsed < 1)) { G.stopUsed++; floatText(at.clone().setY(at.y + 2.6), "一個月止血！攔下了", "gold"); burst(at, "#e08a3c", 10, 4); return; }
   if (type !== "boss" && G.retroUsed < [0, 1, 2, 3][lv("retro")] && (G.t >= 100 || G.retroUsed < 1)) { G.retroUsed++; spawn(type, L, 0.55); floatText(at.clone().setY(at.y + 2.6), "回顧會議！再打一次", "gold"); return; }
   G.missed++; G.combo = 0; syncCombo();
-  if (type === "r" && !G.explainR) { G.explainR = true; banner("漏 1 隻衝突 → 島失火、停工、掉 6 磚", "英雄坐下、每 2 秒再掉 1 磚，直到火滅", true, 3.2, true); }
+
   onb("miss", null, "", "沒人拍板，島就停工");
   if (G.phase === 3) G.bloomMiss++;
   sound.miss();
   flashRed();
   dust(at);
-  if (type === "y") { L.stall = Math.max(L.stall, 5); addPoints(-3); heroSit(L, 4, "到底誰要回？"); G.shake = Math.max(G.shake, 0.2); floatText(at.clone().setY(at.y + 2.6), `${["已讀不回！", "這誰負責的？", "需求沒人認領，"][G.missed % 3]}-3 磚`, "bad"); }
-  else if (type === "r" && !G.firstLeak) { G.firstLeak = true; L.stall = Math.max(L.stall, 3); addPoints(-6); setFire(L); heroSit(L, 6, "兩邊都說自己對…"); G.shake = 0.3; banner("衝突漏進船塢了", "這次先停工 3 秒，挑對技能就擋得住", true, 2.8); sayB(BUB.allwill, "沒人拍板，Plan 就卡住。", 2.6); floatText(at.clone().setY(at.y + 2.6), "停工 3 秒", "bad"); }
-  else if (type === "r") { L.stall = Math.max(L.stall, 7); addPoints(-6); setFire(L); heroSit(L, 6, "兩邊都說自己對…"); G.shake = 0.45; floatText(at.clone().setY(at.y + 2.6), "衝突沒解！船掉了 6 塊磚", "bad big"); }
+  if (type === "y") { L.stall = Math.max(L.stall, 5); addPoints(-3); heroSit(L, 4, "到底誰要回？"); G.shake = Math.max(G.shake, 0.2); floatText(at.clone().setY(at.y + 2.6), "🧱 -3", "bad"); }
+  else if (type === "r" && !G.firstLeak) { G.firstLeak = true; L.stall = Math.max(L.stall, 3); addPoints(-6); setFire(L); heroSit(L, 6, "兩邊都說自己對…"); G.shake = 0.3; floatText(at.clone().setY(at.y + 2.6), "🧱 -6", "bad big"); }
+  else if (type === "r") { L.stall = Math.max(L.stall, 7); addPoints(-6); setFire(L); heroSit(L, 6, "兩邊都說自己對…"); G.shake = 0.45; floatText(at.clone().setY(at.y + 2.6), "🧱 -6", "bad big"); }
   else {
-    G.bossHp = Math.min(125, Math.max(1, G.lastBossHp ?? 125) + 12); G.bossLeaks++; // 衝島回 12 血
+    p.hp = G.bossHp = G.lastBossHp = Math.min(p.maxHp, Math.max(1, p.hp) + 12); G.bossLeaks++; // 咬一口回 12 血
+    p.el.style.setProperty("--hp", `${(p.hp / p.maxHp) * 100}%`);
     let loss = 10;
     if (has("stop")) loss = Math.round(loss / 2);           // 一個月止血：懲罰減半
     if (has("retro") && G.bossLeaks === 1) loss = 0;       // 回顧會議：第一次不扣磚
-    L.stall = 8; if (loss) addPoints(-loss); G.shake = 0.7; G.bossAt = G.t + 3;
-    floatText(at.clone().setY(at.y + 3), loss ? `魔王衝上島！船掉 ${loss} 塊磚` : "回顧會議：這次沒掉磚！", "bad big");
-    banner("魔王衝上島了！", `牠還剩 ${G.bossHp} 血，傷害有留著，再打一次`, true, 2.6);
+    L.stall = 8; if (loss) addPoints(-loss); G.shake = 0.7; bossRoam(p, L);
+    floatText(at.clone().setY(at.y + 3), loss ? `🧱 -${loss}` : "回顧會議：沒掉磚", "bad big");
   }
 }
 
 const redFlash = document.getElementById("redFlash");
+const stageDim = document.getElementById("stageDim");
+const bossDusk = document.getElementById("bossDusk");
 function flashRed() { redFlash.classList.remove("on"); void redFlash.offsetWidth; redFlash.classList.add("on"); }
 function tickPets(dt, only = null) {
   for (const p of pets) {
@@ -3933,11 +4188,30 @@ function tickPets(dt, only = null) {
       if (p.t >= 1) { p.state = "walk"; p.u = 1; p.g.rotation.x = 0; dust(p.to); }
       continue;
     }
+    if (p.state === "roam") {
+      p.t += dt / p.dur;
+      const k = THREE.MathUtils.clamp(p.t, 0, 1), e = k * k * (3 - 2 * k);
+      const dir = p.to.clone().sub(p.from);
+      p.g.position.lerpVectors(p.from, p.to, e).setY(THREE.MathUtils.lerp(p.from.y, p.to.y, e) + 0.06 + Math.abs(Math.sin(k * Math.PI * 3)) * 0.5);
+      if (p.t > 0) { p.g.rotation.y = Math.atan2(dir.x, dir.z); p.legs.forEach((l, i) => (l.rotation.x = Math.sin(elapsed * 9) * 0.6 * (i === 0 || i === 3 ? 1 : -1))); if (rand() < dt * 10) burst(p.g.position.clone().setY(0.3), "#bfe6e0", 3, 2.2); }
+      else p.g.rotation.z = Math.sin(elapsed * 30) * 0.08; // 先在島上啃一下
+      if (p.t >= 1) { p.g.rotation.z = 0; p.state = "walk"; p.lane = p.next; p.u = ROAM_U; dust(p.to); }
+      continue;
+    }
     const cv = p.lane.br.curve;
     if (p.state === "jam") {
-      const i = p.lane.jam.indexOf(p), base = cv.getPointAt(0);
-      p.g.position.set(base.x, base.y + 0.1 + i * 0.9 + Math.abs(Math.sin(elapsed * 6 + i)) * 0.08, base.z);
-      p.g.rotation.y += dt * 1.5;
+      const i = p.lane.jam.indexOf(p), base = cv.getPointAt(0), n = p.lane.jam.length;
+      const sway = Math.sin(elapsed * (3 + n)) * 0.07 * i * (n >= 3 ? 1.8 : 1); // 疊越高越晃
+      p.g.position.set(base.x + sway * i * 0.6, base.y + 0.1 + i * 0.9 + Math.abs(Math.sin(elapsed * 6 + i)) * 0.08, base.z);
+      p.g.rotation.set(0, p.g.rotation.y + dt * 1.5, sway);
+      if (n >= 3) { p.shell.emissive.set("#ff3b2f"); p.shell.emissiveIntensity = 0.25 + Math.sin(elapsed * 12) * 0.2; }
+      continue;
+    }
+    if (p.state === "fall") { // 整疊倒進海
+      p.ft += dt; p.vel.y -= 14 * dt;
+      p.g.position.addScaledVector(p.vel, dt); p.g.rotation.x += dt * 6; p.g.rotation.z += dt * 4;
+      if (p.g.position.y < 0.1 && !p.splashed) { p.splashed = true; burst(p.g.position.clone().setY(0.3), "#bfe6e0", 10, 4); shockwave(p.g.position.clone().setY(0.2), "#ffffff", 1.8, 0.4); }
+      if (p.ft > 1.1) { p.splashed = false; p.shell.emissiveIntensity = 0; p.state = "gone"; retire(p); }
       continue;
     }
     if (p.stun > 0) {
@@ -3995,10 +4269,11 @@ function tickHeroes(dt) {
     if (!t) { h.timer = 0.12; continue; }
     h.timer = h.auto * (G.t < 100 ? 1.25 : 1); // 魔王來之前英雄稍慢，前段才會有漏怪壓力
     const top = heroTopLv(h);
-    fireOrb(h, t, top >= 3 ? 2 : 1, { size: [0.6, 0.8, 1.0, 1.25][top], dur: 0.4 / (1 + [0, 0.4, 0.8, 1.5][lv("beat")] * 0.4) });
+    h.kickT = 0;
+    fireOrb(h, t, top >= 3 ? 2 : 1, { size: [0.6, 0.8, 1.0, 1.25][top], delay: 0.1, auto: true, dur: (h.key === "ccza" ? 0.14 : h.key === "raymond" ? 0.26 : 0.42) / (1 + [0, 0.4, 0.8, 1.5][lv("beat")] * 0.4) });
     if (h.key === "ben" && has("multi")) {
       const extra = active((p) => p !== t && p.u <= 0.6).sort((a, c) => a.u - c.u).slice(0, [0, 1, 3, 5][lv("multi")]);
-      extra.forEach((p, i) => fireOrb(h, p, 1, { size: 0.6, delay: 0.05 * (i + 1) }));
+      extra.forEach((p, i) => fireOrb(h, p, 1, { size: 0.6, delay: 0.1 + 0.05 * (i + 1), auto: true }));
     }
   }
 }
@@ -4020,7 +4295,7 @@ const SKILL = {
   richard: (h) => {
     const near = ["richard", "ben", "ccza"];
     const stunned = active((p) => near.includes(p.lane.id) && p.type !== "boss");
-    stunned.forEach((p) => setStun(p, 3, h.c, "♪ 跳舞中"));
+    stunned.forEach((p) => setStun(p, 3, h.c, "♪"));
     taskProgress("richard", stunned.length);
     active((p) => p.lane.id === "richard" && p.type === "y").forEach((p, i) => fireOrb(h, p, 9, { kind: "note", delay: 0.15 + i * 0.05, arc: 2.4 }));
     const at = h.obj().getWorldPosition(V3());
@@ -4039,7 +4314,7 @@ const SKILL = {
     L.mark = 1.2; G.async = { lane: L, t: 1.2 };
   },
   // ben：舞台演出，全場的 Agent 停下來看戲，這段時間英雄傷害加倍
-  ben: (h) => { active().forEach((p) => setStun(p, 3.5, h.c, "🎭 看戲中")); G.double = 3.5; G.spot = 3.5; G.stageSolves = 0; },
+  ben: (h) => { active().forEach((p) => setStun(p, 3.5, h.c, "🎭")); G.double = 3.5; G.spot = 3.5; G.stageSolves = 0; },
 };
 function cast(h) {
   const btn = hud.btn[h.key];
@@ -4075,25 +4350,25 @@ function heroPoses(dt) {
 
 // 出怪節奏：教學 → 加速 → 紅色登場 → 需求大爆發 → 魔王
 const PHASES = [
-  { until: 16, every: 1.1, y: 0.6, r: 0, b: ["AllWill 開工了！", "英雄會自動解矛盾，共識條滿了就挑技能"] },
+  { until: 16, every: 1.1, y: 0.6, r: 0 },
   { until: 26, every: 1.0, y: 0.4, r: 0 },
-  { until: 52, every: 0.68, y: 0.45, r: 0.14 },
-  { until: 100, every: 0.41, y: 0.36, r: 0.3, b: ["衝突變多了！", "挑對技能就擋得住"] },
-  { until: 132, every: 0.5, y: 0.38, r: 0.24, b: ["需求大爆發！", "Agent 吐得更快了"], danger: true },
+  { until: 52, every: 0.68, y: 0.45, r: 0.14, ev: ["fin", "#general", "砍預算 30%。人不補，用 AI。"] },
+  { until: 100, every: 0.41, y: 0.36, r: 0.3, ev: ["boss", "DM", "我看了一下……不太喜歡這種。"] },
+  { until: 132, every: 0.5, y: 0.38, r: 0.24 },
   { until: 999, every: 0.8, y: 0.34, r: 0.18 },
 ];
 const WAVES = [
-  { at: 31, lanes: ["jc", "raymond", "ccza"], seq: ["y", "y", "y", "y", "y", "y"], say: "這波很多！" },
-  { at: 38, lanes: ["richard", "ben", "ccza"], seq: ["y", "y", "y", "y", "y"], say: "又一波！三座島一起來了！" },
-  { at: 47, lanes: ["auto"], seq: ["y", "y", "r", "y", "y"], say: "這條橋塞車了！" },
-  { at: 64, lanes: ["auto"], seq: ["r", "y", "y", "r", "y", "y"], say: "這條橋又吵起來了！" },
-  { at: 82, lanes: ["auto"], seq: ["r", "y", "y", "r", "y", "y"], say: "需求又改了！" },
+  { at: 31, lanes: ["jc", "raymond", "ccza"], seq: ["y", "y", "y", "y", "y", "y"], ev: ["mkt", "#marketing", "提案在這，只有兩行：「做一個像 ChatGPT 的，要有質感。」"] },
+  { at: 38, lanes: ["richard", "ben", "ccza"], seq: ["y", "y", "y", "y", "y"], ev: ["client", "LINE", "我們下午兩點過去參觀喔～"] },
+  { at: 47, lanes: ["auto"], seq: ["y", "y", "r", "y", "y"], ev: ["client", "LINE", "你們有 bug，截圖給你。（截的是別家的）"] },
+  { at: 64, lanes: ["auto"], seq: ["r", "y", "y", "r", "y", "y"], ev: ["sales", "#sales", "我跟客戶說下週可以上了。"] },
+  { at: 82, lanes: ["auto"], seq: ["r", "y", "y", "r", "y", "y"], ev: ["pm", "#product", "需求改了，Jira 沒改。"] },
 ];
 function tickSpawn(dt) {
   const ph = PHASES.findIndex((x) => G.t < x.until);
   if (ph !== G.phase) {
     G.phase = ph; const P = PHASES[ph];
-    if (P.b) banner(P.b[0], P.b[1], P.danger);
+    if (P.ev) notify(...P.ev);
     if (P.redTut) {
       banner("紅色 ! Spec 打架了", "自動解不掉，點 Raymond", true, 3.2);
       if (!redTutDone()) G.redTut = { step: 0, t: 0, p: null };
@@ -4102,10 +4377,15 @@ function tickSpawn(dt) {
     if (P.ben && !G.benHome) benReturn();
   }
   // 前段小高潮：固定時間、固定橋，逼玩家按剛登場的英雄
+  for (const W of WAVES) if (!G.wavesWarn[W.at] && G.t >= W.at - 1.8) {
+    G.wavesWarn[W.at] = W.lanes[0] === "auto" ? LANE_IDS[Math.floor(rand() * LANE_IDS.length)] : "multi";
+    const pl = G.wavesWarn[W.at] === "multi" ? W.lanes : [G.wavesWarn[W.at]];
+    notify(...W.ev, { lanes: pl, force: true, sec: 3 }); G.rumble = 1.8; G.waveN = W.seq.length;
+  }
   for (const W of WAVES) if (!G.wavesDone[W.at] && G.t >= W.at) {
     G.wavesDone[W.at] = true;
-    sayB(BUB.allwill, W.say, 2.2);
-    const pickLane = W.lanes[0] === "auto" ? LANE_IDS[Math.floor(rand() * LANE_IDS.length)] : null;
+    const pickLane = G.wavesWarn[W.at] && G.wavesWarn[W.at] !== "multi" ? G.wavesWarn[W.at] : W.lanes[0] === "auto" ? LANE_IDS[Math.floor(rand() * LANE_IDS.length)] : null;
+    G.jaw = 0.45;
     W.seq.forEach((type, i) => G.waveQ.push({ at: G.t + i * 0.18, type, lane: pickLane || W.lanes[i % W.lanes.length] }));
   }
   for (let i = G.waveQ.length - 1; i >= 0; i--) { const q = G.waveQ[i]; if (G.t >= q.at && spawn(q.type, laneById[q.lane])) G.waveQ.splice(i, 1); }
@@ -4113,13 +4393,14 @@ function tickSpawn(dt) {
   // 魔王：時間到 132 秒，或船蓋到九成
   if (!G.bossSpawned && G.t >= 100) {
     G.bossSpawned = true; G.bossAt = G.t + 1.4; G.warn = { type: "boss", t: 1.4 };
+    notify("boss", "#general", "明天交 POC，今晚辛苦了。", { force: true, sec: 2.6 });
   }
   if (G.bossSpawned && !G.bossDown && !G.boss && G.t >= G.bossAt) {
     const L = lanes[Math.floor(rand() * lanes.length)];
     spawn("boss", L); G.warn = null;
     if (G.bossFirstT == null) G.bossFirstT = G.t;
     if (!G.bossCineDone) { G.bossCineDone = true; G.cine = { t: 0, lane: L, short: false, canSkip: bossSeen(), said: {} }; sound.setMode?.("silent"); document.body.classList.add("cine"); sound.miss(); }
-    else banner("魔王又來了！", "全員集火！", true, 2.4);
+
   }
   if (G.warn && G.warn.type !== "boss") {
     G.warn.t -= dt;
@@ -4171,7 +4452,6 @@ function endCine() {
   if (G.boss) G.boss.g.scale.setScalar(BOSS_SCALE);
   caveParts.head.position.x = 0;
   gameView();
-  banner("全員集火！", "別讓牠到船塢", true, 2.2);
   sayB(BUB.raymond, "全員集火！", 2);
   ["raymond", "ccza"].forEach((k) => { const b = hud.btn[k]; b.classList.remove("cast"); void b.offsetWidth; b.classList.add("cast"); });
 }
@@ -4255,6 +4535,14 @@ function tickCave(dt) {
   if (G.happy > 0) { G.happy -= dt; sy = 0.4; } // 笑成彎月
   else if (G.blink < 0) { sy = 0.15; if (G.blink < -0.12) G.blink = 2 + rand() * 3; }
   eyes.forEach((e) => (e.scale.y = sy));
+  if (G.rumble > 0) { // 大波預告：山洞發抖、洞口噴塵、眼睛快閃
+    G.rumble -= dt;
+    head.position.x = Math.sin(elapsed * 55) * 0.1;
+    eyeMat.color.set(Math.sin(elapsed * 22) > 0 ? "#ffd23f" : "#ff5a3c");
+    if (rand() < dt * 12) burst(MOUTH().add(V3((rand() - 0.5) * 2, -0.6, 0)), "#cbb79a", 3, 2.5);
+    if (G.rumble <= 0) head.position.x = 0;
+    G.shake = Math.max(G.shake, 0.06);
+  }
   if (G.jaw > 0) G.jaw = Math.max(0, G.jaw - dt);
   const k = G.jaw > 0 ? Math.sin((1 - G.jaw / 0.45) * Math.PI) : 0;
   jaw.rotation.x = k * 0.65;
@@ -4375,6 +4663,7 @@ addEventListener("keydown", (e) => { // 選卡時可用 1–3 挑
 });
 hud.intro.addEventListener("pointerdown", hideIntro);
 const fmt = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+const clockOf = (t) => { const m = 9 * 60 + Math.floor(((Math.min(t, TIME_LIMIT) / TIME_LIMIT) * 9 * 60) / 10) * 10; return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`; };
 let hudCache = "";
 function updateHud() {
   const left = Math.max(0, TIME_LIMIT - G.t);
@@ -4382,7 +4671,7 @@ function updateHud() {
   const key = `${Math.ceil(left)}|${pct}`;
   if (key !== hudCache) {
     hudCache = key;
-    hud.time.textContent = fmt(Math.ceil(left));
+    hud.time.textContent = clockOf(G.t);
     hud.time.classList.toggle("hurry", left < 30);
     hud.bar.style.width = `${pct}%`;
     hud.pct.textContent = `${pct}%`;
@@ -4414,8 +4703,8 @@ function updateHud() {
   more.textContent = off ? `+${off}` : "";
   const lo = G.xpIdx ? XP_TH[G.xpIdx - 1] : 0, hi = XP_TH[G.xpIdx] ?? lo + 1;
   hud.xpI ||= document.querySelector("#hXp i"); hud.xpB ||= document.querySelector("#hXp b");
-  hud.xpI.style.width = `${Math.min(100, ((G.xp - lo) / (hi - lo)) * 100)}%`;
-  hud.xpB.textContent = G.pendingPicks > 0 ? `待挑 ${G.pendingPicks}` : `下一張 ${Math.max(0, hi - G.xp)}`;
+  hud.xpI.style.width = `${THREE.MathUtils.clamp(((G.xp - lo) / (hi - lo)) * 100, 0, 100)}%`;
+  hud.xpB.textContent = G.paused && picker.classList.contains("open") ? "挑一張" : G.pendingPicks > 0 ? `待挑 ${G.pendingPicks}` : `下一張 ${Math.max(0, hi - G.xp)}`;
 }
 function calcUrge() {
   const qs = active();
@@ -4428,7 +4717,7 @@ function syncCombo(pop = false) {
 }
 const bannerQ = [];
 function banner(main, sub = "", danger = false, sec = 2.6, force = false) {
-  if (!force && (G.cine || (G.bannerT > 0.4 && hud.banner.classList.contains("on")))) { if (bannerQ.length < 3) bannerQ.push([main, sub, danger, sec]); return; }
+  if (!force && (G.cine || (G.bannerT > 0.4 && hud.banner.classList.contains("on")) || (BUB.allwill?.until > elapsed))) { if (bannerQ.length < 3) bannerQ.push([main, sub, danger, sec]); return; }
   showBanner(main, sub, danger, sec);
 }
 function showBanner(main, sub, danger, sec) {
@@ -4497,7 +4786,7 @@ function resetGame() {
   Object.assign(G, { t: 0, points: 0, shown: 0, inflight: 0, combo: 0, comboT: 0, maxCombo: 0, solved: 0, split: 0, missed: 0, spawnT: 1.2, warn: null, boss: null,
     bossSpawned: false, bossDown: false, bossAt: 0, rapid: 0, double: 0, spot: 0, async: null, hitstop: 0, uses: {}, phase: -1, milestone: 0, seq: null, sailing: false,
     onb: {}, onbOn: !onbDone(), firstRed: false, bossHp: null, lastBossHp: null, bossLeaks: 0, bossFirstT: null, bossKillT: null, cannon: 0, focusT: 0, lastPickT: null,
-    explainY: false, explainR: false, slamT: 0, slamArmed: false, cannonT: null, bossPickHeld: false, pickAuto: 8, tut2: null, xp: 0, xpIdx: 0, pendingPicks: 0, picks: 0, boons: {}, boonT: {}, laneBoost: {}, stopUsed: 0, retroUsed: 0, fbCount: 0, bossHalf: false, paused: false,
+    explainY: false, explainR: false, notifQ: [], notifT: 0, notifGap: 0, notifN: 0, evSaid: {}, wavesWarn: {}, rumble: 0, waveN: 0, bossAcc: 0, dusk: 0, fled: false, slamT: 0, slamArmed: false, cannonT: null, bossPickHeld: false, pickAuto: 8, tut2: null, xp: 0, xpIdx: 0, pendingPicks: 0, picks: 0, boons: {}, boonT: {}, laneBoost: {}, stopUsed: 0, retroUsed: 0, fbCount: 0, bossHalf: false, paused: false,
     preview: null, task: {}, fresh: [], rapidSolves: 0, stageSolves: 0, casts: {}, waveQ: [], wavesDone: {}, firstLeak: false, redTut: null, cine: null, bossCineDone: false, slow: 0, intro: null, introQ: [], bloomMiss: 0, redsDone: 0, asyncMax: 0, stageCombo: 0, tut: null, tutFreeze: false });
   document.body.classList.remove("tutorial", "cine", "voyage");
   hideIntro();
@@ -4602,7 +4891,8 @@ function endTut2() {
   picker.classList.remove("tut");
   try { localStorage.setItem(TUT2_KEY, "1"); localStorage.setItem(ONB_KEY, "1"); } catch {}
   document.getElementById("replayTut").hidden = false;
-  G.t = 0; G.xp = 0; G.xpIdx = Math.max(G.xpIdx, 1); G.pendingPicks = 0; G.spawnT = 0.8;
+  G.t = 0; G.xpIdx = Math.max(G.xpIdx, 1); G.xp = XP_TH[G.xpIdx - 1]; G.pendingPicks = 0; G.spawnT = 0.8;
+  planOpening();
   gameView();
   BUB.allwill.until = 0;
 }
@@ -4626,11 +4916,15 @@ function tickTut2(dt) {
     if (T.t > 3 && once("rmore")) sayB(BUB.allwill, "要打 3 下，沒解掉的話島會停工。", 2.6);
     if (T.t > 5.6) { p?.st.classList.add("off"); T.step = 3; T.t = 0; gameView(); }
   } else if (T.step === 3) {
-    if (once("pick")) { sayB(BUB.allwill, "達成共識就能挑一張技能卡！", 2.4); picker.classList.add("tut"); G.pendingPicks = 1; G.lastPickT = -99; openPicker(); }
+    if (once("pick")) { sayB(BUB.allwill, "每解掉一個，大家就多一點共識 👍", 3); G.xp = XP_TH[0] - 3; G.xpIdx = 0; G.lastPickT = -99; [0, 0.5, 1].forEach((d, i) => setTimeout(() => G.tut2 && spawn("y", [laneById.jc, laneById.raymond, laneById.ccza][i]), d * 1000)); }
+    if (G.paused && picker.classList.contains("open") && once("pickTag")) picker.classList.add("tut");
+    if (!T.said.pickTag && T.t > 14 && once("pickForce")) { G.pendingPicks = Math.max(1, G.pendingPicks); G.xp = XP_TH[0]; G.xpIdx = 1; picker.classList.add("tut"); openPicker(); }
     if (T.picked) { T.step = 4; T.t = 0; picker.classList.remove("tut"); }
   } else if (T.step === 4) {
-    if (once("boss")) sayB(BUB.allwill, "100 秒後魔王「對不齊」會來，挑對卡！", 2.6);
-    if (T.t > 2.6) endTut2();
+    // 等選卡後的「上線」橫幅收掉再講，兩個不疊在一起
+    if (hud.banner.classList.contains("on") && !T.said.boss) { T.t = 0; }
+    else if (once("boss")) { T.t = 0; sayB(BUB.allwill, "共識滿了就開會，挑一張。下午魔王「對不齊」會來。", 2.8); }
+    if (T.said.boss && T.t > 2.8) endTut2();
   }
 }
 document.getElementById("skipTut").addEventListener("click", () => { if (G.tut2) { if (G.paused) { picker.classList.remove("open", "tut"); G.paused = false; document.body.classList.remove("picking"); } endTut2(); } });
@@ -4641,7 +4935,7 @@ function startGame() {
   resetGame();
   G.demo = false; G.on = true;
   picker.classList.remove("open");
-  if (!tut2Done() && !params.has("notut")) startTut2(); else setTimeout(() => sayB(BUB.allwill, "Spec 對不上的地方，我丟出來。", 3), 0);
+  if (!tut2Done() && !params.has("notut")) startTut2(); else planOpening();
   startScreen.classList.remove("open"); endScreen.classList.remove("open");
   document.body.classList.add("playing-game");
 }
@@ -4704,9 +4998,9 @@ function tickSail(dt) {
 // 成員卡收集：每位成員一個綁在大招上的任務，邊玩邊看得到進度；進度跨局存在玩家自己的瀏覽器
 const CARD_RULES = {
   johnny: { hero: "jc", need: 1, bg: "水球軟體學院創辦人，社群一年 6,000+", cond: "拍板定案或回顧會議升到 Lv2，或觸發含它的共鳴" },
-  coomy: { hero: "jc", need: 1, bg: "前 Onramp Lab FE Tech Lead，團隊的節拍器", cond: "對齊節拍或單一事實來源升到 Lv2，或觸發含它的共鳴" },
+  coomy: { hero: "jc", need: 1, bg: "前 Onramp Lab FE Tech Lead，三個月的東西一個月到一個半月交付", cond: "對齊節拍或單一事實來源升到 Lv2，或觸發含它的共鳴" },
   raymond: { hero: "raymond", need: 1, bg: "Appier 出身，SurveyCake 初期核心開發", cond: "Raymond 任一技能升到 Lv2，或觸發含他的共鳴" },
-  richard: { hero: "richard", need: 1, bg: "SlideArt 設計 Nike、Google、BMW", cond: "Richard 任一技能升到 Lv2，或觸發含他的共鳴" },
+  richard: { hero: "richard", need: 1, bg: "SlideArt 設計 Nike、Google、BMW；讓 Runway 剩一個月的公司兩個月轉虧為盈", cond: "Richard 任一技能升到 Lv2，或觸發含他的共鳴" },
   ccza: { hero: "ccza", need: 1, bg: "AllWill 背後的主力工程師", cond: "ccza 任一技能升到 Lv2，或觸發含她的共鳴" },
   ben: { hero: "ben", need: 1, bg: "在客戶端帶導入的人", cond: "ben 任一技能升到 Lv2，或觸發含他的共鳴" },
 };
@@ -4763,7 +5057,7 @@ function showEnd(won) {
   const owned = BOONS.filter((b) => lv(b.id)), ownedDuos = DUOS.filter((d) => has(d.id));
   h ||= { key: "rookie", avs: ["allwill"], title: "AllWill 見習船員" };
   // 稱號：水球潘和 Coomy 依各自技能分開
-  const TITLES = { johnny: "拍板船長 水球潘", coomy: "人形節拍器 Coomy", raymond: "步驟多了點 CTO Raymond", richard: "止血吉他手 Richard", ccza: "海邊狙擊手 ccza", ben: "最佳串門男主角 ben" };
+  const TITLES = { johnny: "拍板船長 水球潘", coomy: "人形節拍器 Coomy", raymond: "「最難的事只是步驟多了點」Raymond", richard: "止血吉他手 Richard", ccza: "海邊狙擊手 ccza", ben: "最佳串門男主角 ben" };
   if (h.key === "jc") { const jo = ["hat", "retro"].reduce((a, k) => a + lv(k), 0), co = ["beat", "ssot"].reduce((a, k) => a + lv(k), 0); h = { ...h, key: co > jo ? "coomy" : "johnny", avs: [co > jo ? "coomy" : "water"], title: TITLES[co > jo ? "coomy" : "johnny"] }; }
   else if (TITLES[h.key]) h = { ...h, title: TITLES[h.key] };
   if (starsOf(won) === 3) h = { ...h, key: "perfect", title: `零失誤船長・${h.title}` };
@@ -4776,24 +5070,23 @@ function showEnd(won) {
   const bt = bossTime();
   const gapT = bt != null ? Math.max(0, Math.ceil(bt - 25)) : null, gapM = Math.max(0, G.missed - 2);
   const starLine = won ? ["", `下一顆星：魔王 40 秒內倒（這局 ${bt != null ? Math.round(bt) : "—"} 秒），或漏怪 ≤4`, `差一點 3 星：${gapT ? `再快 ${gapT} 秒` : ""}${gapT && gapM ? "、" : ""}${gapM ? `少漏 ${gapM} 個` : ""}`, "零失誤船長！魔王 25 秒內倒、漏怪 ≤2"][stars] : G.bossFirstT != null ? "魔王沒打倒。挑「打魔王」的卡，傷害會累積" : "時間到，船還沒蓋完";
-  const share = encodeURIComponent(`漏 ${G.missed} 個｜魔王 ${bt != null ? Math.round(bt) + " 秒" : "沒倒"}｜總時間 ${fmt(G.t)}
-被魔王問了一整局「到底要做什麼？」，解掉 ${G.solved} 個矛盾${ownedDuos.length ? `，靠「${ownedDuos[0].name}」` : ""}${won ? `把船開出港${stars ? ` ${"★".repeat(stars)}` : ""}` : "還是沒出海"}。我是「${h.title}」，集到 ${got}/6 張 AllWill 成員卡。你的需求也每天在改嗎？來挑戰 👉 ${location.origin}${location.pathname}`);
-  G.endInfo = { won, stars, h, got };
+  const share = encodeURIComponent(`${bt != null ? `魔王問了我一整局「到底要做什麼？」，我 ${Math.round(bt)} 秒讓它閉嘴${stars ? " " + "★".repeat(stars) : ""}` : "魔王問了我一整局「到底要做什麼？」，這次沒讓它閉嘴"}\n漏 ${G.missed} 個｜總時間 ${fmt(G.t)}\n解掉 ${G.solved} 個矛盾${ownedDuos.length ? `，靠「${ownedDuos[0].name}」` : ""}${won ? `把船開出港${stars ? ` ${"★".repeat(stars)}` : ""}` : "還是沒出海"}。我是「${h.title}」，集到 ${got}/6 張 AllWill 成員卡。你的需求也每天在改嗎？來挑戰 👉 ${location.origin}${location.pathname}`);
+  G.endInfo = { won, stars, h, got, bt, missed: G.missed };
   endPanel.innerHTML = `<div class="t-stagger">
     <span class="tag">#AllWill 船塢守衛戰</span>
-    <h2>${won ? "AllWill 號出航！" : `還差 ${100 - pct}%，船還沒蓋好`}</h2>
+    <h2>${won ? "準時下班！AllWill 號出航" : `還差 ${100 - pct}%，今晚加班`}</h2>
+    <div class="title-card${h.key === "perfect" ? " perfect" : ""}"><span class="avs">${(h.avs || [h.av]).map((a) => `<img src="${avatars[a]}" alt="">`).join("")}</span><div><small>你的稱號</small><b>${h.title}</b><span>${TITLE_LINE[h.key]}</span></div></div>
+    <div class="bignum"><b>${bt != null ? `${Math.round(bt)} 秒` : "魔王沒倒"}</b><span>${bt != null ? "讓魔王閉嘴" : "下次挑「打魔王」的卡"}</span></div>
     <div class="stars" aria-label="${stars} 顆星">${"★".repeat(stars)}<s>${"★".repeat(3 - stars)}</s><small>${starLine}</small></div>
-    <div class="stats"><div><b>${G.solved}</b><span>解掉的矛盾</span></div><div><b>${G.missed}</b><span>漏掉的怪</span></div><div><b>${bt != null ? `${Math.round(bt)} 秒` : "—"}</b><span>打倒魔王</span></div></div>
-    <div class="combo-set"><b>本局共識組合</b>${owned.map((b) => `<span>${b.name} Lv${lv(b.id)}</span>`).join("")}${ownedDuos.map((d) => `<span class="duo">共鳴・${d.name}</span>`).join("") || ""}</div>
-    <div class="title-card"><span class="avs">${(h.avs || [h.av]).map((a) => `<img src="${avatars[a]}" alt="">`).join("")}</span><div><small>你的稱號</small><b>${h.title}</b><span>${TITLE_LINE[h.key]}</span></div></div>
-    <div class="collect"><b>成員卡 ${got} / 6</b><span>${fresh.length ? `這局新收集：${fresh.map((k) => MEMBERS[k].name).join("、")}` : got === 6 ? "全部集滿！你認識整個 AllWill 開發團隊了" : "這局沒有新卡，看看下面還差哪些任務"}</span></div>
-    <div class="crew">${CARD_ORDER.map((k) => `<div class="${cards[k] ? "" : "off"}"><img src="${avatars[MEMBERS[k].av]}" alt=""><div><b>${MEMBERS[k].name}${fresh.includes(k) ? "<em>新</em>" : ""}</b><span>${cards[k] ? CARD_RULES[k].bg : "還沒收集"}</span></div></div>`).join("")}</div>
+    <div class="stats"><div><b>${G.solved}</b><span>解掉的矛盾</span></div><div><b>${G.missed}</b><span>漏掉的怪</span></div><div><b>${fmt(G.t)}</b><span>總時間</span></div></div>
+    <div class="collect"><b>成員卡 ${got} / 6</b><span>${fresh.length ? `這局新收集：${fresh.map((k) => MEMBERS[k].name).join("、")}` : got === 6 ? `全部集滿！你認識整個 AllWill 了 → <a href="mailto:hi@specformula.ai">hi@specformula.ai</a>` : "這局沒有新卡，看看下面還差哪些任務"}</span></div>
+    <div class="crew">${CARD_ORDER.map((k) => `<div class="${cards[k] ? "" : "off"}"><img src="${avatars[MEMBERS[k].av]}" alt=""><div><b>${MEMBERS[k].name}${fresh.includes(k) ? "<em>新</em>" : ""}</b><span>${cards[k] ? CARD_RULES[k].bg : "還沒收集"}</span>${cards[k] ? `<a class="chat" href="mailto:hi@specformula.ai?subject=${encodeURIComponent(`[船塢守衛戰] 我拿到「${h.title}」，想跟 ${MEMBERS[k].name} 聊聊`)}">跟 ${MEMBERS[k].name} 聊聊 →</a>` : ""}</div></div>`).join("")}</div>
     ${nextK ? `<div class="next">下一張：${MEMBERS[nextK].name}・${CARD_RULES[nextK].cond}</div>` : ""}
+    <details class="combo-set"><summary>本局共識組合 ▾</summary>${owned.map((b) => `<span>${b.name} Lv${lv(b.id)}</span>`).join("")}${ownedDuos.map((d) => `<span class="duo">共鳴・${d.name}</span>`).join("")}</details>
     <div class="end-actions"><div class="row2"><button class="btn" id="imgBtn" type="button">存成分享圖</button><a class="btn ghost" id="shareBtn" href="https://www.threads.net/intent/post?text=${share}" target="_blank" rel="noopener">分享到 Threads</a></div>
     <button class="btn ghost" id="againBtn" type="button">再玩一次</button></div>
-    <a class="btn ghost" href="mailto:hi@specformula.ai">想認識我們？寫信到 hi@specformula.ai</a>
-    <a class="alt" href="../">看 AllWill 團隊的一天 →</a>
-    <a class="alt" href="../islands/" style="margin-top:4px">看 AllWill 怎麼在開工前找出衝突 →</a>
+    <a class="btn ghost" href="../">認識 AllWill 團隊 →</a>
+    <a class="alt" href="mailto:hi@specformula.ai">或寫信到 hi@specformula.ai</a>
   </div>`;
   endScreen.classList.add("open");
   document.body.classList.remove("playing-game");
@@ -4802,7 +5095,7 @@ function showEnd(won) {
 }
 // 分享圖：星等、稱號、成員卡收集（沒收集的是灰色剪影）、網址
 async function saveShareImage() {
-  const { won, stars, h, got } = G.endInfo;
+  const { won, stars, h, got, bt, missed } = G.endInfo;
   const W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H;
   const x = c.getContext("2d");
   const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#f6e6cf"); g.addColorStop(1, "#3e9fc8");
@@ -4816,7 +5109,7 @@ async function saveShareImage() {
   x.fillStyle = "rgba(28,36,48,0.92)"; x.beginPath(); x.roundRect(90, 370, W - 180, 190, 36); x.fill();
   x.fillStyle = "rgba(255,255,255,0.7)"; x.font = font(700, 32); x.fillText("我的稱號", W / 2, 432);
   x.fillStyle = "#fff"; x.font = font(900, 56); x.fillText(h.title, W / 2, 510);
-  x.fillStyle = "#1c2430"; x.font = font(900, 50); x.fillText(`我集到 ${got} / 6 張成員卡`, W / 2, 650);
+  x.fillStyle = "#5b2a86"; x.font = font(900, 46); x.fillText(bt != null ? `魔王 ${Math.round(bt)} 秒閉嘴｜漏 ${missed} 個` : `魔王沒倒｜漏 ${missed} 個`, W / 2, 635);
   const imgs = await Promise.all(CARD_ORDER.map((k) => load(avatars[MEMBERS[k].av])));
   CARD_ORDER.forEach((k, i) => {
     const cx = 210 + (i % 3) * 330, cy = 790 + Math.floor(i / 3) * 270, own = ownedCards[k];
@@ -4827,7 +5120,8 @@ async function saveShareImage() {
     x.restore();
     x.fillStyle = own ? "#1c2430" : "rgba(28,36,48,0.55)"; x.font = font(900, 34); x.fillText(own ? MEMBERS[k].name : "？？？", cx, cy + 100);
   });
-  x.fillStyle = "#fff"; x.font = font(900, 36); x.fillText("來認識 AllWill 開發團隊 👉", W / 2, 1245);
+  x.fillStyle = "#fff"; x.font = font(900, 32); x.fillText(`集到 ${got} / 6 張 AllWill 成員卡`, W / 2, 1180);
+  x.font = font(900, 38); x.fillText(bt != null ? `你能比 ${Math.round(bt)} 秒快嗎？👉` : "你能讓魔王閉嘴嗎？👉", W / 2, 1245);
   x.font = font(700, 30); x.fillText(`${location.host}${location.pathname}`, W / 2, 1300);
   c.toBlob(async (blob) => {
     const file = new File([blob], "allwill-crew-card.png", { type: "image/png" });
@@ -4894,16 +5188,16 @@ Object.assign(boonById.beat, { name: "明天交 POC", desc: ["全隊攻速 +40%"
 Object.assign(boonById.ssot, { name: "以 Spec 為準", desc: ["解掉時 30% 連鎖打下一個", "連鎖 45%，少吵一輪", "連鎖 60%，群組安靜了"] });
 Object.assign(boonById.retro, { name: "這個上次講過", desc: ["漏掉的回放重打 1 次，魔王首衝不扣磚", "Retro 再開一輪（2 次）", "Retro 開到第三輪"] });
 Object.assign(boonById.split, { name: "只是步驟多了點", desc: ["紅色一打就拆成 2 個黃色", "拆完的走更慢", "拆完直接解掉"] });
-Object.assign(boonById.punch, { name: "健身房直送一拳", desc: ["每 7 秒揍最前面 3 個紅色或魔王", "練胸日：傷害 +1", "不跳腿日：傷害 +2"] });
+Object.assign(boonById.punch, { name: "健身房直送一拳", desc: ["每 7 秒揍最前面 3 個紅色或魔王", "練胸日：傷害 +1", "練腿日：傷害 +2"] });
 Object.assign(boonById.pierce, { name: "Root Cause 追到底", desc: ["Raymond 的攻擊多打穿 2 個", "再追兩層（穿 4）", "追到上游（整條橋）"] });
-Object.assign(boonById.review, { name: "這版 Figma 先別動", desc: ["每 10 秒定住附近三島 2 秒，魔王也停", "定住 3 秒", "定住 4 秒，全場屏息"] });
+Object.assign(boonById.review, { name: "等等，這版先不要改", desc: ["每 10 秒定住附近三島 2 秒，魔王也停", "定住 3 秒", "定住 4 秒，全場屏息"] });
 Object.assign(boonById.stop, { name: "Runway 只剩 1 個月", desc: ["攔下 2 個快漏掉的，魔王衝島懲罰減半", "先砍預算再說（攔 3 個）", "兩個月轉虧為盈（攔 4 個）"] });
 Object.assign(boonById.lang, { name: "翻成人話", desc: ["Richard 打過的，大家打它多 50%", "多 100%", "多 200%，工程師聽懂了"] });
 Object.assign(boonById.async, { name: "已讀，晚點回", desc: ["每 9 秒清空最塞的那條橋", "7.5 秒就回", "6 秒，比 Slack 快"] });
 Object.assign(boonById.remote, { name: "在海邊 WFH", desc: ["ccza 可以支援任何一座島", "Wi-Fi 更遠", "海風加持，攻速 +30%"] });
 Object.assign(boonById.lock, { name: "上線前 Code Freeze", desc: ["被打過的矛盾走慢 30%", "慢 50%", "慢 70%，誰都別動"] });
 Object.assign(boonById.demo, { name: "客戶在看別出包", desc: ["每 15 秒全場定住 3 秒，傷害 ×2", "冷卻 13 秒", "冷卻 11 秒，安可"] });
-Object.assign(boonById.visit, { name: "你有抽到馬拉松？", desc: ["每 12 秒串門一座島，攻速 ×2 持續 4 秒", "聊 5 秒", "聊 6 秒才走"] });
+Object.assign(boonById.visit, { name: "我過去你那邊一下", desc: ["每 12 秒串門一座島，攻速 ×2 持續 4 秒", "聊 5 秒", "聊 6 秒才走"] });
 Object.assign(boonById.feedback, { name: "客戶說這要改", desc: ["每解 10 個，船 +1 磚、魔王 -1 血", "每 8 個", "每 6 個"] });
 Object.assign(boonById.multi, { name: "PM、QA 我都演", desc: ["ben 的攻擊分裂成 2 發", "分裂成 4 發", "分裂成 6 發，劇組免請人"] });
 Object.assign(boonById.d_record, { name: "老闆拍板，CTO 拆單", desc: "船長帽打中紅色時，直接拆光" });
@@ -4921,14 +5215,13 @@ const ONB_KEY = "allwill-game-onboard";
 const onbDone = () => { try { return localStorage.getItem(ONB_KEY) === "1"; } catch { return false; } };
 function onb(k, pet, tag, line) {
   if (G.onb[k] || !G.onbOn) return; G.onb[k] = true;
-  sayB(BUB.allwill, line, 2.6);
   if (pet) { pet.st.textContent = tag; pet.st.style.setProperty("--sc", tag.startsWith("衝") ? "#ec4d2f" : tag === "停工" ? "#ec4d2f" : "#d9a400"); pet.st.classList.remove("off"); setTimeout(() => pet.st.classList.add("off"), 3000); }
   if (Object.keys(G.onb).length >= 4) { try { localStorage.setItem(ONB_KEY, "1"); } catch {} }
 }
 function addXP(n) {
   if (!G.on || G.seq) return;
   G.xp += n;
-  while (G.xpIdx < XP_TH.length && G.xp >= XP_TH[G.xpIdx]) { G.xpIdx++; G.pendingPicks++; onb("xp", null, "", "有共識了！挑張卡加班"); }
+  while (G.xpIdx < XP_TH.length && G.xp >= XP_TH[G.xpIdx]) { G.xpIdx++; G.pendingPicks++; }
   maybeOpenPicker();
 }
 const picker = document.getElementById("boonPick");
@@ -4972,7 +5265,7 @@ function openPicker() {
       <span class="bp-txt">${fresh ? `<i class="bp-tag new">新英雄上線</i>` : ""}${half ? `<i class="bp-tag">再拿這張 → 共鳴「${half.name}」</i>` : ""}<b>${b.name}</b><span class="bp-use">${USE[b.id].map((u) => `<i class="u-${u}">${u}</i>`).join("")}</span><em>${heroName(h)}・${l ? `Lv${l} → Lv${l + 1}` : "Lv1"}</em><p>${b.desc[l]}</p><span class="bp-dots">${[0, 1, 2].map((i) => `<s class="${i < l + 1 ? "on" : ""}"></s>`).join("")}</span></span></button>`;
   };
   picker.querySelector(".bp-cards").innerHTML = opts.map(card).join("");
-  picker.querySelector(".bp-title").textContent = G.picks === 0 ? "達成共識！挑一張技能" : G.boss ? "魔王來了！挑一張技能" : ["達成共識！挑一張", "終於對齊了！挑一張", "會議沒延長！挑一張"][G.picks % 3];
+  picker.querySelector(".bp-title").textContent = G.boss ? "緊急會議：魔王怎麼處理？" : "會議結論：下一步怎麼做？";
   picker.classList.add("open"); document.body.classList.add("picking");
   G.pickAuto = 8; picker.querySelector(".bp-timer i").style.transitionDuration = "0s"; picker.querySelector(".bp-timer i").style.width = "100%";
   sound.ok?.();
@@ -4992,10 +5285,12 @@ function pickBoon(id) {
     if (!h.unlocked) {
       h.unlocked = true; h.unlockT = G.t; h.timer = 0.3;
       if (h.key === "ben") benReturn();
-      banner(`${heroName(h)} 上線！`, `${b.name}：${b.desc[0]}`, false, 2.6);
-    } else banner(`${b.name} Lv${lv(id)}`, b.desc[lv(id) - 1], false, 2.2);
+      banner(`${heroName(h)} 上線`, "", false, 1.6);
+    } else banner(`${b.name} Lv${lv(id)}`, "", false, 1.4);
     sayB(BUB[h.bub], `${b.name}！`, 1.6);
-  } else banner(`共鳴：${b.name}`, b.desc, false, 2.8);
+  } else banner(`共鳴：${b.name}`, "", false, 1.8);
+  const chosen = picker.querySelector(`[data-id="${id}"]`);
+  picker.querySelectorAll(".bp-card").forEach((c) => c.classList.add(c === chosen ? "chosen" : "fade"));
   picker.classList.remove("open"); document.body.classList.remove("picking");
   setTimeout(() => { if (!picker.classList.contains("open")) picker.querySelector(".bp-title").textContent = ""; }, 300);
   G.paused = false;
@@ -5017,20 +5312,20 @@ function fireBoon(b) {
   else if (b.id === "punch") {
     let list = active((p) => p.type === "r" || p.type === "boss").sort((a, c) => a.u - c.u).slice(0, 3);
     if (!list.length) list = active().sort((a, c) => a.u - c.u).slice(0, 3);
-    list.forEach((p, i) => fireOrb(h, p, 2 + L, { kind: "fist", delay: i * 0.14, dur: 0.45, arc: 0 }));
-    if (list.length) { h.cast = 0.9; heroSay(h, "一拳！"); }
+    list.forEach((p, i) => fireOrb(h, p, 2 + L, { kind: "fist", delay: 0.25 + i * 0.14, dur: 0.4, arc: 0 }));
+    if (list.length) { h.cast = 0.9; heroSay(h, "一拳！"); h.kickT = -0.25; burst(heroPos(h), "#ffffff", 14, 2); shockwave(h.obj().getWorldPosition(V3()), h.c, 2.2, 0.25); }
   } else if (b.id === "review") {
     const sec = (1 + L) * (has("d_rehearse") ? 2 : 1);
     const t = active((p) => ["richard", "ben", "ccza"].includes(p.lane.id) && p.type !== "boss");
-    t.forEach((p) => setStun(p, sec, h.c, "♪ 跳舞中"));
-    if (G.boss && G.boss.state === "walk") setStun(G.boss, 1, h.c, "♪ 跳舞中");
-    if (t.length) { h.cast = 0.9; heroSay(h, "設計評審！"); shockwave(h.obj().getWorldPosition(V3()), h.c, 7, 0.8); }
+    t.forEach((p) => setStun(p, sec, h.c, "♪"));
+    if (G.boss && G.boss.state === "walk") setStun(G.boss, 1, h.c, "♪");
+    if (t.length) { h.cast = 0.9; heroSay(h, "設計評審！"); const o = h.obj().getWorldPosition(V3()); [0, 160, 320].forEach((d, i) => setTimeout(() => { shockwave(o, i === 1 ? "#ffffff" : h.c, 5 + i * 2.5, 0.7); burst(o.clone().setY(2), h.c, 8, 5); }, d)); }
   } else if (b.id === "async") {
     const count = lanes.map((l) => active((p) => p.lane === l && p.type !== "boss").length);
     if (Math.max(...count) > 0) { const Ln = lanes[count.indexOf(Math.max(...count))]; Ln.mark = 1.2; G.async = { lane: Ln, t: 1.2 }; h.cast = 0.9; heroSay(h, "（敲 Enter）"); }
   } else if (b.id === "demo") {
     const sec = 3 * (has("d_rehearse") ? 2 : 1);
-    active().forEach((p) => setStun(p, sec, h.c, "🎭 看戲中")); G.double = sec; G.spot = sec; h.cast = 0.9; heroSay(h, "看我這邊！");
+    active().forEach((p) => setStun(p, sec, h.c, "🎭")); G.double = sec; G.spot = sec; h.cast = 0.9; heroSay(h, "看我這邊！");
   } else if (b.id === "visit") {
     const lane = LANE_IDS[Math.floor(rand() * LANE_IDS.length)];
     G.laneBoost[lane] = 3 + L;
@@ -5050,10 +5345,10 @@ function tickBossFocus(dt) {
 function heroTopLv(h) { return Math.max(0, ...BOONS.filter((b) => b.hero === h.key).map((b) => lv(b.id))); }
 // 打穿：一道光束連到後面的目標
 const beams = Array.from({ length: 6 }, () => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1, 6), new THREE.MeshBasicMaterial({ color: "#7fb3ff", transparent: true, depthWrite: false })); m.visible = false; scene.add(m); return { m, t: 1 }; });
-function pierceBeam(a, b, color) {
+function pierceBeam(a, b, color, w = 1) {
   const B = beams.find((x) => x.t >= 1) || beams[0];
   const from = a.clone().add(V3(0, 1, 0)), to = b.clone().add(V3(0, 1, 0)), mid = from.clone().lerp(to, 0.5);
-  B.m.position.copy(mid); B.m.scale.set(1, from.distanceTo(to), 1); B.m.lookAt(to); B.m.rotateX(Math.PI / 2);
+  B.m.position.copy(mid); B.m.scale.set(w, from.distanceTo(to), w); B.m.lookAt(to); B.m.rotateX(Math.PI / 2);
   B.m.material.color.set(color); B.t = 0; B.m.visible = true;
 }
 // 英雄腳下的光環：Lv1 一圈、Lv2 兩圈、Lv3 會轉
@@ -5067,20 +5362,29 @@ function heroAura(h) {
 function tickAuras(dt) {
   for (const h of BTN_HEROES) {
     const L = heroTopLv(h), a = heroAura(h);
+    {
+      const objs = h.key === "jc" ? [h.obj(), mascots.water] : [h.obj()];
+      const kk = h.kickT == null ? null : (h.kickT += dt);
+      const [sx, sy] = kickShape(kk);
+      objs.forEach((o) => {
+        const base = (o.userData.baseScale ??= o.scale.x);
+        const want = base * HERO_K() * (1 + 0.06 * L);
+        o.userData.hs = (o.userData.hs ?? want) + (want - (o.userData.hs ?? want)) * Math.min(1, dt * 6);
+        o.scale.set(o.userData.hs * sx, o.userData.hs * sy, o.userData.hs * sx);
+      });
+    }
     a.visible = h.unlocked && L > 0 && !G.sailing;
     if (!a.visible) continue;
     a.position.copy(h.obj().getWorldPosition(V3())).setY(0.85);
     a.children.forEach((r, i) => { r.visible = i < Math.min(2, L); r.material.opacity = 0.55 + Math.sin(elapsed * 4 + i) * 0.2; });
     if (L >= 3) { a.rotation.y += dt * 2; if (rand() < dt * 10) burst(a.position.clone().add(V3(Math.cos(elapsed * 3) * 1.3, 0.4, Math.sin(elapsed * 3) * 1.3)), h.c, 1, 1.5); }
-    const sc = 1 + 0.08 * L, o = h.obj(), base = o.userData.baseScale ??= o.scale.x;
-    o.scale.setScalar(base * sc);
   }
   for (const B of beams) { if (B.t >= 1) continue; B.t = Math.min(1, B.t + dt / 0.25); B.m.material.opacity = 1 - B.t; if (B.t >= 1) B.m.visible = false; }
 }
 // 升級瞬間：頭頂大字＋（Lv3 或新英雄）鏡頭推近
 function levelUpFx(h, b, isNew) {
   const L = lv(b.id), at = heroPos(h).add(V3(0, 1.2, 0));
-  if (isNew) banner(`${heroName(h)} 上線！`, b.name, false, 2); else floatText(at, `Lv${L}！${b.name}`, "gold"); // 上線大字放畫面中央，不會被切邊
+  if (!isNew) floatText(at, `Lv${L}！${b.name}`, "gold"); // 上線的橫幅由 pickBoon 出一次 // 上線大字放畫面中央，不會被切邊
   burst(at, h.c, 18, 6); shockwave(h.obj().getWorldPosition(V3()), h.c, 4, 0.6);
   sound.sparkle?.();
   if (L >= 3 || isNew) { const p = h.obj().getWorldPosition(V3()); placeCamera(p.clone().add(V3(0, 1, 0)), fitDistance(9, 9), portrait() ? 40 : 32); G.camBack = 0.9; }
@@ -5104,7 +5408,7 @@ for (const id of LANE_IDS) {
   const c = posOf(unitById[id]), g = new THREE.Group(); g.visible = false; scene.add(g);
   const flames = Array.from({ length: 8 }, (_, i) => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: fireTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); const a = (i / 8) * Math.PI * 2; sp.position.set(c.x + Math.cos(a) * 2.2, 1.6, c.z + Math.sin(a) * 2.2); g.add(sp); return sp; });
   const smoke = Array.from({ length: 12 }, (_, i) => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: smokeTex, transparent: true, depthWrite: false })); sp.userData.t = i / 12; sp.userData.x = c.x + (rand() - 0.5) * 4; sp.userData.z = c.z + (rand() - 0.5) * 4; g.add(sp); return sp; });
-  const light = new THREE.PointLight("#ff7a1a", 0, 14); light.position.set(c.x, 3, c.z); g.add(light);
+  const light = new THREE.PointLight("#ff7a1a", 0, 14); light.position.set(c.x, 3, c.z); scene.add(light); // 燈常駐、亮度 0，第一次失火不重新編譯 shader
   FIRES[id] = { g, flames, smoke, light };
 }
 function tickFireFx(dt) {
@@ -5124,7 +5428,7 @@ function bannerOnce(key, main, sub, danger, sec, at) {
 function setFire(L) {
   L.fire = 10; L.fireAcc = 0;
   const I = islands[L.id]; if (I?.grass) I.grass.color.set("#5a4636");
-  bannerOnce("fire", "衝突沒拍板，島燒起來了", "這鍋誰背？英雄會去滅火", true, 2.4, posOf(unitById[L.id]).setY(4));
+  if (!G.evSaid.fire) { G.evSaid.fire = true; notify("pm", "#dev", "這鍋誰背？", { force: true, sec: 2.4, lanes: [L.id] }); }
 }
 // 坐下的英雄頭上的 💤
 const zzzTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); x.font = "48px sans-serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("💤", 32, 34); return new THREE.CanvasTexture(c); })();
@@ -5191,7 +5495,13 @@ function tickLeaks(dt) {
       if (!worstP.buzzed) { worstP.buzzed = true; navigator.vibrate?.(30); }
     }
     const hb = hud.btn[L.id === "jc" ? "jc" : L.id];
-    if (hb) hb.classList.toggle("danger", !!(worstP && worst < 0.3 && G.on));
+    const danger = !!(worstP && worst < 0.3 && G.on && !G.tut2);
+    if (hb) hb.classList.toggle("danger", danger);
+    if (danger) { L.band.visible = true; L.band.material.color.set("#ff3b2f"); L.band.material.opacity = 0.22 + Math.sin(elapsed * 14) * 0.16; }
+    else if (L.evT > 0 && !G.preview) { L.evT -= dt; L.band.visible = true; L.band.material.color.set("#ffd36b"); L.band.material.opacity = Math.min(1, L.evT) * (0.35 + Math.sin(elapsed * 10) * 0.15); }
+    else if (!G.preview) { L.band.visible = false; L.band.material.opacity = 0; }
+    const I = islands[L.id];
+    if (I) I.el.classList.toggle("mini", portrait() && G.on && !G.tut2 && !(worstP && worst < 0.45) && !(L.fire > 0) && !L.jam.length && !(L.stall > 0));
   }
   // 坐下的英雄：停火、抱頭
   for (const h of HEROES) {
@@ -5204,7 +5514,7 @@ function tickLeaks(dt) {
   }
 }
 function tickBoons(dt) {
-  tickLeaks(dt);
+  tickLeaks(dt); tickPetLooks(dt); tickNotif(dt);
   tickAuras(dt);
   tickBossHud(); tickBossLook(dt);
   if (G.camBack > 0) { G.camBack -= dt; if (G.camBack <= 0) gameView(); }
@@ -5229,10 +5539,13 @@ function tickGame(dt) {
   tickBricks(dt);
   tickFx(dt);
   if (G.bannerT > 0) { G.bannerT -= dt; if (G.bannerT <= 0) hud.banner.classList.remove("on"); }
-  else if (bannerQ.length && !G.cine) showBanner(...bannerQ.shift());
+  if (shipToastT > 0) { shipToastT -= dt; if (shipToastT <= 0) shipToastEl.classList.remove("on"); }
+  else if (bannerQ.length && !G.cine && !(BUB.allwill?.until > elapsed)) showBanner(...bannerQ.shift());
   if (G.preview?.h.key === "ccza") G.preview.lanes = G.preview.main = SKILL_INFO.ccza.lanes();
   lanes.forEach((l) => {
     l.el.classList.toggle("off", !(l.stall > 0 && G.on));
+    if (l.stall > (l.stallMax || 0)) l.stallMax = l.stall; else if (l.stall <= 0) l.stallMax = 0;
+    if (l.stall > 0) l.el.style.setProperty("--sp", (l.stall / l.stallMax).toFixed(3));
     const pv = G.preview && G.preview.lanes.includes(l.id);
     l.band.visible = !!pv;
     if (pv) { l.band.material.color.set(G.preview.h.c); l.band.material.opacity = (G.preview.main.includes(l.id) ? 0.7 : 0.4) + Math.sin(elapsed * 6) * 0.1; }
@@ -5264,7 +5577,15 @@ function tickGame(dt) {
   lanes.forEach((l) => { l.stall = Math.max(0, l.stall - gdt); l.mark = Math.max(0, l.mark - gdt); });
   if (G.async) {
     G.async.t -= gdt;
+    { const k = THREE.MathUtils.clamp(1 - G.async.t / 1.2, 0, 1), cv = G.async.lane.br.curve; for (let j = 0; j < 2; j++) burst(cv.getPointAt(Math.max(0.001, 1 - k)).add(V3((rand() - 0.5) * 1.6, 0.5, (rand() - 0.5) * 1.6)), "#b48cff", 1, 1.2); }
     if (G.async.t <= 0) { const h = heroByKey.ccza; G.asyncMax = Math.max(G.asyncMax, active((p) => p.lane === G.async.lane).length); taskProgress("ccza", active((p) => p.lane === G.async.lane).length); active((p) => p.lane === G.async.lane).forEach((p, i) => fireOrb(h, p, p.type === "boss" ? 3 : 9, { kind: "code", sky: true, delay: i * 0.05, dur: 0.4 })); G.async = null; }
+  }
+  stageDim.classList.toggle("on", G.spot > 0);
+  { // 魔王來之前 6 秒：天色變暗、小怪逃散；登場後慢慢退回
+    const want = G.on && !G.bossDown ? (G.boss ? 0.35 : THREE.MathUtils.clamp((G.t - 94) / 6, 0, 1)) : 0;
+    G.dusk = (G.dusk || 0) + (want - (G.dusk || 0)) * Math.min(1, gdt * 2);
+    bossDusk.style.opacity = G.dusk.toFixed(3);
+    if (G.t >= 94 && !G.fled && !G.boss) { G.fled = true; pets.forEach((q) => { if (q.active && q.type === "n") q.speed *= 1.8; }); }
   }
   if (G.spot > 0) { spotLight.visible = true; spotLight.position.copy(team.ben.g.position).add(V3(0, 4.2, 0)); }
   tickSpawn(gdt);
@@ -5383,7 +5704,7 @@ function tick(dt) {
     w.legs[3].rotation.x = Math.sin(step) * 0.5;
   }
   if (mascots.water) {
-    mascots.water.scale.set(1.4 * (1 + Math.sin(elapsed * 4.4) * 0.03), 1.4 * (1 - Math.sin(elapsed * 4.4) * 0.03), 1.4);
+    if (!document.body.classList.contains("playing-game")) mascots.water.scale.set(1.4 * (1 + Math.sin(elapsed * 4.4) * 0.03), 1.4 * (1 - Math.sin(elapsed * 4.4) * 0.03), 1.4);
     if (coomyBusy) {} else if (!love.hug && !(roamers.find((r) => r.me) || {}).moving) mascots.wave.rotation.z = 2.5 + Math.sin(elapsed * 6) * 0.35;
     else if (!love.hug) mascots.wave.rotation.z = 0.2;
   }
